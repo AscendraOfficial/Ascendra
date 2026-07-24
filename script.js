@@ -5,6 +5,65 @@ const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
 const PASSWORD_ITERATIONS = 600000;
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+const achievements = [
+    {
+        id: "firstTask",
+        name: "First Step",
+        description: "Complete your first task.",
+        stat: "tasksCompleted",
+        goal: 1,
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "taskMaster",
+        name: "Task Master",
+        description: "Complete 10 tasks.",
+        stat: "tasksCompleted",
+        goal: 10,
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "habitStarter",
+        name: "Habit Starter",
+        description: "Complete your first habit.",
+        stat: "habitsCompleted",
+        goal: 1,
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "noZeroDays",
+        name: "No Zero Days",
+        description: "Complete a seven-day streak with no missed tasks or habits.",
+        stat: "noZeroDaysStreak",
+        goal: 7,
+        progress: 0,
+        unlocked: false,
+    },
+];
+
+const badges = [
+    {
+        id: "genesis",
+        name: "GENESIS",
+        description: "Awarded to the first person in the world to use Ascendra.",
+        obtained: false,
+    },
+    {
+        id: "coFounder",
+        name: "Co-Founder",
+        description: "Awarded to someone who helped create and shape Ascendra from the beginning.",
+        obtained: false,
+    },
+    {
+        id: "founder",
+        name: "Founder",
+        description: "Awarded to the creator and lead developer of Ascendra.",
+        obtained: false,
+    },
+];
 
 function formatLocalDate(date = new Date()) {
     const year = date.getFullYear();
@@ -28,6 +87,8 @@ function parseLocalDateTime(value, fallbackTime = "") {
     const hour = Number(match[4] ?? fallbackMatch?.[1] ?? 0);
     const minute = Number(match[5] ?? fallbackMatch?.[2] ?? 0);
     const parsed = new Date(year, month - 1, day, hour, minute, 0, 0);
+
+
 
     if (
         parsed.getFullYear() !== year ||
