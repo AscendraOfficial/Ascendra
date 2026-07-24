@@ -2880,58 +2880,66 @@ return () => {
             uncheckedToday;
     }
 
-    function updateAchievement(
-        completedTasks,
-        successfulHabitDays
-    ) {
-        const totalWins =
-            completedTasks + successfulHabitDays;
+    function updateAchievements(
+    completedTasks,
+    successfulHabitDays
+) {
+    const statistics = {
+        tasksCompleted: completedTasks,
+        habitsCompleted: successfulHabitDays,
+    };
 
-        if (totalWins >= 100) {
-            achievementIcon.textContent = "👑";
-            achievementTitle.textContent =
-                "Ascendra Legend";
+    achievements.forEach(function (achievement) {
+        const statValue =
+            statistics[achievement.stat] || 0;
 
-            achievementDescription.textContent =
-                "You have collected at least 100 total wins.";
-        } else if (totalWins >= 50) {
-            achievementIcon.textContent = "🏆";
-            achievementTitle.textContent =
-                "Progress Champion";
+        achievement.progress = Math.min(
+            statValue,
+            achievement.goal
+        );
 
-            achievementDescription.textContent =
-                "You have collected at least 50 total wins.";
-        } else if (totalWins >= 25) {
-            achievementIcon.textContent = "🔥";
-            achievementTitle.textContent =
-                "On Fire";
+        achievement.unlocked =
+            statValue >= achievement.goal;
+    });
 
-            achievementDescription.textContent =
-                "You have collected at least 25 total wins.";
-        } else if (totalWins >= 10) {
-            achievementIcon.textContent = "⭐";
-            achievementTitle.textContent =
-                "Momentum Builder";
+    localStorage.setItem(
+        "achievements",
+        JSON.stringify(achievements)
+    );
 
-            achievementDescription.textContent =
-                "You have collected at least 10 total wins.";
-        } else if (totalWins >= 1) {
-            achievementIcon.textContent = "✅";
-            achievementTitle.textContent =
-                "First Win";
+    displayLatestAchievement();
+}
+    function displayLatestAchievement() {
+    const unlockedAchievements =
+        achievements.filter(function (achievement) {
+            return achievement.unlocked;
+        });
 
-            achievementDescription.textContent =
-                "You recorded your first completed task or habit.";
-        } else {
-            achievementIcon.textContent = "🌱";
-            achievementTitle.textContent =
-                "Getting Started";
+    if (unlockedAchievements.length === 0) {
+        achievementIcon.textContent = "🌱";
 
-            achievementDescription.textContent =
-                "Complete a task or habit check-in to begin.";
-        }
+        achievementTitle.textContent =
+            "Getting Started";
+
+        achievementDescription.textContent =
+            "Complete a task or habit to unlock your first achievement.";
+
+        return;
     }
 
+    const latestAchievement =
+        unlockedAchievements[
+            unlockedAchievements.length - 1
+        ];
+
+    achievementIcon.textContent = "🏆";
+
+    achievementTitle.textContent =
+        latestAchievement.name;
+
+    achievementDescription.textContent =
+        latestAchievement.description;
+}
     function formatDate(dateString) {
         if (!dateString) {
             return "No due date";
@@ -3093,7 +3101,8 @@ window.formatDate = formatDate;
 window.getStoredArray = getStoredArray;
 window.getTodayString = getTodayString;
 window.loadStats = loadStats;
-window.updateAchievement = updateAchievement;
+window.updateAchievements = updateAchievements;
+window.displayLatestAchievement = displayLatestAchievement;
 window.updateHabitProgressMessage = updateHabitProgressMessage;
 window.updateHabitStatistics = updateHabitStatistics;
 window.updateTaskDateStatistics = updateTaskDateStatistics;
