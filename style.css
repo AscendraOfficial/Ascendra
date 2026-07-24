@@ -6020,41 +6020,38 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="roadmap"] .navbar{
-  position:fixed;
-  left:50%;
-  bottom:calc(20px + env(safe-area-inset-bottom));
-  z-index:9999;
-  display:flex;
-  width:min(
-    900px,
-    calc(90% - env(safe-area-inset-left) - env(safe-area-inset-right))
-  );
-  padding:10px;
-  transform:translateX(-50%);
-  border-radius:30px;
-  background:white;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    width: 600px;
+
+    border-radius: 999px;
+    overflow: hidden;
+    background-color: rgb(240, 240, 240);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
 .ascendra-page[data-route="roadmap"] .navbar button{
-  flex:1;
-  border:0;
-  padding:10px 4px;
-  background:transparent;
-  color:#333;
-  cursor:pointer;
-  font-size:14px;
-  transition:background-color .2s;
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 15px 0;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .ascendra-page[data-route="roadmap"] .navbar button:hover{
-  background:#d7d7d7;
+    background-color: rgb(215, 215, 215);
 }
 
-.ascendra-page[data-route="roadmap"] .navbar button:focus-visible{
-  outline:0;
-  border-radius:14px;
-  box-shadow:inset 0 0 0 3px var(--accent,#7f00ff);
+.ascendra-page[data-route="roadmap"] .navbar .current{
+    background-color: rgb(37, 99, 235);
+    color: white;
+    border-radius: 25px;
 }
 
 .roadmap-progress{
