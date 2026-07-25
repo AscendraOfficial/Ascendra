@@ -2881,65 +2881,103 @@ return () => {
     }
 
     function updateAchievements(
-    completedTasks,
-    successfulHabitDays
-) {
-    const statistics = {
-        tasksCompleted: completedTasks,
-        habitsCompleted: successfulHabitDays,
-    };
+        completedTasks,
+        successfulHabitDays
+    ) {
+        const statistics = {
+            tasksCompleted: completedTasks,
+            habitsCompleted: successfulHabitDays,
+            noZeroDaysStreak: 0
+        };
 
-    achievements.forEach(function (achievement) {
-        const statValue =
-            statistics[achievement.stat] || 0;
+        achievements.forEach(function (achievement) {
+            if (achievement.id === "noZeroDays") {
+                achievement.progress = 0;
+                achievement.unlocked = false;
+                return;
+            }
 
-        achievement.progress = Math.min(
-            statValue,
-            achievement.goal
-        );
+            const rawStatValue =
+                Number(statistics[achievement.stat] || 0);
 
-        achievement.unlocked =
-            statValue >= achievement.goal;
-    });
+            const statValue =
+                Number.isFinite(rawStatValue)
+                    ? Math.max(0, rawStatValue)
+                    : 0;
 
-    localStorage.setItem(
-        "achievements",
-        JSON.stringify(achievements)
-    );
+            achievement.progress = Math.min(
+                statValue,
+                achievement.goal
+            );
 
-    displayLatestAchievement();
-}
-    function displayLatestAchievement() {
-    const unlockedAchievements =
-        achievements.filter(function (achievement) {
-            return achievement.unlocked;
+            achievement.unlocked =
+                statValue >= achievement.goal;
         });
 
-    if (unlockedAchievements.length === 0) {
-        achievementIcon.textContent = "🌱";
+        localStorage.setItem(
+            "achievements",
+            JSON.stringify(achievements)
+        );
 
-        achievementTitle.textContent =
-            "Getting Started";
-
-        achievementDescription.textContent =
-            "Complete a task or habit to unlock your first achievement.";
-
-        return;
+        displayLatestAchievement();
     }
 
-    const latestAchievement =
-        unlockedAchievements[
-            unlockedAchievements.length - 1
-        ];
+    function displayLatestAchievement() {
+        const unlockedAchievements =
+            achievements.filter(function (achievement) {
+                return achievement.unlocked;
+            });
 
-    achievementIcon.textContent = "🏆";
+        if (unlockedAchievements.length === 0) {
+            achievementIcon.textContent = "🌱";
 
-    achievementTitle.textContent =
-        latestAchievement.name;
+            achievementTitle.textContent =
+                "Getting Started";
 
-    achievementDescription.textContent =
-        latestAchievement.description;
-}
+            achievementDescription.textContent =
+                "Complete a task or habit to unlock your first achievement.";
+
+            return;
+        }
+
+        const latestAchievement =
+            unlockedAchievements[
+                unlockedAchievements.length - 1
+            ];
+
+        achievementIcon.textContent = "🏆";
+
+        achievementTitle.textContent =
+            latestAchievement.name;
+
+        achievementDescription.textContent =
+            latestAchievement.description;
+    }
+
+    function updateBadges() {
+        const normalizedName =
+            String(
+                localStorage.getItem("name") || ""
+            ).trim().toLowerCase();
+
+        badges.forEach(function (badge) {
+            if (badge.id === "genesis") {
+                badge.obtained = false;
+            } else if (badge.id === "founder") {
+                badge.obtained =
+                    normalizedName === "declan";
+            } else if (badge.id === "coFounder") {
+                badge.obtained =
+                    normalizedName === "jayden";
+            }
+        });
+
+        localStorage.setItem(
+            "badges",
+            JSON.stringify(badges)
+        );
+    }
+
     function formatDate(dateString) {
         if (!dateString) {
             return "No due date";
@@ -3086,10 +3124,12 @@ return () => {
 
         updateTodayHabitStatistics(habits);
 
-        updateAchievement(
+        updateAchievements(
             completedTasks,
             successfulHabitDays
         );
+
+        updateBadges();
 
         displayRecentTasks(todos);
     }
@@ -3103,6 +3143,7 @@ window.getTodayString = getTodayString;
 window.loadStats = loadStats;
 window.updateAchievements = updateAchievements;
 window.displayLatestAchievement = displayLatestAchievement;
+window.updateBadges = updateBadges;
 window.updateHabitProgressMessage = updateHabitProgressMessage;
 window.updateHabitStatistics = updateHabitStatistics;
 window.updateTaskDateStatistics = updateTaskDateStatistics;
