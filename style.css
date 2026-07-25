@@ -6068,7 +6068,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .roadmap-page .progress-fill{
-  width:62.5%;
+  width:75%;
   height:100%;
   border-radius:inherit;
   background:linear-gradient(90deg,#6d28d9,#a855f7);
