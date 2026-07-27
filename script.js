@@ -2445,7 +2445,7 @@ let radius = 0;
 function updateOrbitRadius() {
     const firstButton = buttons[0];
     radius = firstButton
-        ? firstButton.getBoundingClientRect().width * 2.2
+        ? firstButton.getBoundingClientRect().width * 1.65
         : 0;
 }
 
