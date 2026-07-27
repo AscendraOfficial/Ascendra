@@ -5884,16 +5884,21 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 @media (min-width:769px) and (min-height:821px){
+  .ascendra-page[data-route="menu"] #menuTitle,
+  .ascendra-page[data-route="menu"] #nav{
+    top:45%;
+  }
+
   .ascendra-page[data-route="menu"] #nav button{
-    width:112px;
-    height:112px;
-    border-radius:20px;
-    font-size:15px;
-    gap:8px;
+    width:clamp(128px,min(15.5vw,15.56vh),152px);
+    height:clamp(128px,min(15.5vw,15.56vh),152px);
+    border-radius:28px;
+    font-size:clamp(16px,2vmin,20px);
+    gap:clamp(8px,1vmin,11px);
   }
 
   .ascendra-page[data-route="menu"] #nav button i{
-    font-size:34px;
+    font-size:clamp(38px,4.2vmin,46px);
   }
 
   .ascendra-page[data-route="menu"] #nav button:hover{

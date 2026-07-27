@@ -2440,7 +2440,15 @@ function clearOrbitPositions() {
     });
 }
 
-const radius = 210;
+let radius = 0;
+
+function updateOrbitRadius() {
+    const firstButton = buttons[0];
+    radius = firstButton
+        ? firstButton.getBoundingClientRect().width * 2.2
+        : 0;
+}
+
 let angle = 0;
 let paused = false;
 let animationFrame = null;
@@ -2494,8 +2502,11 @@ function syncMenuLayout() {
         cancelAnimationFrame(animationFrame);
         animationFrame = null;
         clearOrbitPositions();
-    } else if (animationFrame === null) {
-        animate();
+    } else {
+        updateOrbitRadius();
+        if (animationFrame === null) {
+            animate();
+        }
     }
 }
 
