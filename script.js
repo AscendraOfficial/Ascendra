@@ -1,4 +1,4 @@
-console.log("Ascendra loaded")
+console.log("Ascendra loaded!")
 "use strict";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
