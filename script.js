@@ -335,26 +335,41 @@ function getScheduledHabitHistoryEntries(habit) {
 }
 
 function getHabitCurrentStreak(habit, fromDate = new Date()) {
-    const history = getHabitHistory(habit);
-    const date = new Date(
-        fromDate.getFullYear(),
-        fromDate.getMonth(),
-        fromDate.getDate()
-    );
-    let streak = 0;
-    let inspectedDays = 0;
+const history = getHabitHistory(habit);
 
-    while (inspectedDays < 3660) {
-        if (isHabitScheduledForDate(habit, date)) {
-            if (history[formatLocalDate(date)] !== true) break;
+const date = new Date(
+    fromDate.getFullYear(),
+    fromDate.getMonth(),
+    fromDate.getDate()
+);
+
+let streak = 0;
+let inspectedDays = 0;
+let firstScheduledDay = true;
+
+while (inspectedDays < 3660) {
+    if (isHabitScheduledForDate(habit, date)) {
+        const result = history[formatLocalDate(date)];
+
+        if (result === true) {
             streak++;
+            firstScheduledDay = false;
+        } else if (
+            firstScheduledDay &&
+            result === undefined
+        ) {
+            firstScheduledDay = false;
+        } else {
+            break;
         }
-
-        date.setDate(date.getDate() - 1);
-        inspectedDays++;
     }
 
-    return streak;
+    date.setDate(date.getDate() - 1);
+    inspectedDays++;
+}
+
+return streak;
+
 }
 
 function moveUserDataNamespace(oldUsername, newUsername) {
