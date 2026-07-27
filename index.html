@@ -1474,5 +1474,41 @@
     </div>
 </div>
 
+<template id="page-miniTools">
+  <h1>Mini Tools</h1>
+  <strong>Quick little tools for decisions, randomness, and everyday tasks.</strong>
+
+  <section class="mini-tools-grid">
+    
+    <!-- Coin Flip -->
+    <article class="card">
+      <h2>Coin Flip <i class="fa-solid fa-coins"></i></h2>
+      <p>Flip a coin.</p>
+      <button id="flip">Flip</button>
+      <p><strong id="coin-flip-output"></strong></p>
+    </article>
+
+    <!-- Dice Roll-->
+    <article class="card">
+      <h2>Dice Roll <i class="fa-solid fa-dice"></i></h2>
+      <p>Roll a six-sided die. </p>
+      <button id="roll">Roll</button>
+      <!-- Add a visual die that rolls -->   
+    </article>
+
+    <!-- Random Number Generator -->
+    <article class="card">
+      <h2>Random Number Generator <i class="fa-solid fa-hashtag"></i></h2>
+      <p>Generate a random number.</p>
+      <label for="min">Minimum number</label>
+      <input type="number" id="min">
+      <label for="max">Maximum number</label>
+      <input type="number" id="max">
+      <button id="gen">Generate</button>
+    </article>
+  </section>
+  
+</template>
+
 </body>
 </html>
