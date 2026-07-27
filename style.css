@@ -6247,7 +6247,7 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 }
 
 .roadmap-page .progress-fill{
-  width:75%;
+  width:87.5%;
   height:100%;
   border-radius:inherit;
   background:linear-gradient(90deg,#6d28d9,#a855f7);
