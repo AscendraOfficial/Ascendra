@@ -969,7 +969,7 @@
 <button class="options" id="soundscape" onclick="navigate('comingsoon')">Soundscape<br/><i class="fa-solid fa-music"></i></button>
 <button class="options" id="unwind" onclick="navigate('comingsoon')">Unwind<br/><i class="fa-solid fa-cloud-moon"></i></button>
 <button class="options" id="achievements" onclick="navigate('comingsoon')">Achievements<br/><i class="fa-solid fa-medal"></i></button>
-<button class="options" id="mini-tools" onclick="navigate('comingsoon')">Mini Tools<br/><i class="fa-solid fa-gamepad"></i></button>
+<button class="options" id="mini-tools" onclick="navigate('minitools')" type="button">Mini Tools<br/><i class="fa-solid fa-gamepad"></i></button>
 </div>
 <div class="navbar">
 <button onclick="navigate('home')"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
@@ -1457,6 +1457,42 @@
     <button onclick="navigate('menu')" type="button"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
   </nav>
 </template>
+
+<template id="page-minitools">
+  <h1>Mini Tools</h1>
+  <strong>Quick little tools for decisions, randomness, and everyday tasks.</strong>
+
+  <section class="mini-tools-grid">
+    <!-- Coin Flip -->
+    <article class="card">
+      <h2>Coin Flip <i class="fa-solid fa-coins"></i></h2>
+      <p>Flip a coin.</p>
+      <button id="flip" type="button">Flip</button>
+      <p class="tool-result" id="coin-flip-output" aria-live="polite"></p>
+    </article>
+
+    <!-- Dice Roll -->
+    <article class="card">
+      <h2>Dice Roll <i class="fa-solid fa-dice"></i></h2>
+      <p>Roll a six-sided die.</p>
+      <button id="roll" type="button">Roll</button>
+      <p class="tool-result" id="dice-roll-output" aria-live="polite"></p>
+    </article>
+
+    <!-- Random Number Generator -->
+    <article class="card">
+      <h2>Random Number Generator <i class="fa-solid fa-hashtag"></i></h2>
+      <p>Generate a random whole number.</p>
+      <label for="min">Minimum number</label>
+      <input type="number" id="min" step="1">
+      <label for="max">Maximum number</label>
+      <input type="number" id="max" step="1">
+      <button id="gen" type="button">Generate</button>
+      <p class="tool-result" id="random-number-output" aria-live="polite"></p>
+    </article>
+  </section>
+</template>
+
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="script.js"></script>
   <div aria-label="Search Ascendra" aria-modal="true" class="search-overlay" hidden id="searchOverlay" role="dialog">
@@ -1473,42 +1509,6 @@
         <div aria-live="polite" id="searchResults"></div>
     </div>
 </div>
-
-<template id="page-miniTools">
-  <h1>Mini Tools</h1>
-  <strong>Quick little tools for decisions, randomness, and everyday tasks.</strong>
-
-  <section class="mini-tools-grid">
-    
-    <!-- Coin Flip -->
-    <article class="card">
-      <h2>Coin Flip <i class="fa-solid fa-coins"></i></h2>
-      <p>Flip a coin.</p>
-      <button id="flip">Flip</button>
-      <p><strong id="coin-flip-output"></strong></p>
-    </article>
-
-    <!-- Dice Roll-->
-    <article class="card">
-      <h2>Dice Roll <i class="fa-solid fa-dice"></i></h2>
-      <p>Roll a six-sided die. </p>
-      <button id="roll">Roll</button>
-      <!-- Add a visual die that rolls -->   
-    </article>
-
-    <!-- Random Number Generator -->
-    <article class="card">
-      <h2>Random Number Generator <i class="fa-solid fa-hashtag"></i></h2>
-      <p>Generate a random number.</p>
-      <label for="min">Minimum number</label>
-      <input type="number" id="min">
-      <label for="max">Maximum number</label>
-      <input type="number" id="max">
-      <button id="gen">Generate</button>
-    </article>
-  </section>
-  
-</template>
 
 </body>
 </html>

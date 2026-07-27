@@ -3465,6 +3465,78 @@ return () => {
 
 
 },
+"minitools": function init_minitools(){
+const flipButton = document.getElementById("flip");
+const rollButton = document.getElementById("roll");
+const generateButton = document.getElementById("gen");
+const minimumInput = document.getElementById("min");
+const maximumInput = document.getElementById("max");
+const coinOutput = document.getElementById("coin-flip-output");
+const diceOutput = document.getElementById("dice-roll-output");
+const numberOutput = document.getElementById("random-number-output");
+
+function flipCoin() {
+    coinOutput.textContent =
+        Math.random() < 0.5 ? "Heads!" : "Tails!";
+}
+
+function rollDie() {
+    const result = Math.floor(Math.random() * 6) + 1;
+    diceOutput.textContent = "You rolled a " + result + ".";
+}
+
+function generateRandomNumber() {
+    const minimumText = minimumInput.value.trim();
+    const maximumText = maximumInput.value.trim();
+
+    if (!minimumText || !maximumText) {
+        numberOutput.textContent =
+            "Enter both a minimum and maximum number.";
+        return;
+    }
+
+    const minimum = Number(minimumText);
+    const maximum = Number(maximumText);
+    const range = maximum - minimum + 1;
+
+    if (
+        !Number.isSafeInteger(minimum) ||
+        !Number.isSafeInteger(maximum)
+    ) {
+        numberOutput.textContent =
+            "Use whole numbers within the safe number range.";
+        return;
+    }
+
+    if (minimum > maximum) {
+        numberOutput.textContent =
+            "The minimum must be less than or equal to the maximum.";
+        return;
+    }
+
+    if (!Number.isSafeInteger(range) || range < 1) {
+        numberOutput.textContent =
+            "Choose a smaller range of numbers.";
+        return;
+    }
+
+    const result =
+        Math.floor(Math.random() * range) + minimum;
+
+    numberOutput.textContent =
+        "Your random number is " + result + ".";
+}
+
+flipButton.addEventListener("click", flipCoin);
+rollButton.addEventListener("click", rollDie);
+generateButton.addEventListener("click", generateRandomNumber);
+
+return () => {
+    flipButton.removeEventListener("click", flipCoin);
+    rollButton.removeEventListener("click", rollDie);
+    generateButton.removeEventListener("click", generateRandomNumber);
+};
+},
 "privacy": function init_privacy(){
 
 
@@ -3507,7 +3579,8 @@ const searchablePages = [
     { name: "Profile", route: "profile" },
     { name: "Statistics", route: "stats" },
     { name: "Settings", route: "settings" },
-    { name: "Roadmap", route: "roadmap" }
+    { name: "Roadmap", route: "roadmap" },
+    { name: "Mini Tools", route: "minitools" }
 ];
 let searchPreviousFocus = null;
 

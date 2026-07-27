@@ -4515,7 +4515,157 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     border-radius: 25px;
 }
 
-    
+/* ===== MINI TOOLS ===== */
+.ascendra-page[data-route="minitools"]{
+    min-height: 100dvh;
+    padding:
+        calc(76px + env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        calc(56px + env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+    color: #26212f;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+.ascendra-page[data-route="minitools"] > h1{
+    margin: 0;
+    color: var(--accent, #7b2cff);
+    font-size: clamp(2.25rem, 6vw, 3.25rem);
+}
+
+.ascendra-page[data-route="minitools"] > strong{
+    display: block;
+    width: min(680px, 100%);
+    margin: 12px auto 0;
+    color: #625b70;
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    line-height: 1.55;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-grid{
+    width: min(1080px, 100%);
+    margin: 32px auto 0;
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(100%, 280px), 1fr)
+    );
+    gap: clamp(16px, 2.5vw, 24px);
+    align-items: stretch;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-grid .card{
+    min-width: 0;
+    padding: clamp(22px, 3vw, 30px);
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    color: #2f2938;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(91, 33, 182, 0.12);
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(55, 32, 93, 0.12);
+}
+
+.ascendra-page[data-route="minitools"] .card h2{
+    margin: 0 0 10px;
+    color: var(--accent, #7b2cff);
+    font-size: clamp(1.25rem, 3vw, 1.55rem);
+    line-height: 1.25;
+}
+
+.ascendra-page[data-route="minitools"] .card h2 i{
+    margin-left: 6px;
+    color: var(--accent, #7b2cff);
+}
+
+.ascendra-page[data-route="minitools"] .card p{
+    color: #625b70;
+    line-height: 1.5;
+}
+
+.ascendra-page[data-route="minitools"] .card label{
+    margin: 12px 0 6px;
+    color: #403848;
+    font-weight: 700;
+}
+
+.ascendra-page[data-route="minitools"] .card input[type="number"]{
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 12px;
+    color: #26212f;
+    background: #fff;
+    border: 1px solid #cfc5dd;
+    border-radius: 12px;
+    font: inherit;
+}
+
+.ascendra-page[data-route="minitools"] .card > button{
+    width: 100%;
+    min-height: 48px;
+    margin-top: auto;
+    padding: 11px 16px;
+    color: #fff;
+    background: var(--accent, #7b2cff);
+    border: 0;
+    border-radius: 14px;
+    box-shadow: 0 7px 18px rgba(109, 40, 217, 0.24);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ascendra-page[data-route="minitools"] .card > button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(109, 40, 217, 0.3);
+}
+
+.ascendra-page[data-route="minitools"] .card > button:active{
+    transform: translateY(0);
+}
+
+.ascendra-page[data-route="minitools"] .card .tool-result{
+    min-height: 1.5em;
+    margin: 16px 0 0;
+    color: var(--accent, #7b2cff);
+    font-weight: 700;
+    text-align: center;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] > strong,
+body.dark-mode .ascendra-page[data-route="minitools"] .card :is(p, label){
+    color: var(--dark-muted) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-grid .card{
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-result){
+    color: #d8b4fe !important;
+}
+
+@media (max-width: 650px){
+    .ascendra-page[data-route="minitools"]{
+        padding:
+            calc(74px + env(safe-area-inset-top))
+            max(14px, env(safe-area-inset-right))
+            calc(48px + env(safe-area-inset-bottom)) !important;
+    }
+
+    .ascendra-page[data-route="minitools"] .mini-tools-grid{
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-top: 24px;
+    }
+
+    .ascendra-page[data-route="minitools"] .mini-tools-grid .card{
+        padding: 20px;
+    }
+}
 
 /* ===== PRIVACY ===== */
 .ascendra-page[data-route="privacy"]{
