@@ -2440,7 +2440,7 @@ function clearOrbitPositions() {
     });
 }
 
-const radius = 250;
+const radius = 210;
 let angle = 0;
 let paused = false;
 let animationFrame = null;
