@@ -853,6 +853,12 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     font-size: 24px;
 }
 
+.ascendra-page[data-route="alerts"] button {
+    color: white;
+    background-color: rgb(127, 0, 255);
+    border-radius: 20;
+}
+
 .ascendra-page[data-route="alerts"] .alert-card p{
     margin: 8px 0 0;
     color: #555;
