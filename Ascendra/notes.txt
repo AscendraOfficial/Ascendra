@@ -7,9 +7,9 @@
 - Alerts, Todos and habits should be added with more detail ✅
 - Make sure the calendar counts leap years ✅
 - Fix habits page bug ✅
-- Fix roadmap navbar CSS proportions
 - Replace menu with rotating buttons
 - Add kids mode starting with more interaction
+- Add parental-controls.html to merged index.html in the real branch
 ────────────────────────────────────────
 
 💬 Messages
