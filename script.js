@@ -4725,6 +4725,14 @@ return () => {
     renderAchievementCollection(progression.state);
     renderBadgeCollection(progression.state);
 },
+
+"unwind": function init_unwind() {
+    const start = document.getElementById("start");
+    const elapsed = document.getElementById("elapsed");
+    const reset = document.getElementById("reset");
+    const pause = document.getElementById("pause");
+    const timerDisplay = document.getElementById("timer-display");
+},
 "profile": function init_profile(){
 
     const nameInput = document.getElementById("name-input");
@@ -5218,7 +5226,8 @@ const searchablePages = [
     { name: "About", route: "about" },
     { name: "Credits", route: "credits" },
     { name: "Privacy Policy", route: "privacy" },
-    { name: "Terms of Service", route: "terms" }
+    { name: "Terms of Service", route: "terms" },
+    { name: "Unwind", route: "unwind"}
 ];
 let searchPreviousFocus = null;
 
@@ -5354,3 +5363,5 @@ document.addEventListener("click", function(event) {
 
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
+
+

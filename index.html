@@ -1670,6 +1670,21 @@
   </section>
 </template>
 
+<template id="page-unwind">
+    <!-- Zen timer -->
+    <article class="card">
+        <h2>Zen timer <i class="fa-solid fa-spa"></i></h2>
+        <input min="1" value="5" type="number" id="elapsed">
+        <button id="start">Start <i class="fa-solid fa-play"></i></button>
+        <button id="reset">Reset <i class="fa-solid fa-repeat"></i></button>
+        <button id="pause">Pause <i class="fa-solid fa-pause"></i></button>
+
+        <div id="display-card">
+            <p><strong id="timer-display"></strong></p>
+        </div>
+    </article>
+</template>
+
   <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script defer src="script.js"></script>
   <div aria-label="Search Ascendra" aria-modal="true" class="search-overlay" hidden id="searchOverlay" role="dialog">
