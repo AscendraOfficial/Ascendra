@@ -64,6 +64,9 @@ Declan:
 
 Declan:
 "just make sure at the beginning of each file there is <meta name="viewport" content="width=device-width, initial-scale=1.0">"
+
+Jayden:
+"Im going to start with xp levels"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
