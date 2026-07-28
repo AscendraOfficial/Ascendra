@@ -9,6 +9,27 @@ const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 const PROGRESSION_STORAGE_KEY = "ascendraProgression";
 const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
+const TAB_IDENTITY_PREFIX = "ascendra:tab-identity:";
+const TAB_IDENTITY_FIELDS = Object.freeze([
+    "loggedInUser",
+    "name",
+    "surname",
+    "username",
+    "accountId"
+]);
+const LEGACY_USER_KEYS = Object.freeze([
+    "todos",
+    "habits",
+    "events",
+    "ascendraSettings",
+    "ascendra-profile-bio",
+    "ascendra-profile-picture",
+    "ascendra-streak",
+    "ascendra-tasks-completed",
+    "ascendra-achievements",
+    "ascendraProgression"
+]);
+const LEGACY_JOURNAL_PREFIX = "journal-";
 const XP_REWARDS = Object.freeze({
     task: 10,
     habit: 5,
@@ -135,6 +156,12 @@ function formatLocalDate(date = new Date()) {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+}
+
+function formatLocalDateTimeInput(date = new Date()) {
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${formatLocalDate(date)}T${hours}:${minutes}`;
 }
 
 function parseLocalDateTime(value, fallbackTime = "") {
@@ -271,6 +298,44 @@ function accountStorageKey(username) {
     return `ascendra:user:${String(username || "").trim().toLowerCase()}`;
 }
 
+function createAccountId() {
+    if (typeof crypto.randomUUID === "function") {
+        return crypto.randomUUID();
+    }
+
+    const bytes = crypto.getRandomValues(new Uint8Array(16));
+    return [...bytes]
+        .map(byte => byte.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+function normalizeUsername(username) {
+    return String(username || "").trim();
+}
+
+function getUsernameValidationMessage(
+    username,
+    { allowLegacyUsername = "" } = {}
+) {
+    const normalized = normalizeUsername(username);
+    const allowedLegacy = normalizeUsername(allowLegacyUsername);
+
+    if (!normalized) return "Please enter a username.";
+    if (
+        allowedLegacy &&
+        normalized.toLowerCase() === allowedLegacy.toLowerCase()
+    ) {
+        return "";
+    }
+    if (normalized.length > 20) {
+        return "Usernames can be up to 20 characters.";
+    }
+    if (!/^[A-Za-z0-9._-]+$/.test(normalized)) {
+        return "Use only letters, numbers, periods, underscores, or hyphens.";
+    }
+    return "";
+}
+
 function readStoredJson(key) {
     if (!key) return null;
     try {
@@ -320,29 +385,263 @@ function saveStoredAccount(account) {
     localStorage.setItem(accountStorageKey(account.username), JSON.stringify(account));
 }
 
-function getLoggedInUsername() {
-    return String(localStorage.getItem("loggedInUser") || "").trim().toLowerCase();
+function ensureStoredAccountId(accountRecord) {
+    if (!accountRecord) return null;
+    if (String(accountRecord.account?.accountId || "").trim()) {
+        return accountRecord;
+    }
+
+    const previousValue = localStorage.getItem(accountRecord.key);
+    const updatedAccount = {
+        ...accountRecord.account,
+        accountId: createAccountId()
+    };
+    const serializedAccount = JSON.stringify(updatedAccount);
+
+    try {
+        localStorage.setItem(accountRecord.key, serializedAccount);
+        if (localStorage.getItem(accountRecord.key) !== serializedAccount) {
+            throw new Error("Ascendra could not verify this account.");
+        }
+    } catch (error) {
+        if (previousValue === null) {
+            localStorage.removeItem(accountRecord.key);
+        } else {
+            localStorage.setItem(accountRecord.key, previousValue);
+        }
+        throw error;
+    }
+
+    return {
+        ...accountRecord,
+        account: updatedAccount
+    };
 }
+
+const tabIdentityFallback = new Map();
+
+function tabIdentityStorageKey(field) {
+    return TAB_IDENTITY_PREFIX + field;
+}
+
+function readTabIdentityItem(field) {
+    const key = tabIdentityStorageKey(field);
+    try {
+        if (typeof sessionStorage !== "undefined") {
+            return sessionStorage.getItem(key);
+        }
+    } catch (error) {
+        console.warn("Ascendra could not read this tab's session identity.", error);
+    }
+    return tabIdentityFallback.has(key) ? tabIdentityFallback.get(key) : null;
+}
+
+function writeTabIdentityItem(field, value) {
+    const key = tabIdentityStorageKey(field);
+    const normalizedValue = value === null || value === undefined
+        ? null
+        : String(value);
+
+    try {
+        if (typeof sessionStorage !== "undefined") {
+            if (normalizedValue === null) {
+                sessionStorage.removeItem(key);
+            } else {
+                sessionStorage.setItem(key, normalizedValue);
+            }
+            return;
+        }
+    } catch (error) {
+        console.warn("Ascendra could not save this tab's session identity.", error);
+    }
+
+    if (normalizedValue === null) {
+        tabIdentityFallback.delete(key);
+    } else {
+        tabIdentityFallback.set(key, normalizedValue);
+    }
+}
+
+function initializeTabIdentity() {
+    if (readTabIdentityItem("initialized") === "true") {
+        const tabUsername = String(
+            readTabIdentityItem("loggedInUser") || ""
+        ).trim();
+        const tabAccountId = String(
+            readTabIdentityItem("accountId") || ""
+        );
+        const accountRecord = tabUsername
+            ? findStoredAccount(tabUsername)
+            : null;
+
+        if (
+            tabUsername &&
+            (
+                !tabAccountId ||
+                accountRecord?.account?.accountId !== tabAccountId
+            )
+        ) {
+            clearActiveIdentity();
+            history.replaceState({ route: "login" }, "", "#/login");
+        }
+        return;
+    }
+
+    let publishedUsername = String(
+        localStorage.getItem("loggedInUser") || ""
+    ).trim();
+    let accountRecord = publishedUsername
+        ? findStoredAccount(publishedUsername)
+        : null;
+
+    try {
+        if (accountRecord) {
+            accountRecord = ensureStoredAccountId(accountRecord);
+        } else if (publishedUsername) {
+            throw new Error("The published account no longer exists.");
+        }
+    } catch (error) {
+        console.warn("Ascendra signed out an unverifiable account.", error);
+        TAB_IDENTITY_FIELDS.forEach(field => localStorage.removeItem(field));
+        publishedUsername = "";
+        accountRecord = null;
+    }
+
+    const account = accountRecord?.account || null;
+
+    TAB_IDENTITY_FIELDS.forEach(field => {
+        let value;
+        if (field === "loggedInUser") {
+            value = publishedUsername || null;
+        } else if (account) {
+            value = account[field] ?? null;
+        } else {
+            value = localStorage.getItem(field);
+        }
+        writeTabIdentityItem(field, value);
+    });
+    writeTabIdentityItem("initialized", "true");
+}
+
+function getActiveIdentityItem(field) {
+    return readTabIdentityItem(field) || "";
+}
+
+function setActiveIdentity(
+    identity,
+    { publish = true, previousUsername = null } = {}
+) {
+    const username = String(identity?.username || "").trim();
+    const loggedInUser = identity?.loggedInUser === null
+        ? ""
+        : String(identity?.loggedInUser ?? username).trim();
+    const values = {
+        loggedInUser,
+        name: String(identity?.name || ""),
+        surname: String(identity?.surname || ""),
+        username,
+        accountId: String(identity?.accountId || "")
+    };
+
+    TAB_IDENTITY_FIELDS.forEach(field => {
+        writeTabIdentityItem(field, values[field]);
+    });
+    writeTabIdentityItem("initialized", "true");
+
+    const sharedUsername = String(
+        localStorage.getItem("loggedInUser") || ""
+    ).trim().toLowerCase();
+    const previousClean = String(previousUsername || "")
+        .trim()
+        .toLowerCase();
+    const canPublish = publish || (
+        previousClean
+            ? sharedUsername === previousClean
+            : sharedUsername === ""
+    );
+
+    if (!canPublish) return;
+
+    try {
+        Object.entries(values).forEach(([field, value]) => {
+            if (field === "loggedInUser" && value === "") {
+                localStorage.removeItem(field);
+            } else {
+                localStorage.setItem(field, value);
+            }
+        });
+    } catch (error) {
+        console.warn("Ascendra could not publish this tab's identity.", error);
+    }
+}
+
+function clearActiveIdentity() {
+    const tabUsername = String(
+        readTabIdentityItem("loggedInUser") || ""
+    ).trim().toLowerCase();
+    const tabAccountId = String(
+        readTabIdentityItem("accountId") || ""
+    );
+    const sharedUsername = String(
+        localStorage.getItem("loggedInUser") || ""
+    ).trim().toLowerCase();
+    const sharedAccountId = String(
+        localStorage.getItem("accountId") || ""
+    );
+
+    TAB_IDENTITY_FIELDS.forEach(field => writeTabIdentityItem(field, null));
+    writeTabIdentityItem("initialized", "true");
+
+    if (
+        (
+            tabUsername &&
+            sharedUsername === tabUsername &&
+            (!sharedAccountId || sharedAccountId === tabAccountId)
+        ) ||
+        (!tabUsername && !sharedUsername)
+    ) {
+        try {
+            TAB_IDENTITY_FIELDS.forEach(field => localStorage.removeItem(field));
+        } catch (error) {
+            console.warn("Ascendra could not clear the published identity.", error);
+        }
+    }
+}
+
+function getLoggedInUsername() {
+    return String(
+        readTabIdentityItem("loggedInUser") || ""
+    ).trim().toLowerCase();
+}
+
+initializeTabIdentity();
 
 function userStorageKey(key, username = getLoggedInUsername()) {
     const cleanUsername = String(username || "").trim().toLowerCase();
     return cleanUsername ? `ascendra:data:${cleanUsername}:${key}` : `ascendra:guest:${key}`;
 }
 
-function getUserItem(key) {
-    return localStorage.getItem(userStorageKey(key));
+function getUserItem(key, username = getLoggedInUsername()) {
+    if (!ensureActiveAccountAccess(username)) return null;
+    return localStorage.getItem(userStorageKey(key, username));
 }
 
-function setUserItem(key, value) {
-    localStorage.setItem(userStorageKey(key), value);
+function setUserItem(key, value, username = getLoggedInUsername()) {
+    assertActiveAccountForWrite(username);
+    localStorage.setItem(userStorageKey(key, username), value);
 }
 
-function removeUserItem(key) {
-    localStorage.removeItem(userStorageKey(key));
+function removeUserItem(key, username = getLoggedInUsername()) {
+    assertActiveAccountForWrite(username);
+    localStorage.removeItem(userStorageKey(key, username));
 }
 
-function readUserJson(key, fallback = null) {
-    const storedValue = getUserItem(key);
+function readUserJson(
+    key,
+    fallback = null,
+    username = getLoggedInUsername()
+) {
+    const storedValue = getUserItem(key, username);
     if (storedValue === null) return fallback;
 
     try {
@@ -354,8 +653,8 @@ function readUserJson(key, fallback = null) {
     }
 }
 
-function getUserArray(key) {
-    const value = readUserJson(key, []);
+function getUserArray(key, username = getLoggedInUsername()) {
+    const value = readUserJson(key, [], username);
     const items = Array.isArray(value)
         ? value.filter(item => item && typeof item === "object" && !Array.isArray(item))
         : [];
@@ -364,7 +663,8 @@ function getUserArray(key) {
         ensureStableActivityIds(
             items,
             key === "todos" ? "task" : "habit",
-            key
+            key,
+            username
         );
     }
 
@@ -509,7 +809,12 @@ function hashProgressIdentifier(value) {
     return (hash >>> 0).toString(36);
 }
 
-function ensureStableActivityIds(items, type, storageKey) {
+function ensureStableActivityIds(
+    items,
+    type,
+    storageKey,
+    username = getLoggedInUsername()
+) {
     const usedIds = new Set();
     const changedItems = [];
     const migrationSeed = Date.now().toString(36);
@@ -552,7 +857,7 @@ function ensureStableActivityIds(items, type, storageKey) {
     if (changedItems.length === 0) return true;
 
     try {
-        setUserItem(storageKey, JSON.stringify(items));
+        setUserItem(storageKey, JSON.stringify(items), username);
         return true;
     } catch (error) {
         changedItems.forEach(({ item, previousId, hadOwnId }) => {
@@ -718,7 +1023,7 @@ function reconcileAchievementState(state) {
 
 function reconcileBadgeState(state) {
     const normalizedName = String(
-        localStorage.getItem("name") || ""
+        getActiveIdentityItem("name") || ""
     ).trim().toLowerCase();
 
     badges.forEach(badge => {
@@ -1126,20 +1431,20 @@ const date = new Date(
 
 let streak = 0;
 let inspectedDays = 0;
-let firstScheduledDay = true;
+const startingDateKey = formatLocalDate(date);
 
 while (inspectedDays < 3660) {
     if (isHabitScheduledForDate(habit, date)) {
-        const result = history[formatLocalDate(date)];
+        const dateKey = formatLocalDate(date);
+        const result = history[dateKey];
 
         if (result === true) {
             streak++;
-            firstScheduledDay = false;
         } else if (
-            firstScheduledDay &&
+            dateKey === startingDateKey &&
             result === undefined
         ) {
-            firstScheduledDay = false;
+            // Today's scheduled check-in is allowed to remain unanswered.
         } else {
             break;
         }
@@ -1153,27 +1458,184 @@ return streak;
 
 }
 
-function moveUserDataNamespace(oldUsername, newUsername) {
+function collectStorageEntries(prefix) {
+    const entries = [];
+    for (let index = 0; index < localStorage.length; index++) {
+        const key = localStorage.key(index);
+        if (!key?.startsWith(prefix)) continue;
+        const value = localStorage.getItem(key);
+        if (value !== null) entries.push({ key, value });
+    }
+    return entries;
+}
+
+function collectUserDataEntries(username) {
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    if (!cleanUsername) return [];
+
+    const prefix = `ascendra:data:${cleanUsername}:`;
+    return collectStorageEntries(prefix).filter(entry => {
+        const suffix = entry.key.slice(prefix.length);
+        return LEGACY_USER_KEYS.includes(suffix) ||
+            /^journal-\d{4}-\d{1,2}-\d{1,2}$/.test(suffix);
+    });
+}
+
+function hasUserDataNamespace(username) {
+    return collectUserDataEntries(username).length > 0;
+}
+
+function activeAccountMatchesIdentity(username = getLoggedInUsername()) {
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    if (!cleanUsername) return true;
+
+    const accountId = getActiveIdentityItem("accountId");
+    const accountRecord = findStoredAccount(cleanUsername);
+    return Boolean(
+        accountId &&
+        accountRecord?.account?.accountId === accountId
+    );
+}
+
+function invalidateMissingActiveAccount() {
+    const username = getLoggedInUsername();
+    if (!username || activeAccountMatchesIdentity(username)) return false;
+
+    clearActiveIdentity();
+    alert("This account changed in another tab. Please log in again.");
+    navigate("login", true);
+    return true;
+}
+
+function ensureActiveAccountAccess(username) {
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    const activeUsername = getLoggedInUsername();
+    if (
+        cleanUsername &&
+        cleanUsername === activeUsername &&
+        !activeAccountMatchesIdentity(activeUsername)
+    ) {
+        invalidateMissingActiveAccount();
+        return false;
+    }
+    return true;
+}
+
+function assertActiveAccountForWrite(username) {
+    if (!ensureActiveAccountAccess(username)) {
+        throw new Error(
+            "Ascendra stopped a save because this account changed in another tab."
+        );
+    }
+}
+
+function copyStorageEntries(entries, getTargetKey, collisionMessage) {
+    const plan = entries.map(entry => ({
+        ...entry,
+        targetKey: getTargetKey(entry.key)
+    }));
+
+    plan.forEach(entry => {
+        const existingValue = localStorage.getItem(entry.targetKey);
+        if (existingValue !== null && existingValue !== entry.value) {
+            throw new Error(collisionMessage);
+        }
+    });
+
+    const writtenEntries = [];
+    try {
+        plan.forEach(entry => {
+            if (localStorage.getItem(entry.targetKey) === null) {
+                localStorage.setItem(entry.targetKey, entry.value);
+                writtenEntries.push(entry);
+            }
+            if (localStorage.getItem(entry.targetKey) !== entry.value) {
+                throw new Error("Ascendra could not verify copied data.");
+            }
+        });
+    } catch (error) {
+        writtenEntries.forEach(entry => {
+            if (localStorage.getItem(entry.targetKey) === entry.value) {
+                localStorage.removeItem(entry.targetKey);
+            }
+        });
+        throw error;
+    }
+
+    return { plan, writtenEntries };
+}
+
+function rollbackCopiedStorageEntries(writtenEntries) {
+    writtenEntries.forEach(entry => {
+        if (localStorage.getItem(entry.targetKey) === entry.value) {
+            localStorage.removeItem(entry.targetKey);
+        }
+    });
+}
+
+function renameStoredAccountAndData(
+    accountRecord,
+    updatedAccount,
+    oldUsername,
+    newUsername
+) {
     const oldClean = String(oldUsername || "").trim().toLowerCase();
     const newClean = String(newUsername || "").trim().toLowerCase();
-    if (!oldClean || !newClean || oldClean === newClean) return;
+    const oldAccountKey = accountRecord.key;
+    const newAccountKey = accountStorageKey(newClean);
+
+    if (oldClean === newClean || oldAccountKey === newAccountKey) {
+        const previousValue = localStorage.getItem(oldAccountKey);
+        const serializedAccount = JSON.stringify(updatedAccount);
+        try {
+            localStorage.setItem(oldAccountKey, serializedAccount);
+            if (localStorage.getItem(oldAccountKey) !== serializedAccount) {
+                throw new Error("Ascendra could not verify the updated account.");
+            }
+        } catch (error) {
+            if (previousValue === null) {
+                localStorage.removeItem(oldAccountKey);
+            } else {
+                localStorage.setItem(oldAccountKey, previousValue);
+            }
+            throw error;
+        }
+        return;
+    }
+
+    if (localStorage.getItem(newAccountKey) !== null) {
+        throw new Error("That username is already in use.");
+    }
+    if (hasUserDataNamespace(newClean)) {
+        throw new Error("Saved data already exists for that username.");
+    }
 
     const oldPrefix = `ascendra:data:${oldClean}:`;
     const newPrefix = `ascendra:data:${newClean}:`;
-    const keysToMove = [];
-    for (let index = 0; index < localStorage.length; index++) {
-        const key = localStorage.key(index);
-        if (key?.startsWith(oldPrefix)) keysToMove.push(key);
+    const entries = collectUserDataEntries(oldClean);
+    let copied = { plan: [], writtenEntries: [] };
+    let wroteNewAccount = false;
+
+    try {
+        copied = copyStorageEntries(
+            entries,
+            oldKey => newPrefix + oldKey.slice(oldPrefix.length),
+            "Saved data already exists for that username."
+        );
+        const serializedAccount = JSON.stringify(updatedAccount);
+        localStorage.setItem(newAccountKey, serializedAccount);
+        wroteNewAccount = true;
+        if (localStorage.getItem(newAccountKey) !== serializedAccount) {
+            throw new Error("Ascendra could not verify the renamed account.");
+        }
+    } catch (error) {
+        rollbackCopiedStorageEntries(copied.writtenEntries);
+        if (wroteNewAccount) localStorage.removeItem(newAccountKey);
+        throw error;
     }
 
-    for (const oldKey of keysToMove) {
-        const suffix = oldKey.slice(oldPrefix.length);
-        const newKey = newPrefix + suffix;
-        if (localStorage.getItem(newKey) === null) {
-            localStorage.setItem(newKey, localStorage.getItem(oldKey));
-        }
-        localStorage.removeItem(oldKey);
-    }
+    copied.plan.forEach(entry => localStorage.removeItem(entry.key));
+    localStorage.removeItem(oldAccountKey);
 
     const ownerKey = "ascendra:legacy-data-owner";
     if (String(localStorage.getItem(ownerKey) || "").toLowerCase() === oldClean) {
@@ -1181,68 +1643,112 @@ function moveUserDataNamespace(oldUsername, newUsername) {
     }
 }
 
+function transferGuestDataToUser(username) {
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    if (!cleanUsername) return 0;
+
+    const guestPrefix = "ascendra:guest:";
+    const userPrefix = `ascendra:data:${cleanUsername}:`;
+    const entries = collectStorageEntries(guestPrefix);
+    const copied = copyStorageEntries(
+        entries,
+        guestKey => userPrefix + guestKey.slice(guestPrefix.length),
+        "Saved account data already exists for that username."
+    );
+    copied.plan.forEach(entry => localStorage.removeItem(entry.key));
+    return entries.length;
+}
+
+function getLegacyStorageEntries() {
+    const entries = [];
+    LEGACY_USER_KEYS.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value !== null) entries.push({ key, value });
+    });
+
+    collectStorageEntries(LEGACY_JOURNAL_PREFIX).forEach(entry => {
+        if (!entries.some(savedEntry => savedEntry.key === entry.key)) {
+            entries.push(entry);
+        }
+    });
+    return entries;
+}
+
+function deleteOwnedLegacyData(username) {
+    const cleanUsername = String(username || "").trim().toLowerCase();
+    const ownerKey = "ascendra:legacy-data-owner";
+    const owner = String(localStorage.getItem(ownerKey) || "")
+        .trim()
+        .toLowerCase();
+    const ownsLegacyData = cleanUsername
+        ? owner === cleanUsername
+        : owner === "";
+
+    if (!ownsLegacyData) return;
+    getLegacyStorageEntries().forEach(entry => {
+        localStorage.removeItem(entry.key);
+    });
+    localStorage.removeItem(ownerKey);
+}
+
 function deleteCurrentAccountData() {
     const username = getLoggedInUsername();
-    const dataPrefix = username
-        ? `ascendra:data:${username}:`
-        : "ascendra:guest:";
-    const keysToDelete = [];
-    for (let index = 0; index < localStorage.length; index++) {
-        const key = localStorage.key(index);
-        if (key?.startsWith(dataPrefix)) keysToDelete.push(key);
-    }
-    keysToDelete.forEach(key => localStorage.removeItem(key));
+    if (username) assertActiveAccountForWrite(username);
+    const dataEntries = username
+        ? collectUserDataEntries(username)
+        : collectStorageEntries("ascendra:guest:");
+
+    dataEntries.forEach(entry => {
+        localStorage.removeItem(entry.key);
+    });
     if (username) {
+        const accountRecord = findStoredAccount(username);
         localStorage.removeItem(accountStorageKey(username));
+        if (accountRecord?.key) localStorage.removeItem(accountRecord.key);
     }
 
-    ["name", "surname", "username", "loggedInUser", "password"].forEach(key => {
-        localStorage.removeItem(key);
-    });
+    deleteOwnedLegacyData(username);
+    clearActiveIdentity();
+    localStorage.removeItem("password");
 }
 
 function migrateLegacyUserData(username) {
     const cleanUsername = String(username || "").trim().toLowerCase();
-    if (!cleanUsername) return;
+    if (!cleanUsername) return false;
 
     const ownerKey = "ascendra:legacy-data-owner";
-    const existingOwner = String(localStorage.getItem(ownerKey) || "").trim().toLowerCase();
-    if (existingOwner && existingOwner !== cleanUsername) return;
+    const existingOwner = String(localStorage.getItem(ownerKey) || "")
+        .trim()
+        .toLowerCase();
+    if (existingOwner && existingOwner !== cleanUsername) return false;
 
-    const legacyKeys = [
-        "todos", "habits", "events", "ascendraSettings",
-        "ascendra-profile-bio", "ascendra-profile-picture",
-        "ascendra-streak", "ascendra-tasks-completed", "ascendra-achievements"
-    ];
+    const entries = getLegacyStorageEntries();
+    const missingEntries = entries.filter(entry => {
+        return localStorage.getItem(userStorageKey(entry.key, cleanUsername)) === null;
+    });
+    let copied = { writtenEntries: [] };
 
-    let foundLegacyData = false;
-    for (const key of legacyKeys) {
-        const oldValue = localStorage.getItem(key);
-        const newKey = userStorageKey(key, cleanUsername);
-        if (oldValue !== null && localStorage.getItem(newKey) === null) {
-            localStorage.setItem(newKey, oldValue);
-            foundLegacyData = true;
-        }
-    }
-
-    const journalPrefix = "journal-";
-    const journalKeys = [];
-    for (let index = 0; index < localStorage.length; index++) {
-        const key = localStorage.key(index);
-        if (key?.startsWith(journalPrefix)) journalKeys.push(key);
-    }
-    for (const key of journalKeys) {
-        const oldValue = localStorage.getItem(key);
-        const newKey = userStorageKey(key, cleanUsername);
-        if (oldValue !== null && localStorage.getItem(newKey) === null) {
-            localStorage.setItem(newKey, oldValue);
-            foundLegacyData = true;
-        }
-    }
-
-    if (foundLegacyData || !existingOwner) {
+    try {
+        copied = copyStorageEntries(
+            missingEntries,
+            oldKey => userStorageKey(oldKey, cleanUsername),
+            "Ascendra could not safely migrate legacy data."
+        );
         localStorage.setItem(ownerKey, cleanUsername);
+        if (
+            String(localStorage.getItem(ownerKey) || "").trim().toLowerCase() !==
+            cleanUsername
+        ) {
+            throw new Error("Ascendra could not verify the legacy data owner.");
+        }
+    } catch (error) {
+        rollbackCopiedStorageEntries(copied.writtenEntries);
+        console.warn("Ascendra could not migrate legacy data.", error);
+        return false;
     }
+
+    entries.forEach(entry => localStorage.removeItem(entry.key));
+    return true;
 }
 
 function createModalController(dialog, initialFocus, options = {}) {
@@ -1333,13 +1839,15 @@ function normalizeRoute(value) {
     let route = String(value || "welcome").replace(/^#\/?/, "").replace(/\.html$/, "");
     if (route === "index" || route === "") route = "welcome";
     if (route === "alert") route = "alerts";
-    if (route === "projects") route = "comingsoon";
     return document.getElementById("page-" + route) ? route : "welcome";
 }
 function getRoute(){ return normalizeRoute(location.hash); }
+function canonicalRouteHash(route) {
+    return "#/" + normalizeRoute(route);
+}
 function navigate(route, replace=false){
     route=normalizeRoute(route);
-    const hash="#/"+route;
+    const hash=canonicalRouteHash(route);
     if(replace) history.replaceState({route},"",hash);
     else if(location.hash!==hash) history.pushState({route},"",hash);
     renderRoute(route);
@@ -1351,6 +1859,15 @@ function goBack(){
 window.navigate=navigate;
 window.goTo=function(page){ navigate(page); };
 window.goBack=goBack;
+window.addEventListener("storage", function handleAccountStorageChange() {
+    invalidateMissingActiveAccount();
+});
+window.addEventListener("focus", function handleAccountWindowFocus() {
+    invalidateMissingActiveAccount();
+});
+document.addEventListener("visibilitychange", function handleAccountVisibility() {
+    if (!document.hidden) invalidateMissingActiveAccount();
+});
 
 function getSavedSettings(){
     const defaults={accentColor:"purple",lightMode:true};
@@ -1361,7 +1878,7 @@ function getSavedSettings(){
 }
 
 function applySavedSettings(){
-    const colors={purple:"rgb(127, 0, 255)",blue:"rgb(37, 99, 235)",green:"rgb(22, 163, 74)",pink:"rgb(219, 39, 119)"};
+    const colors={purple:"rgb(127, 0, 255)",blue:"rgb(37, 99, 235)",green:"rgb(21, 128, 61)",pink:"rgb(219, 39, 119)"};
     const settings=getSavedSettings();
     const darkModeEnabled=settings.lightMode===false;
     document.documentElement.style.setProperty("--accent",colors[settings.accentColor]||colors.purple);
@@ -1375,8 +1892,15 @@ function applySavedSettings(){
     if(modeToggle) modeToggle.checked=darkModeEnabled;
 }
 
-function renderRoute(route){
+function clearWindowRouteFunction(name, routeFunction) {
+    if (window[name] === routeFunction) {
+        delete window[name];
+    }
+}
+
+function renderRoute(route, { focusRoute = true } = {}){
     route=normalizeRoute(route);
+    if (route !== "login" && invalidateMissingActiveAccount()) return;
     const template=document.getElementById("page-"+route);
     if(!template){ app.innerHTML='<div class="spa-error" role="main"><h1>Page not found</h1></div>'; return; }
     // stop route-owned intervals/animations when possible by replacing the DOM and calling cleanup
@@ -1389,6 +1913,7 @@ function renderRoute(route){
     const page=document.createElement('section');
     page.className='ascendra-page';
     page.dataset.route=route;
+    page.tabIndex=-1;
     page.appendChild(template.content.cloneNode(true));
     if(!page.querySelector('main')) page.setAttribute('role','main');
     app.appendChild(page);
@@ -1396,6 +1921,17 @@ function renderRoute(route){
     document.title='Ascendra - '+route.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
     backButton.hidden=(route==='welcome');
     applySavedSettings();
+    page.querySelectorAll(".navbar").forEach(navbar => {
+        if (navbar.tagName !== "NAV") {
+            navbar.setAttribute("role", "navigation");
+        }
+        if (!navbar.hasAttribute("aria-label")) {
+            navbar.setAttribute("aria-label", "Primary navigation");
+        }
+        navbar.querySelectorAll(".current").forEach(item => {
+            item.setAttribute("aria-current", "page");
+        });
+    });
     try{
         const cleanup=(ROUTE_INITIALIZERS[route]||function(){})();
         if(typeof cleanup==='function') initializedCleanups.set(route,cleanup);
@@ -1405,17 +1941,38 @@ function renderRoute(route){
         box.innerHTML='<h2>This page hit an error</h2><p>Open DevTools Console for the exact line.</p>';
         page.prepend(box);
     }
+    if (focusRoute) {
+        page.focus({preventScroll:true});
+    }
     window.scrollTo(0,0);
 }
 function handleLocationChange(){
     const route=getRoute();
+    const canonicalHash=canonicalRouteHash(route);
+    if(location.hash!==canonicalHash){
+        history.replaceState({route},"",canonicalHash);
+    }
     if(app.dataset.route!==route) renderRoute(route);
 }
 window.addEventListener('popstate',handleLocationChange);
 window.addEventListener('hashchange',handleLocationChange);
 document.addEventListener('click',function(e){
+    if(
+        e.defaultPrevented ||
+        e.button!==0 ||
+        e.metaKey ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        e.altKey
+    ) return;
     const a=e.target.closest('a[href^="#/"]');
-    if(a){e.preventDefault();navigate(a.getAttribute('href'));}
+    if(
+        !a ||
+        a.hasAttribute("download") ||
+        (a.target && a.target.toLowerCase()!=="_self")
+    ) return;
+    e.preventDefault();
+    navigate(a.getAttribute('href'));
 });
 
 const ROUTE_INITIALIZERS = {
@@ -1426,6 +1983,9 @@ const ROUTE_INITIALIZERS = {
 "loading-screen": function init_loading_screen(){
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const reduceLoadingMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+).matches;
 
 let backgroundStars = [];
 let viewportWidth = window.innerWidth;
@@ -1459,7 +2019,6 @@ function resizeCanvas() {
 }
 
 resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
 
 // Shooting star variables
 let xPos = 300;
@@ -1474,6 +2033,13 @@ function circle(x, y, size, color) {
     ctx.arc(x, y, size / 2, 0, Math.PI * 2);
     ctx.fill();
 }
+
+function handleCanvasResize() {
+    resizeCanvas();
+    if (reduceLoadingMotion) draw();
+}
+
+window.addEventListener("resize", handleCanvasResize);
 
 function draw() {
 
@@ -1510,28 +2076,27 @@ function draw() {
 
     ctx.restore();
 
-// Animate
-xPos -= 3;
-yPos += 3;
-starSize += 0.7;
-starEdge += 0.7;
+    if (!reduceLoadingMotion) {
+        xPos -= 3;
+        yPos += 3;
+        starSize += 0.7;
+        starEdge += 0.7;
 
-// Restart when it leaves the screen
-if (xPos < -150 || yPos > 550) {
-    xPos = 500;
-    yPos = -50;
+        if (xPos < -150 || yPos > 550) {
+            xPos = 500;
+            yPos = -50;
+            starSize = 8;
+            starEdge = 12;
+        }
 
-    starSize = 8;
-    starEdge = 12;
-}
-
-    animationFrame = requestAnimationFrame(draw);
+        animationFrame = requestAnimationFrame(draw);
+    }
 }
 
 draw();
 return () => {
-    cancelAnimationFrame(animationFrame);
-    window.removeEventListener("resize", resizeCanvas);
+    if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+    window.removeEventListener("resize", handleCanvasResize);
 };
 },
 "login": function init_login(){
@@ -1539,13 +2104,24 @@ const loginForm = document.getElementById("login");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
 const submitButton = loginForm.querySelector('[type="submit"]');
+let loginActive = true;
 
-loginForm.addEventListener("submit", async function(event) {
+async function handleLoginSubmit(event) {
     event.preventDefault();
 
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
     const record = findStoredAccount(username);
+    const recordSnapshot = record
+        ? localStorage.getItem(record.key)
+        : null;
+
+    function accountChangedDuringLogin() {
+        return Boolean(
+            record &&
+            localStorage.getItem(record.key) !== recordSnapshot
+        );
+    }
 
     submitButton.disabled = true;
     try {
@@ -1555,6 +2131,11 @@ loginForm.addEventListener("submit", async function(event) {
 
         if (savedUser?.credentials) {
             passwordMatches = await verifyPasswordCredentials(password, savedUser.credentials);
+            if (!loginActive) return;
+            if (accountChangedDuringLogin()) {
+                alert("That account changed. Please try logging in again.");
+                return;
+            }
             needsMigration = passwordMatches && (
                 savedUser.credentials.iterations < PASSWORD_ITERATIONS ||
                 typeof savedUser.password === "string"
@@ -1571,11 +2152,20 @@ loginForm.addEventListener("submit", async function(event) {
             return;
         }
 
-        if (needsMigration) {
+        if (needsMigration || !savedUser.accountId) {
+            const credentials = needsMigration
+                ? await createPasswordCredentials(password)
+                : savedUser.credentials;
+            if (!loginActive) return;
+            if (accountChangedDuringLogin()) {
+                alert("That account changed. Please try logging in again.");
+                return;
+            }
             savedUser = {
                 ...savedUser,
                 username: savedUser.username || username,
-                credentials: await createPasswordCredentials(password)
+                accountId: savedUser.accountId || createAccountId(),
+                credentials
             };
             delete savedUser.password;
             saveStoredAccount(savedUser);
@@ -1585,38 +2175,56 @@ loginForm.addEventListener("submit", async function(event) {
         }
 
         const savedUsername = savedUser.username || username;
-        localStorage.setItem("name", savedUser.name || "");
-        localStorage.setItem("surname", savedUser.surname || "");
-        localStorage.setItem("username", savedUsername);
-        localStorage.setItem("loggedInUser", savedUsername);
         migrateLegacyUserData(savedUsername);
+        setActiveIdentity({
+            loggedInUser: savedUsername,
+            name: savedUser.name || "",
+            surname: savedUser.surname || "",
+            username: savedUsername,
+            accountId: savedUser.accountId
+        });
         localStorage.removeItem("password");
         alert("Welcome back, " + (savedUser.name || savedUsername) + "!");
         loginForm.reset();
         navigate("home");
     } catch (error) {
+        if (!loginActive) return;
         console.error("Could not verify the account:", error);
         alert(error.message || "Could not securely verify this account.");
     } finally {
-        submitButton.disabled = false;
+        if (loginActive) submitButton.disabled = false;
     }
-});
+}
+
+loginForm.addEventListener("submit", handleLoginSubmit);
+return () => {
+    loginActive = false;
+    loginForm.removeEventListener("submit", handleLoginSubmit);
+};
 
 },
 "signup": function init_signup(){
 const signupForm = document.getElementById("signupForm");
 const submitButton = signupForm.querySelector('[type="submit"]');
+let signupActive = true;
 
-signupForm.addEventListener("submit", async function(event) {
+async function handleSignupSubmit(event) {
     event.preventDefault();
 
 const name = document.getElementById("name").value.trim();
 const surname = document.getElementById("surname").value.trim();
-const username = document.getElementById("username").value.trim();
+const username = normalizeUsername(document.getElementById("username").value);
 const password = document.getElementById("password").value;
 
     if (!name || !surname || !username) {
         alert("Enter your first name, last name, and username.");
+        return;
+    }
+
+    const usernameValidationMessage =
+        getUsernameValidationMessage(username);
+    if (usernameValidationMessage) {
+        alert(usernameValidationMessage);
         return;
     }
 
@@ -1625,39 +2233,65 @@ const password = document.getElementById("password").value;
         return;
     }
 
-    if (findStoredAccount(username)) {
+    if (findStoredAccount(username) || hasUserDataNamespace(username)) {
         alert("That username is already in use.");
         return;
     }
 
     submitButton.disabled = true;
+    let accountSaved = false;
+    let guestTransferComplete = false;
     try {
+        const credentials = await createPasswordCredentials(password);
+        if (!signupActive) return;
+        if (findStoredAccount(username) || hasUserDataNamespace(username)) {
+            alert("That username is already in use.");
+            return;
+        }
+
         const user = {
             version: 2,
             name,
             surname,
             username,
-            credentials: await createPasswordCredentials(password)
+            accountId: createAccountId(),
+            credentials
         };
 
         saveStoredAccount(user);
-        localStorage.setItem("name", name);
-        localStorage.setItem("surname", surname);
-        localStorage.setItem("username", username);
-        localStorage.setItem("loggedInUser", username);
+        accountSaved = true;
+        transferGuestDataToUser(username);
+        guestTransferComplete = true;
         migrateLegacyUserData(username);
+        setActiveIdentity({
+            loggedInUser: username,
+            name,
+            surname,
+            username,
+            accountId: user.accountId
+        });
         localStorage.removeItem("password");
 
         alert("Account created!");
         signupForm.reset();
         navigate("home");
     } catch (error) {
+        if (!signupActive) return;
+        if (accountSaved && !guestTransferComplete) {
+            localStorage.removeItem(accountStorageKey(username));
+        }
         console.error("Could not create the account:", error);
         alert(error.message || "Could not securely create this account.");
     } finally {
-        submitButton.disabled = false;
+        if (signupActive) submitButton.disabled = false;
     }
-});
+}
+
+signupForm.addEventListener("submit", handleSignupSubmit);
+return () => {
+    signupActive = false;
+    signupForm.removeEventListener("submit", handleSignupSubmit);
+};
 
 },
 "home": function init_home(){
@@ -1671,8 +2305,8 @@ const dateText = document.getElementById("dateText");
 const now = new Date();
 const hour = now.getHours();
 
-const firstName = localStorage.getItem("name") || "";
-const lastName = localStorage.getItem("surname") || "";
+const firstName = getActiveIdentityItem("name");
+const lastName = getActiveIdentityItem("surname");
 const fullName = `${firstName} ${lastName}`.trim();
 
 let greetingText = "";
@@ -1751,8 +2385,6 @@ if (randomIndex === 0) {
 // Load Data
 // ===========================
 
-const todayDayNumber = dateKeyDayNumber(now);
-
 const todos = getUserArray("todos");
 const events = getUserArray("events");
 const habits = getUserArray("habits");
@@ -1809,7 +2441,7 @@ if (calendarList) {
     const nextEvents = events
         .filter(event => {
             const date = eventDateTime(event);
-            return date && dateKeyDayNumber(date) >= todayDayNumber;
+            return date && date.getTime() >= now.getTime();
         })
         .sort((a, b) => {
             const dateA = eventDateTime(a);
@@ -1893,6 +2525,17 @@ const progress = totalItems > 0
 if (progressFill && progressText) {
     progressFill.style.width = progress + "%";
     progressText.textContent = progress + "% complete";
+    const progressBar = progressFill.closest(".progress-bar");
+    if (progressBar) {
+        progressBar.setAttribute("role", "progressbar");
+        progressBar.setAttribute("aria-valuemin", "0");
+        progressBar.setAttribute("aria-valuemax", "100");
+        progressBar.setAttribute("aria-valuenow", String(progress));
+        progressBar.setAttribute(
+            "aria-valuetext",
+            `${completedItems} of ${totalItems} items complete (${progress}%)`
+        );
+    }
 }
 
 // ===========================
@@ -1900,6 +2543,9 @@ if (progressFill && progressText) {
 // ===========================
 
 const starContainer = document.getElementById("shootingStars");
+const reduceHomeMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+).matches;
 
 function createStar(){
 
@@ -1923,15 +2569,17 @@ function createStar(){
 }
 
 // Random every 3–7 seconds
-createStar();
-
-const starInterval = setInterval(() => {
-
+let starInterval = null;
+if (!reduceHomeMotion) {
     createStar();
+    starInterval = setInterval(() => {
+        createStar();
+    }, Math.random() * 4000 + 3000);
+}
 
-}, Math.random() * 4000 + 3000);
-
-return () => clearInterval(starInterval);
+return () => {
+    if (starInterval !== null) clearInterval(starInterval);
+};
 },
     
 "alerts": function init_alerts() {
@@ -1951,8 +2599,9 @@ return () => clearInterval(starInterval);
     }
 
     function getStatus(todo) {
+        const now = new Date();
         const dueDayNumber = dateKeyDayNumber(todo.date);
-        const todayDayNumber = dateKeyDayNumber(new Date());
+        const todayDayNumber = dateKeyDayNumber(now);
         const daysLeft = dueDayNumber - todayDayNumber;
 
         if (!Number.isFinite(daysLeft)) {
@@ -1974,6 +2623,15 @@ return () => clearInterval(starInterval);
         }
 
         if (daysLeft === 0) {
+            const dueDateTime = todo.time
+                ? parseLocalDateTime(todo.date, todo.time)
+                : null;
+            if (dueDateTime && dueDateTime.getTime() < now.getTime()) {
+                return {
+                    text: "Overdue",
+                    className: "status-overdue"
+                };
+            }
             return {
                 text: "🟠 Due Today",
                 className: "status-today"
@@ -2421,7 +3079,11 @@ return () => clearInterval(starInterval);
     window.saveTodos = saveTodos;
     window.showTodos = showTodos;
 
-    return () => modal.destroy();
+    return () => {
+        modal.destroy();
+        clearWindowRouteFunction("saveTodos", saveTodos);
+        clearWindowRouteFunction("showTodos", showTodos);
+    };
 },
 "habits": function init_habits() {
 
@@ -2783,6 +3445,11 @@ return () => clearInterval(starInterval);
 
     function cleanupHabits() {
         modal.destroy();
+        clearWindowRouteFunction("getHabitResultText", getHabitResultText);
+        clearWindowRouteFunction("getToday", getToday);
+        clearWindowRouteFunction("saveHabitResult", saveHabitResult);
+        clearWindowRouteFunction("saveHabits", saveHabits);
+        clearWindowRouteFunction("showHabits", showHabits);
     }
 
     return cleanupHabits;
@@ -2891,7 +3558,13 @@ window.chooseExercise = chooseExercise;
 window.runPhase = runPhase;
 window.startBreathing = startBreathing;
 window.stopBreathing = stopBreathing;
-return function(){ try{ stopBreathing(); }catch(e){} };
+return function(){
+    try{ stopBreathing(); }catch(e){}
+    clearWindowRouteFunction("chooseExercise", chooseExercise);
+    clearWindowRouteFunction("runPhase", runPhase);
+    clearWindowRouteFunction("startBreathing", startBreathing);
+    clearWindowRouteFunction("stopBreathing", stopBreathing);
+};
 },
 "calendar": function init_calendar(){
 let today = new Date();
@@ -2925,7 +3598,7 @@ const eventPicker = typeof window.flatpickr === "function"
         dateFormat: "Y-m-d H:i",
         altInput: true,
         altFormat: "F j, Y h:i K",
-        minDate: "today"
+        minDate: new Date()
     })
     : {
         altInput: null,
@@ -2937,7 +3610,7 @@ const eventPicker = typeof window.flatpickr === "function"
 
 if (typeof window.flatpickr !== "function") {
     eventDateInput.type = "datetime-local";
-    eventDateInput.min = `${formatLocalDate()}T00:00`;
+    eventDateInput.min = formatLocalDateTimeInput();
 }
 eventPicker.altInput?.setAttribute("aria-label", "Event date and time");
 
@@ -3068,8 +3741,8 @@ saveEvent.onclick = () => {
         return;
     }
 
-    if (dateKeyDayNumber(parsedDate) < dateKeyDayNumber(new Date())) {
-        alert("Events must be scheduled for today or a future date.");
+    if (parsedDate.getTime() < Date.now()) {
+        alert("Events must be scheduled for a future time.");
         return;
     }
 
@@ -3091,6 +3764,8 @@ window.showEventsForDay = showEventsForDay;
 return () => {
     modal.destroy();
     eventPicker.destroy();
+    clearWindowRouteFunction("renderCalendar", renderCalendar);
+    clearWindowRouteFunction("showEventsForDay", showEventsForDay);
 };
 },
 "journal": function init_journal(){
@@ -3099,6 +3774,7 @@ const today = new Date();
 const todayDay = today.getDate();
 const todayMonth = today.getMonth();
 const todayYear = today.getFullYear();
+let journalDateKey = formatLocalDate(today);
 
 let currentMonth = todayMonth;
 let currentYear = todayYear;
@@ -3129,13 +3805,30 @@ function getEntryKey(day) {
     return `journal-${currentYear}-${currentMonth + 1}-${day}`;
 }
 
+function getCurrentDateParts() {
+    const currentDate = new Date();
+    return {
+        day: currentDate.getDate(),
+        month: currentDate.getMonth(),
+        year: currentDate.getFullYear()
+    };
+}
+
 function isTodayDate(day) {
-    return day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
+    const currentDate = getCurrentDateParts();
+    return day === currentDate.day &&
+        currentMonth === currentDate.month &&
+        currentYear === currentDate.year;
 }
 
 function isFutureDate(day) {
     const selectedDate = new Date(currentYear, currentMonth, day);
-    const realToday = new Date(todayYear, todayMonth, todayDay);
+    const currentDate = getCurrentDateParts();
+    const realToday = new Date(
+        currentDate.year,
+        currentDate.month,
+        currentDate.day
+    );
     return selectedDate > realToday;
 }
 
@@ -3257,6 +3950,21 @@ saveEntry.onclick = () => {
     buildDateGrid();
 };
 
+function refreshJournalDateRules() {
+    const currentDateKey = formatLocalDate();
+    if (currentDateKey === journalDateKey) return;
+    journalDateKey = currentDateKey;
+    buildDateGrid();
+    loadEntry(selectedDay);
+}
+
+function handleJournalVisibilityChange() {
+    if (!document.hidden) refreshJournalDateRules();
+}
+
+window.addEventListener("focus", refreshJournalDateRules);
+document.addEventListener("visibilitychange", handleJournalVisibilityChange);
+
 buildDateGrid();
 loadEntry(selectedDay);
 
@@ -3265,11 +3973,27 @@ window.getEntryKey = getEntryKey;
 window.isFutureDate = isFutureDate;
 window.isTodayDate = isTodayDate;
 window.loadEntry = loadEntry;
+return () => {
+    window.removeEventListener("focus", refreshJournalDateRules);
+    document.removeEventListener(
+        "visibilitychange",
+        handleJournalVisibilityChange
+    );
+    clearWindowRouteFunction("buildDateGrid", buildDateGrid);
+    clearWindowRouteFunction("getEntryKey", getEntryKey);
+    clearWindowRouteFunction("isFutureDate", isFutureDate);
+    clearWindowRouteFunction("isTodayDate", isTodayDate);
+    clearWindowRouteFunction("loadEntry", loadEntry);
+};
 },
 "menu": function init_menu(){
+const menuNavigation = document.getElementById("nav");
 const buttons = document.querySelectorAll("#nav button");
 
 const compactMenuQuery = window.matchMedia("(max-width: 768px), (max-height: 820px)");
+const reduceMenuMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+).matches;
 
 function clearOrbitPositions() {
     buttons.forEach(button => {
@@ -3289,48 +4013,63 @@ function updateOrbitRadius() {
 }
 
 let angle = 0;
-let paused = false;
+let hoverPaused = false;
+let focusPaused = false;
 let animationFrame = null;
 
-// Pause rotation while hovering over a button
+function handleMenuMouseEnter() {
+    hoverPaused = true;
+}
+
+function handleMenuMouseLeave() {
+    hoverPaused = false;
+}
+
+function handleMenuFocusIn() {
+    focusPaused = true;
+}
+
+function handleMenuFocusOut(event) {
+    if (!menuNavigation.contains(event.relatedTarget)) {
+        focusPaused = false;
+    }
+}
+
 buttons.forEach(button => {
-
-    button.addEventListener("mouseenter", () => {
-        paused = true;
-    });
-
-    button.addEventListener("mouseleave", () => {
-        paused = false;
-    });
-
+    button.addEventListener("mouseenter", handleMenuMouseEnter);
+    button.addEventListener("mouseleave", handleMenuMouseLeave);
 });
+menuNavigation.addEventListener("focusin", handleMenuFocusIn);
+menuNavigation.addEventListener("focusout", handleMenuFocusOut);
 
-function animate() {
-
-    if (compactMenuQuery.matches) {
-        clearOrbitPositions();
-        animationFrame = null;
-        return;
-    }
-
-    if (!paused) {
-        angle += 0.0015; // Rotation speed
-    }
-
+function positionOrbitButtons() {
     buttons.forEach((button, i) => {
-
         const currentAngle = angle + i * (Math.PI * 2 / buttons.length);
-
         const x = Math.cos(currentAngle) * radius;
         const y = Math.sin(currentAngle) * radius;
 
         button.style.left = `${x}px`;
         button.style.top = `${y}px`;
-
-        // Keep the button upright
         button.style.transform = "translate(-50%, -50%)";
-
     });
+}
+
+function animate() {
+    if (compactMenuQuery.matches || reduceMenuMotion) {
+        if (reduceMenuMotion && !compactMenuQuery.matches) {
+            positionOrbitButtons();
+        } else {
+            clearOrbitPositions();
+        }
+        animationFrame = null;
+        return;
+    }
+
+    if (!hoverPaused && !focusPaused) {
+        angle += 0.0015; // Rotation speed
+    }
+
+    positionOrbitButtons();
 
     animationFrame = requestAnimationFrame(animate);
 
@@ -3343,7 +4082,11 @@ function syncMenuLayout() {
         clearOrbitPositions();
     } else {
         updateOrbitRadius();
-        if (animationFrame === null) {
+        if (reduceMenuMotion) {
+            if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+            positionOrbitButtons();
+        } else if (animationFrame === null) {
             animate();
         }
     }
@@ -3352,8 +4095,14 @@ function syncMenuLayout() {
 window.addEventListener("resize", syncMenuLayout);
 syncMenuLayout();
 return () => {
-    cancelAnimationFrame(animationFrame);
+    if (animationFrame !== null) cancelAnimationFrame(animationFrame);
     window.removeEventListener("resize", syncMenuLayout);
+    buttons.forEach(button => {
+        button.removeEventListener("mouseenter", handleMenuMouseEnter);
+        button.removeEventListener("mouseleave", handleMenuMouseLeave);
+    });
+    menuNavigation.removeEventListener("focusin", handleMenuFocusIn);
+    menuNavigation.removeEventListener("focusout", handleMenuFocusOut);
 };
 },
 "settings": function init_settings() {
@@ -3402,6 +4151,8 @@ return () => {
 
     return () => {
         if(modeToggle) modeToggle.removeEventListener("change",handleModeChange);
+        clearWindowRouteFunction("resetSettings", resetSettings);
+        clearWindowRouteFunction("deleteAllData", deleteAllData);
     };
 },
 
@@ -3503,7 +4254,7 @@ return () => {
     }
 
     function updateWelcomeMessage() {
-        const name = localStorage.getItem("name");
+        const name = getActiveIdentityItem("name");
 
         if (name) {
             welcomeMessage.textContent =
@@ -3549,6 +4300,18 @@ return () => {
 
         taskProgressFill.style.width =
             completionRate + "%";
+        const taskProgressTrack =
+            document.getElementById("task-progress-track");
+        if (taskProgressTrack) {
+            taskProgressTrack.setAttribute("role", "progressbar");
+            taskProgressTrack.setAttribute("aria-valuemin", "0");
+            taskProgressTrack.setAttribute("aria-valuemax", "100");
+            taskProgressTrack.setAttribute("aria-valuenow", String(completionRate));
+            taskProgressTrack.setAttribute(
+                "aria-valuetext",
+                `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`
+            );
+        }
 
         updateTaskProgressMessage(
             totalTasks,
@@ -3661,6 +4424,18 @@ return () => {
 
         habitProgressFill.style.width =
             habitSuccessRate + "%";
+        const habitProgressTrack =
+            document.getElementById("habit-progress-track");
+        if (habitProgressTrack) {
+            habitProgressTrack.setAttribute("role", "progressbar");
+            habitProgressTrack.setAttribute("aria-valuemin", "0");
+            habitProgressTrack.setAttribute("aria-valuemax", "100");
+            habitProgressTrack.setAttribute("aria-valuenow", String(habitSuccessRate));
+            habitProgressTrack.setAttribute(
+                "aria-valuetext",
+                `${successfulHabitDays} of ${totalCheckIns} scheduled check-ins successful (${habitSuccessRate}%)`
+            );
+        }
 
         updateHabitProgressMessage(
             habits.length,
@@ -3790,17 +4565,21 @@ return () => {
             return;
         }
 
-        const recentTasks = todos.slice();
+        const recentTasks = todos.map(function (todo, index) {
+            return { todo, index };
+        });
 
-        recentTasks.sort(function (
-            firstTask,
-            secondTask
-        ) {
-            return secondTask.id - firstTask.id;
+        recentTasks.sort(function (firstEntry, secondEntry) {
+            const firstId = Number(firstEntry.todo.id);
+            const secondId = Number(secondEntry.todo.id);
+            if (Number.isFinite(firstId) && Number.isFinite(secondId)) {
+                return secondId - firstId;
+            }
+            return secondEntry.index - firstEntry.index;
         });
 
         const limitedTasks =
-            recentTasks.slice(0, 5);
+            recentTasks.slice(0, 5).map(entry => entry.todo);
 
         limitedTasks.forEach(function (todo) {
             const taskRow =
@@ -3918,6 +4697,27 @@ window.updateTaskProgressMessage = updateTaskProgressMessage;
 window.updateTaskStatistics = updateTaskStatistics;
 window.updateTodayHabitStatistics = updateTodayHabitStatistics;
 window.updateWelcomeMessage = updateWelcomeMessage;
+return () => {
+    Object.entries({
+        displayRecentTasks,
+        formatDate,
+        getStoredArray,
+        getTodayString,
+        loadStats,
+        updateAchievements,
+        displayLatestAchievement,
+        updateBadges,
+        updateHabitProgressMessage,
+        updateHabitStatistics,
+        updateTaskDateStatistics,
+        updateTaskProgressMessage,
+        updateTaskStatistics,
+        updateTodayHabitStatistics,
+        updateWelcomeMessage
+    }).forEach(([name, routeFunction]) => {
+        clearWindowRouteFunction(name, routeFunction);
+    });
+};
 },
 "achievements": function init_achievements(){
     const progression = syncProgressionFromActivity();
@@ -3951,23 +4751,25 @@ window.updateWelcomeMessage = updateWelcomeMessage;
     const achievementsNumber =
         document.getElementById("achievements-number");
     let messageTimeout = null;
+    let profileActive = true;
+    let profileOwner = getLoggedInUsername();
 
     function loadProfile() {
         const savedName =
-            localStorage.getItem("name") || "Ascendra";
+            getActiveIdentityItem("name") || "Ascendra";
 
         const savedSurname =
-            localStorage.getItem("surname") || "User";
+            getActiveIdentityItem("surname") || "User";
 
         const savedUsername =
-            localStorage.getItem("username") || "ascendrauser";
+            getActiveIdentityItem("username") || "ascendrauser";
 
         const savedBio =
-            getUserItem("ascendra-profile-bio") ||
+            getUserItem("ascendra-profile-bio", profileOwner) ||
             "Becoming better, one day at a time.";
 
         const savedPicture =
-            getUserItem("ascendra-profile-picture");
+            getUserItem("ascendra-profile-picture", profileOwner);
 
         nameInput.value = savedName;
         surnameInput.value = savedSurname;
@@ -3985,8 +4787,8 @@ window.updateWelcomeMessage = updateWelcomeMessage;
         characterCount.textContent =
             savedBio.length + " / 120";
 
-        const todos = getUserArray("todos");
-        const habits = getUserArray("habits");
+        const todos = getUserArray("todos", profileOwner);
+        const habits = getUserArray("habits", profileOwner);
         const completedTasks = todos.filter(isTodoCompleted).length;
         const longestCurrentStreak = habits.reduce((longest, habit) => {
             return Math.max(longest, getHabitCurrentStreak(habit));
@@ -4006,10 +4808,7 @@ window.updateWelcomeMessage = updateWelcomeMessage;
     }
 
     function cleanUsername(username) {
-        return username
-            .trim()
-            .replace(/@/g, "")
-            .replace(/\s+/g, "");
+        return normalizeUsername(username);
     }
 
     function showMessage(message, type) {
@@ -4028,11 +4827,13 @@ window.updateWelcomeMessage = updateWelcomeMessage;
         }, 3000);
     }
 
-    saveButton.addEventListener("click", function () {
+    function handleProfileSave() {
         const name = nameInput.value.trim();
         const surname = surnameInput.value.trim();
         const username = cleanUsername(usernameInput.value);
         const bio = bioInput.value.trim();
+        const oldUsername =
+            getActiveIdentityItem("username") || profileOwner;
 
         if (name === "") {
             showMessage(
@@ -4052,18 +4853,30 @@ window.updateWelcomeMessage = updateWelcomeMessage;
             return;
         }
 
-        if (username === "") {
+        const usernameValidationMessage =
+            getUsernameValidationMessage(username, {
+                allowLegacyUsername: oldUsername
+            });
+        if (usernameValidationMessage) {
             showMessage(
-                "Please enter a username.",
+                usernameValidationMessage,
                 "error"
             );
 
             return;
         }
 
-        const oldUsername =
-            localStorage.getItem("username");
-        const accountRecord = findStoredAccount(oldUsername);
+        if (
+            profileOwner &&
+            !activeAccountMatchesIdentity(profileOwner)
+        ) {
+            invalidateMissingActiveAccount();
+            return;
+        }
+
+        const accountRecord = profileOwner
+            ? findStoredAccount(oldUsername) || findStoredAccount(profileOwner)
+            : null;
         const usernameRecord = findStoredAccount(username);
 
         if (usernameRecord && usernameRecord.key !== accountRecord?.key) {
@@ -4073,76 +4886,90 @@ window.updateWelcomeMessage = updateWelcomeMessage;
 
         if (
             accountRecord?.legacy &&
-            oldUsername !== username &&
-            typeof accountRecord.account.password === "string"
+            oldUsername.toLowerCase() !== username.toLowerCase()
         ) {
             showMessage("Log in once before changing this legacy username.", "error");
             return;
         }
 
-        if (accountRecord) {
-            const updatedUser = {
-                ...accountRecord.account,
+        if (profileOwner && !accountRecord) {
+            showMessage("Account data was not found. Please log in again.", "error");
+            return;
+        }
+
+        const updatedAccountId = accountRecord?.account?.accountId ||
+            getActiveIdentityItem("accountId");
+
+        try {
+            if (accountRecord) {
+                const updatedUser = {
+                    ...accountRecord.account,
+                    name,
+                    surname,
+                    username
+                };
+
+                renameStoredAccountAndData(
+                    accountRecord,
+                    updatedUser,
+                    oldUsername,
+                    username
+                );
+            }
+
+            const updatedOwner = accountRecord ? username : "";
+            setActiveIdentity({
+                loggedInUser: accountRecord ? username : null,
                 name,
                 surname,
-                username
-            };
+                username,
+                accountId: accountRecord ? updatedAccountId : ""
+            }, {
+                publish: false,
+                previousUsername: oldUsername || null
+            });
+            profileOwner = updatedOwner;
 
-            if (accountRecord.legacy && typeof updatedUser.password === "string") {
-                localStorage.setItem(accountRecord.key, JSON.stringify(updatedUser));
-            } else {
-                saveStoredAccount(updatedUser);
-                const updatedKey = accountStorageKey(username);
-                if (accountRecord.key !== updatedKey) {
-                    localStorage.removeItem(accountRecord.key);
-                }
-            }
+            setUserItem(
+                "ascendra-profile-bio",
+                bio,
+                updatedOwner
+            );
+            const progression = syncProgressionFromActivity();
+            renderProgressionSummary(progression.state);
+
+            displayName.textContent =
+                name + " " + surname;
+
+            displayUsername.textContent =
+                "@" + username;
+
+            displayBio.textContent =
+                bio ||
+                "Becoming better, one day at a time.";
+
+            usernameInput.value = username;
+
+            showMessage(
+                "Profile saved successfully!",
+                "success"
+            );
+        } catch (error) {
+            console.error("Could not safely save the profile:", error);
+            showMessage(
+                error.message || "Could not safely save your profile.",
+                "error"
+            );
         }
+    }
 
-        moveUserDataNamespace(oldUsername, username);
-
-        localStorage.setItem("name", name);
-        localStorage.setItem("surname", surname);
-        localStorage.setItem("username", username);
-
-        if (localStorage.getItem("loggedInUser")) {
-            localStorage.setItem("loggedInUser", username);
-        }
-
-        setUserItem(
-            "ascendra-profile-bio",
-            bio
-        );
-        const progression = syncProgressionFromActivity();
-        renderProgressionSummary(progression.state);
-
-        displayName.textContent =
-            name + " " + surname;
-
-        displayUsername.textContent =
-            "@" + username;
-
-        displayBio.textContent =
-            bio ||
-            "Becoming better, one day at a time.";
-
-        usernameInput.value = username;
-
-        showMessage(
-            "Profile saved successfully!",
-            "success"
-        );
-    });
-
-    bioInput.addEventListener("input", function () {
+    function handleBioInput() {
         characterCount.textContent =
             bioInput.value.length + " / 120";
-    });
+    }
 
     function handleLogout() {
-        ["loggedInUser", "name", "surname", "username"].forEach(key => {
-            localStorage.removeItem(key);
-        });
+        clearActiveIdentity();
         navigate("login");
     }
 
@@ -4156,58 +4983,67 @@ window.updateWelcomeMessage = updateWelcomeMessage;
 
     cameraButton.addEventListener("keydown", handleCameraKeydown);
 
-    profileUpload.addEventListener(
-        "change",
-        function (event) {
-            const selectedFile =
-                event.target.files[0];
+    function handleProfileUpload(event) {
+        const selectedFile =
+            event.target.files[0];
 
-            if (!selectedFile) {
-                return;
-            }
+        if (!selectedFile) {
+            return;
+        }
 
-            if (
-                !selectedFile.type.startsWith("image/")
-            ) {
-                showMessage(
-                    "Please choose an image file.",
-                    "error"
-                );
+        if (
+            !selectedFile.type.startsWith("image/")
+        ) {
+            showMessage(
+                "Please choose an image file.",
+                "error"
+            );
 
-                profileUpload.value = "";
-                return;
-            }
+            profileUpload.value = "";
+            return;
+        }
 
-            const reader = new FileReader();
+        const pictureOwner = getLoggedInUsername();
+        const reader = new FileReader();
 
-            reader.addEventListener(
-                "load",
-                function () {
+        reader.addEventListener(
+            "load",
+            function () {
+                if (
+                    !profileActive ||
+                    pictureOwner !== getLoggedInUsername()
+                ) {
+                    return;
+                }
+
+                try {
+                    setUserItem(
+                        "ascendra-profile-picture",
+                        reader.result,
+                        pictureOwner
+                    );
                     profilePicture.src =
                         reader.result;
 
-                    try {
-                        setUserItem(
-                            "ascendra-profile-picture",
-                            reader.result
-                        );
-
-                        showMessage(
-                            "Profile picture updated!",
-                            "success"
-                        );
-                    } catch (error) {
-                        showMessage(
-                            "That image is too large.",
-                            "error"
-                        );
-                    }
+                    showMessage(
+                        "Profile picture updated!",
+                        "success"
+                    );
+                } catch (error) {
+                    showMessage(
+                        "That image is too large.",
+                        "error"
+                    );
                 }
-            );
+            }
+        );
 
-            reader.readAsDataURL(selectedFile);
-        }
-    );
+        reader.readAsDataURL(selectedFile);
+    }
+
+    saveButton.addEventListener("click", handleProfileSave);
+    bioInput.addEventListener("input", handleBioInput);
+    profileUpload.addEventListener("change", handleProfileUpload);
 
     loadProfile();
 
@@ -4215,9 +5051,16 @@ window.cleanUsername = cleanUsername;
 window.loadProfile = loadProfile;
 window.showMessage = showMessage;
 return () => {
+    profileActive = false;
     clearTimeout(messageTimeout);
+    saveButton.removeEventListener("click", handleProfileSave);
+    bioInput.removeEventListener("input", handleBioInput);
+    profileUpload.removeEventListener("change", handleProfileUpload);
     logoutButton.removeEventListener("click", handleLogout);
     cameraButton.removeEventListener("keydown", handleCameraKeydown);
+    clearWindowRouteFunction("cleanUsername", cleanUsername);
+    clearWindowRouteFunction("loadProfile", loadProfile);
+    clearWindowRouteFunction("showMessage", showMessage);
 };
 },
 "extras": function init_extras(){
@@ -4350,21 +5193,32 @@ return () => {
 }
 };
 
-if(!location.hash){history.replaceState({route:"welcome"},"","#/welcome");}
-renderRoute(getRoute());
+const initialRoute=getRoute();
+if(location.hash!==canonicalRouteHash(initialRoute)){
+    history.replaceState({route:initialRoute},"",canonicalRouteHash(initialRoute));
+}
+renderRoute(initialRoute,{focusRoute:false});
 
 const searchablePages = [
     { name: "Home", route: "home" },
+    { name: "Alerts", route: "alerts" },
     { name: "Calendar", route: "calendar" },
     { name: "Journal", route: "journal" },
     { name: "Habits", route: "habits" },
     { name: "To-Dos", route: "todos" },
+    { name: "Breathing", route: "breathing" },
+    { name: "Menu", route: "menu" },
+    { name: "Extras", route: "extras" },
     { name: "Profile", route: "profile" },
     { name: "Statistics", route: "stats" },
     { name: "Achievements", route: "achievements" },
     { name: "Settings", route: "settings" },
     { name: "Roadmap", route: "roadmap" },
-    { name: "Mini Tools", route: "minitools" }
+    { name: "Mini Tools", route: "minitools" },
+    { name: "About", route: "about" },
+    { name: "Credits", route: "credits" },
+    { name: "Privacy Policy", route: "privacy" },
+    { name: "Terms of Service", route: "terms" }
 ];
 let searchPreviousFocus = null;
 
@@ -4380,6 +5234,14 @@ function openSearch() {
     const { overlay, input } = getSearchElements();
     if (!overlay || !input) {
         console.warn("Search UI is not available on this page.");
+        return;
+    }
+
+    const activeRouteDialog = app.querySelector(
+        '[role="dialog"][aria-hidden="false"], dialog[open], .modal[aria-hidden="false"]'
+    );
+    if (activeRouteDialog) {
+        console.info("Close the current dialog before opening Search.");
         return;
     }
 

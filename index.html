@@ -81,7 +81,7 @@
 <br/><br/>
 <input aria-label="Last name" autocomplete="family-name" id="surname" maxlength="60" placeholder="Last Name" required="" type="text"/>
 <br/><br/>
-<input aria-label="Username" autocomplete="username" id="username" maxlength="60" placeholder="Username" required="" type="text"/>
+<input aria-label="Username" autocomplete="username" id="username" maxlength="20" placeholder="Username" required="" type="text"/>
 <br/><br/>
 <input aria-label="Password" autocomplete="new-password" id="password" maxlength="128" minlength="8" placeholder="Password (8+ characters)" required="" type="password"/>
 <br/><br/>
@@ -109,7 +109,16 @@
 <section class="widget-grid">
 <div class="widget">
 <h2>Today's Progress</h2>
-<div class="progress-bar">
+<div
+  aria-label="Today's completion"
+  aria-valuemax="100"
+  aria-valuemin="0"
+  aria-valuenow="0"
+  aria-valuetext="0% complete"
+  class="progress-bar"
+  id="home-progress-track"
+  role="progressbar"
+>
 <div id="progressFill"></div>
 </div>
 <p id="progressText">0% complete</p>
@@ -187,7 +196,7 @@
 
 <button id="add-btn"><strong>+ Add Task</strong></button>
 
-<div class="todo-toolbar" aria-label="Filter tasks">
+<div class="todo-toolbar" aria-label="Filter tasks" role="group">
     <button class="todo-filter active" data-filter="all" type="button">All</button>
     <button class="todo-filter" data-filter="active" type="button">Active</button>
     <button class="todo-filter" data-filter="completed" type="button">Completed</button>
@@ -748,7 +757,16 @@
 </div>
 <strong id="task-progress-label">0%</strong>
 </div>
-<div class="progress-track">
+<div
+  aria-label="Overall task completion"
+  aria-valuemax="100"
+  aria-valuemin="0"
+  aria-valuenow="0"
+  aria-valuetext="0% of tasks completed"
+  class="progress-track"
+  id="task-progress-track"
+  role="progressbar"
+>
 <div id="task-progress-fill"></div>
 </div>
 <p id="task-progress-message">
@@ -805,7 +823,16 @@
 </div>
 <strong id="habit-progress-label">0%</strong>
 </div>
-<div class="progress-track">
+<div
+  aria-label="Overall habit success"
+  aria-valuemax="100"
+  aria-valuemin="0"
+  aria-valuenow="0"
+  aria-valuetext="0% successful habit check-ins"
+  class="progress-track"
+  id="habit-progress-track"
+  role="progressbar"
+>
 <div id="habit-progress-fill"></div>
 </div>
 <p id="habit-progress-message">
@@ -910,23 +937,20 @@
 <p class="progression-eyebrow">YOUR ASCENDRA JOURNEY</p>
 <h2 id="progression-title">Level <span data-xp-level>1</span></h2>
 <p>Complete meaningful actions, earn XP, and collect achievements as you build momentum.</p>
-<div class="progression-summary" aria-label="Progress summary">
-<article>
-<i class="fa-solid fa-bolt" aria-hidden="true"></i>
-<strong data-xp-total>0 XP</strong>
-<span>Total XP</span>
-</article>
-<article>
-<i class="fa-solid fa-trophy" aria-hidden="true"></i>
-<strong data-achievement-count>0</strong>
-<span>Unlocked</span>
-</article>
-<article>
-<i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i>
-<strong data-xp-level>1</strong>
-<span>Current Level</span>
-</article>
+<dl class="progression-summary" aria-label="Progress summary">
+<div>
+<dt><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>Total XP</span></dt>
+<dd data-xp-total>0 XP</dd>
 </div>
+<div>
+<dt><i class="fa-solid fa-trophy" aria-hidden="true"></i><span>Unlocked achievements</span></dt>
+<dd data-achievement-count>0</dd>
+</div>
+<div>
+<dt><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i><span>Current level</span></dt>
+<dd data-xp-level>1</dd>
+</div>
+</dl>
 <div class="progression-xp-heading">
 <span data-xp-level-start>0 XP</span>
 <span data-xp-level-end>100 XP</span>
@@ -1468,11 +1492,11 @@
 <!-- Add more people here -->
 <hr>
 <h2>Sources</h2>
-<a href="https://github.com/Jedicuber/Ascendra" target="_blank" rel="noopener" class="github-button"><button><i class="fa-brands fa-github"></i>Source code on GitHub</button></a>
+<a href="https://github.com/Jedicuber/Ascendra" target="_blank" rel="noopener" class="github-button"><i aria-hidden="true" class="fa-brands fa-github"></i>Source code on GitHub</a>
 <h3>Made using:</h3>
-<p><i class="fa-brands fa-html5"></i></i></p>
-<p><i class="fa-brands fa-css3"></i></p>
-<p><i class="fa-brands fa-js"></i></p>
+<p><i aria-hidden="true" class="fa-brands fa-html5"></i><span class="visually-hidden">HTML5</span></p>
+<p><i aria-hidden="true" class="fa-brands fa-css3"></i><span class="visually-hidden">CSS3</span></p>
+<p><i aria-hidden="true" class="fa-brands fa-js"></i><span class="visually-hidden">JavaScript</span></p>
 
 <hr/>
 <p><em>Built to help people live a better day.</em></p>
@@ -1613,8 +1637,8 @@
   </section>
 </template>
 
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script src="script.js"></script>
+  <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script defer src="script.js"></script>
   <div aria-label="Search Ascendra" aria-modal="true" class="search-overlay" hidden id="searchOverlay" role="dialog">
     <div class="search-box">
         <button aria-label="Close search" class="search-close" id="searchClose" type="button">×</button>

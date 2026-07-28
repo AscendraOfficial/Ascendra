@@ -1,5 +1,15 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;}
+.visually-hidden{
+    width:1px;
+    height:1px;
+    padding:0;
+    position:absolute;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+}
 body{min-height:100vh;background-color:#f4f1ff!important;color:#222;font-family:Arial,sans-serif;position:relative;}
 body::before{content:"";position:fixed;inset:0;background-image:url("background.png");background-position:top center;background-size:100% auto;background-repeat:repeat-y;opacity:.25;pointer-events:none;z-index:-1;}
 #app{min-height:100vh;background:transparent!important;}
@@ -178,6 +188,19 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 /* ===== LOADING-SCREEN ===== */
+.ascendra-page[data-route="loading-screen"]{
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.ascendra-page[data-route="loading-screen"] #canvas{
+    display: block;
+    position: fixed;
+    inset: 0;
+}
 
 /* ===== LOGIN ===== */
 .ascendra-page[data-route="login"]{
@@ -451,7 +474,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="home"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -629,7 +651,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="alerts"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -853,10 +874,21 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     font-size: 24px;
 }
 
-.ascendra-page[data-route="alerts"] button {
+.ascendra-page[data-route="alerts"] .alert-actions{
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ascendra-page[data-route="alerts"] .alert-actions button {
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 0;
     color: white;
     background-color: rgb(127, 0, 255);
-    border-radius: 20;
+    border-radius: 20px;
+    cursor: pointer;
 }
 
 .ascendra-page[data-route="alerts"] .alert-card p{
@@ -930,7 +962,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 /* ===== TODOS ===== */
 
 .ascendra-page[data-route="todos"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -1309,7 +1340,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 /* ===== HABITS ===== */
 
 .ascendra-page[data-route="habits"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -1758,7 +1788,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="breathing"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -1996,7 +2025,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     height: 220px;
     margin: 35px auto;
     border-radius: 50%;
-    background: radial-gradient(circle, rgb(96, 165, 250), rgb(37, 99, 235));
+    background: radial-gradient(circle, rgb(29, 101, 190), rgb(30, 64, 175));
     color: white;
 
     display: flex;
@@ -2080,7 +2109,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="calendar"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -2286,7 +2314,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 
 .ascendra-page[data-route="calendar"] .calendar-container{
     flex-grow: 1;
-    padding: 25px 55px;
+    padding: 25px 55px calc(120px + env(safe-area-inset-bottom));
 }
 
 .ascendra-page[data-route="calendar"] .top-title{
@@ -2356,17 +2384,11 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     font-size: 17px;
     font-weight: 600;
     color: rgb(31, 22, 46);
-    cursor: pointer;
+    cursor: default;
     border: none;
     width: 14%;
     height: 90px;
     vertical-align: top;
-}
-
-.ascendra-page[data-route="calendar"] td:hover{
-    background-color: rgb(215, 215, 215);
-    color: rgb(143, 63, 216);
-    border-radius: 50px;
 }
 
 .ascendra-page[data-route="calendar"] .today{
@@ -2438,7 +2460,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     justify-content: center;
     padding: 16px;
     background: rgba(0,0,0,0.45);
-    z-index: 9500;
+    z-index: 10001;
 }
 
 .ascendra-page[data-route="calendar"] .popup-box{
@@ -2467,7 +2489,8 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 .ascendra-page[data-route="calendar"] .calendar-event{
     width: 100%;
     margin-top: 5px;
-    padding: 4px 6px;
+    min-height: 32px;
+    padding: 5px 6px;
     background-color: rgb(143, 63, 216);
     color: white;
     border: 0;
@@ -2484,7 +2507,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 /* ===== JOURNAL ===== */
-@import url("https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap");
 .ascendra-page[data-route="journal"]{
     margin: 0;
     padding-bottom: 110px;
@@ -2581,7 +2603,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 .ascendra-page[data-route="journal"] textarea{
     height: 70px;
     resize: vertical;
-    font-family: "Patric Hand", cursive;
+    font-family: "Patrick Hand", cursive;
     font-size: 20px;
 }
 
@@ -2675,7 +2697,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="journal"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -2853,7 +2874,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="menu"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -3409,7 +3429,6 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 }
 
 .ascendra-page[data-route="settings"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -4172,29 +4191,37 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     gap: 14px;
 }
 
-.ascendra-page[data-route="achievements"] .progression-summary article{
+.ascendra-page[data-route="achievements"] .progression-summary > div{
     min-width: 0;
-    padding: 17px;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 3px 12px;
-    align-items: center;
+    min-height: 78px;
+    padding: 17px 17px 17px 58px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.14);
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 17px;
 }
 
 .ascendra-page[data-route="achievements"] .progression-summary i{
-    grid-row: 1 / 3;
+    position: absolute;
+    left: 17px;
+    top: 50%;
+    transform: translateY(-50%);
     font-size: 1.35rem;
 }
 
-.ascendra-page[data-route="achievements"] .progression-summary strong{
+.ascendra-page[data-route="achievements"] .progression-summary dd{
+    order: 1;
+    margin: 0;
     overflow-wrap: anywhere;
     font-size: 1.25rem;
+    font-weight: 700;
 }
 
-.ascendra-page[data-route="achievements"] .progression-summary span{
+.ascendra-page[data-route="achievements"] .progression-summary dt{
+    order: 2;
     color: rgba(255, 255, 255, 0.82);
     font-size: 0.82rem;
 }
@@ -5289,6 +5316,7 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 
 .ascendra-page[data-route="privacy"] .policy-container{
     width: 75%;
+    max-width: 900px;
     margin: 40px auto;
     padding: 30px;
 
@@ -5346,7 +5374,7 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 .ascendra-page[data-route="about"] .about-header{
     text-align: center;
     padding: 50px 20px;
-    background: linear-gradient(135deg, rgb(0, 123, 255), rgb(0, 170, 255));
+    background: linear-gradient(135deg, rgb(0, 82, 180), rgb(0, 105, 184));
     color: white;
 }
 
@@ -5449,7 +5477,7 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 }
 
 .ascendra-page[data-route="about"] .creator-section{
-    background: linear-gradient(135deg, rgb(0,123,255), rgb(0,170,255));
+    background: linear-gradient(135deg, rgb(0,82,180), rgb(0,105,184));
     color: white;
     text-align: center;
     padding: 40px;
@@ -5507,7 +5535,6 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 }
 
 .ascendra-page[data-route="credits"]{
-    --accent: rgb(127, 0, 255);
     --bg: #f6f3ff;
     --card: white;
     --text: #222;
@@ -6431,15 +6458,10 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 }
 
 .github-button{
-  display:inline-block;
-  text-decoration:none;
-  margin:10px 0 20px;
-}
-
-.github-button button{
   display:inline-flex;
   align-items:center;
   gap:10px;
+  margin:10px 0 20px;
   padding:12px 18px;
   border:none;
   border-radius:12px;
@@ -6448,10 +6470,11 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
   font-size:16px;
   font-weight:700;
   cursor:pointer;
+  text-decoration:none;
   transition:.2s ease;
 }
 
-.github-button button:hover{
+.github-button:hover{
   transform:translateY(-2px);
   box-shadow:0 8px 20px rgba(0,0,0,.2);
 }
@@ -6583,6 +6606,8 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 
     padding-top: 100px;
     background: rgba(0, 0, 0, 0.4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .search-overlay[hidden] {
@@ -6591,16 +6616,21 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 
 .search-box {
     width: min(520px, 90%);
+    max-height: calc(100dvh - 120px);
     padding: 14px;
 
+    display: flex;
+    flex-direction: column;
     background: white;
     border-radius: 18px;
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
 }
 
 .search-close {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
     margin: 0 0 8px auto;
     display: block;
     border: 0;
@@ -6619,6 +6649,12 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
     border: 1px solid #ccc;
     border-radius: 12px;
     font-size: 17px;
+}
+
+#searchResults {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .search-result {
@@ -7281,11 +7317,6 @@ body.dark-mode .ascendra-page[data-route="calendar"] th{
   color:#d8b4fe!important;
 }
 
-body.dark-mode .ascendra-page[data-route="calendar"] td:hover{
-  background:var(--dark-surface-hover)!important;
-  color:#d8b4fe!important;
-}
-
 body.dark-mode .ascendra-page[data-route="journal"] .date-button:hover:not(:disabled){
   background:var(--dark-surface-hover)!important;
 }
@@ -7448,4 +7479,142 @@ body.dark-mode .numInputWrapper span.arrowUp::after{
 
 body.dark-mode .numInputWrapper span.arrowDown::after{
   border-top-color:var(--dark-text)!important;
+}
+
+/* ===== STABILITY, ACCESSIBILITY, AND SAFE-AREA FIXES ===== */
+.ascendra-page[data-route="todos"] .popup,
+.ascendra-page[data-route="habits"] .popup{
+  z-index:10001;
+}
+
+.ascendra-page[data-route="extras"]{
+  padding-bottom:calc(140px + env(safe-area-inset-bottom));
+}
+
+.ascendra-page[data-route="stats"] .top-bar,
+.ascendra-page[data-route="profile"] .top-bar{
+  min-height:calc(75px + env(safe-area-inset-top));
+  padding-top:calc(12px + env(safe-area-inset-top));
+  padding-right:max(25px, env(safe-area-inset-right));
+  padding-left:calc(84px + env(safe-area-inset-left));
+}
+
+.ascendra-page[data-route="calendar"] .calendar-header button{
+  min-width:44px;
+  min-height:44px;
+}
+
+.ascendra-page[data-route="stats"] .recent-card .view-link{
+  min-height:44px;
+  padding:10px 12px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+
+.ascendra-page[data-route="login"],
+.ascendra-page[data-route="signup"]{
+  min-height:100dvh;
+  margin-top:0;
+  padding:
+    calc(70px + env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    calc(36px + env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+}
+
+.ascendra-page[data-route="login"] form,
+.ascendra-page[data-route="signup"] form{
+  width:min(320px, 100%);
+}
+
+body.dark-mode .ascendra-page :focus-visible,
+body.dark-mode .search-overlay :focus-visible{
+  outline:3px solid #fde047 !important;
+  outline-offset:3px !important;
+}
+
+body.dark-mode .ascendra-page :is(input,select,textarea):focus-visible,
+body.dark-mode .search-overlay :is(input,select,textarea):focus-visible{
+  border-color:#fde047 !important;
+}
+
+.search-result:focus-visible{
+  outline-offset:-3px !important;
+  background:#f0ebff;
+}
+
+body.dark-mode .search-result:focus-visible{
+  outline-offset:-3px !important;
+  background:var(--dark-surface-hover) !important;
+}
+
+@media (max-width:768px){
+  .navbar button{
+    font-size:10px !important;
+  }
+
+  .ascendra-page[data-route="stats"] .top-bar,
+  .ascendra-page[data-route="profile"] .top-bar{
+    padding-top:calc(10px + env(safe-area-inset-top));
+    padding-right:max(14px, env(safe-area-inset-right));
+    padding-bottom:10px;
+    padding-left:calc(68px + env(safe-area-inset-left));
+  }
+
+  .ascendra-page[data-route="habits"] .right button{
+    min-width:44px;
+    min-height:44px;
+  }
+
+  .ascendra-page[data-route="calendar"] .calendar-event{
+    min-height:28px;
+    padding:4px 2px;
+    font-size:10px;
+  }
+}
+
+@media (max-width:600px), (max-height:700px){
+  .search-overlay{
+    padding:
+      calc(16px + env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      calc(16px + env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
+  .search-box{
+    width:100%;
+    max-height:calc(
+      100dvh - 32px -
+      env(safe-area-inset-top) -
+      env(safe-area-inset-bottom)
+    );
+  }
+}
+
+@media (max-width:480px){
+  .navbar button{
+    font-size:11px !important;
+  }
+
+  .progression-toast{
+    bottom:max(
+      124px,
+      calc(116px + env(safe-area-inset-bottom))
+    );
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,
+  *::before,
+  *::after{
+    scroll-behavior:auto !important;
+    animation-duration:0.01ms !important;
+    animation-delay:0ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    transition-delay:0ms !important;
+  }
 }
