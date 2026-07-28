@@ -6807,6 +6807,16 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
   font-weight:700;
 }
 
+.roadmap-statusH{
+  flex-shrink:0;
+  padding:8px 13px;
+  border-radius:999px;
+  background:#fff3cd;
+  color:#795500;
+  font-size:14px;
+  font-weight:700;
+}
+
 .roadmap-card hr{
   margin:24px 0;
   border:0;
