@@ -927,6 +927,32 @@ if (dateText) {
 }
 
 // ===========================
+// Motivational Message
+// ===========================
+
+const messages = [
+    { text1: "If you never start you'll never finish." },
+    { text2: "Audrey Hepburn - \"Nothing is impossible. The word itself even says I'm possible!\"" },
+    { text3: "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'" }
+];
+
+// Gets a random message from messages
+const randomIndex = Math.floor(Math.random() * messages.length);
+
+// Changes the text to the random message
+const message = document.getElementById("motivational-message");
+
+if (randomIndex === 0) {
+    message.textContent = messages[0].text1;
+} else if (randomIndex === 1) {
+    message.textContent = messages[1].text2;
+} else if (randomIndex === 2) {
+    message.textContent = messages[2].text3;
+} else {
+    message.textContent = "It seems the message couldn't load.";
+}
+
+// ===========================
 // Load Data
 // ===========================
 
