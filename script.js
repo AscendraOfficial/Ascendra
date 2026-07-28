@@ -931,9 +931,13 @@ if (dateText) {
 // ===========================
 
 const messages = [
-    { text1: "If you never start you'll never finish." },
+    { text1: "Cristiano Ronaldo - 'Talent without working hard is nothing.'" },
     { text2: "Audrey Hepburn - \"Nothing is impossible. The word itself even says I'm possible!\"" },
-    { text3: "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'" }
+    { text3: "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'" },
+    { text4: "Thomas Edison - 'Many of life's failures are people who did not realize how close they were to success when they gave up.'"},
+    { text5: "Nelson Mandela - 'It always seems impossible until it's done.'"},
+    { text6: "Wayne Gretzky - 'You miss 100% of the shots you don't take.'"},
+    { text7: "Vincent Van Gogh - 'Great things are done by a series of small things brought together'"},
 ];
 
 // Gets a random message from messages
@@ -948,6 +952,14 @@ if (randomIndex === 0) {
     message.textContent = messages[1].text2;
 } else if (randomIndex === 2) {
     message.textContent = messages[2].text3;
+} else if (randomIndex === 3) {
+    message.textContent = messages[3].text4;
+} else if (randomIndex === 4) {
+    message.textContent = messages[4].text5;
+} else if (randomIndex === 5) {
+    message.textContent = messages[5].text6;
+} else if (randomIndex === 6) {
+    message.textContent = messages[6].text7;
 } else {
     message.textContent = "It seems the message couldn't load.";
 }
