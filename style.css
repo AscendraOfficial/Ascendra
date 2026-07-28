@@ -3913,6 +3913,51 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     line-height: 1.5;
 }
 
+.ascendra-page[data-route="stats"] .xp-total{
+    color: rgb(76, 96, 211);
+    font-size: 1.4rem;
+}
+
+.ascendra-page[data-route="stats"] .xp-meta{
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    color: rgb(92, 102, 131);
+    font-size: 0.88rem;
+}
+
+.ascendra-page[data-route="stats"] .xp-progress-track{
+    margin: 8px 0 12px;
+}
+
+.ascendra-page[data-route="stats"] [data-xp-progress-fill]{
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgb(77, 103, 222), rgb(168, 85, 247));
+    border-radius: inherit;
+    transition: width 0.7s ease;
+}
+
+.ascendra-page[data-route="stats"] [data-xp-message]{
+    margin: 0;
+    color: rgb(92, 102, 131);
+}
+
+.ascendra-page[data-route="stats"] #achievement-unlocked-date{
+    display: block;
+    margin-top: 8px;
+    color: rgb(102, 111, 139);
+    font-size: 0.82rem;
+}
+
+.ascendra-page[data-route="stats"] .achievement-card .view-link{
+    min-height: 44px;
+    padding: 10px 12px;
+    display: inline-flex;
+    align-items: center;
+    border-radius: 12px;
+}
+
 .ascendra-page[data-route="stats"] .recent-card{
     padding: 28px;
 }
@@ -4037,6 +4082,399 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 
 
 
+
+/* ===== ACHIEVEMENTS AND XP ===== */
+.ascendra-page[data-route="achievements"]{
+    min-height: 100dvh;
+    padding-bottom: max(72px, env(safe-area-inset-bottom));
+    color: rgb(34, 31, 47);
+    background: linear-gradient(135deg, rgb(241, 247, 255), rgb(248, 241, 255));
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.ascendra-page[data-route="achievements"] *{
+    box-sizing: border-box;
+}
+
+.ascendra-page[data-route="achievements"] .top-bar{
+    min-height: calc(75px + env(safe-area-inset-top));
+    padding: 12px max(24px, env(safe-area-inset-right)) 12px max(24px, env(safe-area-inset-left));
+    padding-top: calc(12px + env(safe-area-inset-top));
+    padding-left: calc(84px + env(safe-area-inset-left));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(35, 60, 110, 0.1);
+    backdrop-filter: blur(12px);
+}
+
+.ascendra-page[data-route="achievements"] .top-bar h1{
+    margin: 0;
+    font-size: 1.7rem;
+}
+
+.ascendra-page[data-route="achievements"] .icon-button{
+    width: 45px;
+    height: 45px;
+    display: grid;
+    place-items: center;
+    color: rgb(76, 65, 181);
+    background: rgb(238, 232, 255);
+    border-radius: 14px;
+    text-decoration: none;
+}
+
+.ascendra-page[data-route="achievements"] .progression-main{
+    width: min(1080px, 92%);
+    margin: 34px auto 0;
+}
+
+.ascendra-page[data-route="achievements"] .progression-hero,
+.ascendra-page[data-route="achievements"] .progression-section{
+    border: 1px solid rgba(72, 48, 126, 0.12);
+    border-radius: 24px;
+    box-shadow: 0 14px 36px rgba(55, 32, 93, 0.11);
+}
+
+.ascendra-page[data-route="achievements"] .progression-hero{
+    padding: clamp(26px, 5vw, 44px);
+    color: white;
+    background: linear-gradient(135deg, rgb(79, 70, 229), rgb(126, 34, 206));
+}
+
+.ascendra-page[data-route="achievements"] .progression-eyebrow{
+    margin: 0;
+    color: inherit;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.ascendra-page[data-route="achievements"] .progression-hero h2{
+    margin: 7px 0 8px;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+}
+
+.ascendra-page[data-route="achievements"] .progression-hero > p:not(.progression-eyebrow, .progression-xp-message){
+    max-width: 650px;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.ascendra-page[data-route="achievements"] .progression-summary{
+    margin: 28px 0 24px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.ascendra-page[data-route="achievements"] .progression-summary article{
+    min-width: 0;
+    padding: 17px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 3px 12px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 17px;
+}
+
+.ascendra-page[data-route="achievements"] .progression-summary i{
+    grid-row: 1 / 3;
+    font-size: 1.35rem;
+}
+
+.ascendra-page[data-route="achievements"] .progression-summary strong{
+    overflow-wrap: anywhere;
+    font-size: 1.25rem;
+}
+
+.ascendra-page[data-route="achievements"] .progression-summary span{
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.82rem;
+}
+
+.ascendra-page[data-route="achievements"] .progression-xp-heading{
+    display: flex;
+    justify-content: space-between;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.84rem;
+}
+
+.ascendra-page[data-route="achievements"] .progression-xp-track{
+    height: 16px;
+    margin: 8px 0 11px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 999px;
+}
+
+.ascendra-page[data-route="achievements"] [data-xp-progress-fill]{
+    width: 0;
+    height: 100%;
+    background: linear-gradient(90deg, rgb(253, 224, 71), rgb(251, 146, 60));
+    border-radius: inherit;
+    transition: width 0.7s ease;
+}
+
+.ascendra-page[data-route="achievements"] .progression-xp-message{
+    margin: 0;
+    color: white;
+    font-weight: 700;
+}
+
+.ascendra-page[data-route="achievements"] .progression-section{
+    padding: clamp(22px, 4vw, 32px);
+    margin-top: 24px;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.ascendra-page[data-route="achievements"] .progression-section-heading{
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.ascendra-page[data-route="achievements"] .progression-section-heading h2{
+    margin: 5px 0 0;
+    font-size: 1.6rem;
+}
+
+.ascendra-page[data-route="achievements"] .progression-section-heading .progression-eyebrow{
+    color: rgb(102, 74, 190);
+}
+
+.ascendra-page[data-route="achievements"] .progression-section-heading a{
+    min-height: 44px;
+    padding: 10px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: rgb(84, 63, 180);
+    background: rgb(242, 238, 255);
+    border-radius: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ascendra-page[data-route="achievements"] .progress-achievement-grid,
+.ascendra-page[data-route="achievements"] .progress-badge-grid{
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 275px), 1fr));
+    gap: 15px;
+    list-style: none;
+}
+
+.ascendra-page[data-route="achievements"] .progress-achievement,
+.ascendra-page[data-route="achievements"] .progress-badge{
+    min-width: 0;
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    background: rgb(249, 247, 255);
+    border: 1px solid rgba(91, 33, 182, 0.13);
+    border-radius: 18px;
+}
+
+.ascendra-page[data-route="achievements"] .progress-achievement[data-state="unlocked"],
+.ascendra-page[data-route="achievements"] .progress-badge[data-state="obtained"]{
+    background: rgb(242, 236, 255);
+    border-color: rgba(109, 40, 217, 0.38);
+    box-shadow: inset 4px 0 0 rgb(124, 58, 237);
+}
+
+.ascendra-page[data-route="achievements"] .progress-achievement-icon,
+.ascendra-page[data-route="achievements"] .progress-badge > span{
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 7px 18px rgba(55, 32, 93, 0.1);
+    font-size: 1.7rem;
+}
+
+.ascendra-page[data-route="achievements"] :is(.progress-achievement, .progress-badge) h3{
+    margin: 0 0 7px;
+    color: rgb(57, 42, 89);
+    overflow-wrap: anywhere;
+}
+
+.ascendra-page[data-route="achievements"] :is(.progress-achievement, .progress-badge) p{
+    margin: 0 0 10px;
+    color: rgb(98, 91, 112);
+    line-height: 1.45;
+}
+
+.ascendra-page[data-route="achievements"] .progress-achievement-status,
+.ascendra-page[data-route="achievements"] .progress-badge strong{
+    color: rgb(91, 33, 182);
+    font-size: 0.86rem;
+}
+
+.ascendra-page[data-route="achievements"] .achievement-progress-track{
+    height: 8px;
+    margin-top: 10px;
+    overflow: hidden;
+    background: rgb(226, 220, 239);
+    border-radius: 999px;
+}
+
+.ascendra-page[data-route="achievements"] .achievement-progress-track > div{
+    height: 100%;
+    background: linear-gradient(90deg, rgb(109, 40, 217), rgb(168, 85, 247));
+    border-radius: inherit;
+}
+
+.ascendra-page[data-route="achievements"] .progress-achievement-date{
+    display: block;
+    margin-top: 8px;
+    color: rgb(104, 94, 124);
+    font-size: 0.78rem;
+}
+
+.ascendra-page[data-route="achievements"] .progression-note{
+    margin: 18px 0 0;
+    color: rgb(98, 91, 112);
+    font-size: 0.9rem;
+}
+
+.ascendra-page[data-route="achievements"] :is(a, button):focus-visible{
+    outline: 3px solid rgb(76, 29, 149);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px white;
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"]{
+    color: var(--dark-text);
+    background: transparent;
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] :is(.top-bar, .progression-section){
+    color: var(--dark-text);
+    background: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] :is(.progress-achievement, .progress-badge){
+    color: var(--dark-text);
+    background: var(--dark-surface-raised);
+    border-color: var(--dark-border);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] :is(.progress-achievement, .progress-badge) :is(h3, strong){
+    color: var(--dark-text);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] :is(.progress-achievement, .progress-badge) p,
+body.dark-mode .ascendra-page[data-route="achievements"] :is(.progress-achievement-date, .progression-note){
+    color: var(--dark-muted);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] :is(.progress-achievement-icon, .progress-badge > span){
+    background: var(--dark-surface);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] .achievement-progress-track{
+    background: rgb(64, 55, 78);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] .progression-section-heading a{
+    color: #ddd6fe;
+    background: rgb(62, 48, 85);
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] .progression-section-heading .progression-eyebrow{
+    color: #d8b4fe;
+}
+
+body.dark-mode .ascendra-page[data-route="achievements"] :is(a, button):focus-visible{
+    outline-color: #facc15;
+    box-shadow: 0 0 0 5px var(--dark-surface);
+}
+
+@media screen and (max-width: 650px){
+    .ascendra-page[data-route="achievements"] .top-bar{
+        min-height: calc(66px + env(safe-area-inset-top));
+        padding: 10px 14px;
+        padding-top: calc(10px + env(safe-area-inset-top));
+        padding-left: calc(72px + env(safe-area-inset-left));
+    }
+
+    .ascendra-page[data-route="achievements"] .top-bar h1{
+        font-size: 1.35rem;
+    }
+
+    .ascendra-page[data-route="achievements"] .progression-main{
+        width: calc(100% - 28px);
+        margin-top: 20px;
+    }
+
+    .ascendra-page[data-route="achievements"] .progression-summary{
+        grid-template-columns: 1fr;
+    }
+
+    .ascendra-page[data-route="achievements"] .progression-section-heading{
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ascendra-page[data-route="achievements"] .progression-section-heading a{
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.progression-toast{
+    max-width: min(420px, calc(100vw - 28px));
+    padding: 13px 18px;
+    position: fixed;
+    right: max(18px, env(safe-area-inset-right));
+    bottom: max(88px, calc(72px + env(safe-area-inset-bottom)));
+    z-index: 5000;
+    color: white;
+    background: linear-gradient(135deg, #5b21b6, #7c3aed);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 15px;
+    box-shadow: 0 14px 34px rgba(45, 24, 82, 0.32);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-weight: 700;
+}
+
+.progression-toast.show{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body.dark-mode .progression-toast{
+    color: #f8fafc;
+    background: linear-gradient(135deg, #6d28d9, #9333ea);
+    border-color: var(--dark-border);
+}
+
+@media (prefers-reduced-motion: reduce){
+    .progression-toast,
+    .ascendra-page[data-route="stats"] [data-xp-progress-fill],
+    .ascendra-page[data-route="achievements"] [data-xp-progress-fill]{
+        transition: none !important;
+    }
+}
 
 /* ===== PROFILE ===== */
 .ascendra-page[data-route="profile"] *{
@@ -4199,7 +4637,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     margin: 25px 0;
 
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 18px;
 }
 
@@ -4231,6 +4669,16 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 .ascendra-page[data-route="profile"] .stat-card p{
     margin: 5px 0 0;
     color: rgb(95, 104, 130);
+}
+
+.ascendra-page[data-route="profile"] .profile-stat-link{
+    color: inherit;
+    text-decoration: none;
+}
+
+.ascendra-page[data-route="profile"] .profile-stat-link:focus-visible{
+    outline: 3px solid var(--accent, rgb(127, 0, 255));
+    outline-offset: 3px;
 }
 
 .ascendra-page[data-route="profile"] .edit-profile-card{
@@ -4394,13 +4842,28 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     }
 
     .ascendra-page[data-route="profile"] .stats-container{
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ascendra-page[data-route="profile"] .stats-container .stat-card:last-child:nth-child(odd){
+        grid-column: 1 / -1;
     }
 
     .ascendra-page[data-route="profile"] .edit-profile-card{
         padding: 24px 18px;
     }
 }
+
+@media screen and (min-width: 651px) and (max-width: 850px){
+    .ascendra-page[data-route="profile"] .stats-container{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ascendra-page[data-route="profile"] .stats-container .stat-card:last-child:nth-child(odd){
+        grid-column: 1 / -1;
+    }
+}
+
 .ascendra-page[data-route="profile"] #logout-button{
     width: 100%;
     padding: 15px 20px;
@@ -4573,6 +5036,80 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
     line-height: 1.55;
 }
 
+.ascendra-page[data-route="minitools"] .mini-tools-progress{
+    width: min(1080px, 100%);
+    margin: 28px auto 0;
+    padding: 20px 22px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 20px;
+    align-items: center;
+    color: #2f2938;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(91, 33, 182, 0.12);
+    border-radius: 22px;
+    box-shadow: 0 12px 32px rgba(55, 32, 93, 0.1);
+    text-align: left;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-progress h2{
+    margin: 0 0 6px;
+    color: var(--accent, #7b2cff);
+    font-size: 1.3rem;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-progress p{
+    margin: 0;
+    color: #625b70;
+    line-height: 1.45;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-totals{
+    margin: 0;
+    display: flex;
+    gap: 10px;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-totals > div{
+    min-width: 112px;
+    padding: 10px 14px;
+    background: #f4efff;
+    border: 1px solid rgba(109, 40, 217, 0.13);
+    border-radius: 14px;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-totals dt{
+    color: #625b70;
+    font-size: 0.78rem;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-totals dd{
+    margin: 3px 0 0;
+    color: var(--accent, #7b2cff);
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-achievement-link{
+    min-height: 46px;
+    padding: 11px 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: white;
+    background: var(--accent, #7b2cff);
+    border-radius: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ascendra-page[data-route="minitools"] .mini-tools-achievement-link:focus-visible{
+    outline: 3px solid #4c1d95;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px white;
+}
+
 .ascendra-page[data-route="minitools"] .mini-tools-grid{
     width: min(1080px, 100%);
     margin: 32px auto 0;
@@ -4674,6 +5211,32 @@ body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-grid .card{
     border-color: var(--dark-border) !important;
 }
 
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-progress{
+    color: var(--dark-text) !important;
+    background: var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-progress p,
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-totals dt{
+    color: var(--dark-muted) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-totals > div{
+    background: var(--dark-surface-raised) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-progress h2,
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-totals dd{
+    color: #d8b4fe !important;
+}
+
+body.dark-mode .ascendra-page[data-route="minitools"] .mini-tools-achievement-link:focus-visible{
+    outline-color: #facc15;
+    box-shadow: 0 0 0 5px var(--dark-surface);
+}
+
 body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-result){
     color: #d8b4fe !important;
 }
@@ -4684,6 +5247,25 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
             calc(74px + env(safe-area-inset-top))
             max(14px, env(safe-area-inset-right))
             calc(48px + env(safe-area-inset-bottom)) !important;
+    }
+
+    .ascendra-page[data-route="minitools"] .mini-tools-progress{
+        padding: 18px;
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .ascendra-page[data-route="minitools"] .mini-tools-totals{
+        width: 100%;
+    }
+
+    .ascendra-page[data-route="minitools"] .mini-tools-totals > div{
+        min-width: 0;
+        flex: 1;
+    }
+
+    .ascendra-page[data-route="minitools"] .mini-tools-achievement-link{
+        width: 100%;
     }
 
     .ascendra-page[data-route="minitools"] .mini-tools-grid{
@@ -6183,8 +6765,8 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
   flex-shrink:0;
   padding:8px 13px;
   border-radius:999px;
-  background:#fff3cd;
-  color:#795500;
+  background:#dcfce7;
+  color:#166534;
   font-size:14px;
   font-weight:700;
 }
@@ -6253,7 +6835,7 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
 }
 
 .roadmap-page .progress-fill{
-  width:87.5%;
+  width:100%;
   height:100%;
   border-radius:inherit;
   background:linear-gradient(90deg,#6d28d9,#a855f7);
@@ -6311,8 +6893,8 @@ body.dark-mode .roadmap-details{
 }
 
 body.dark-mode .roadmap-status{
-  background:#4a3517;
-  color:#fde68a;
+  background:#143d2a;
+  color:#86efac;
 }
 
 .ascendra-page[data-route="about"] .about-roadmap-link{
@@ -6605,8 +7187,11 @@ body.dark-mode .ascendra-page[data-route="stats"] :is(
   .stat-card p,
   #task-progress-message,
   #habit-progress-message,
+  [data-xp-message],
+  .xp-meta,
   .detail-row span,
   .achievement-box p,
+  #achievement-unlocked-date,
   .recent-task-date,
   .empty-message
 ),
@@ -6663,6 +7248,7 @@ body.dark-mode .ascendra-page[data-route="habits"] .habit-streak{
 body.dark-mode .ascendra-page[data-route="stats"] :is(
   .eyebrow,
   #task-progress-label,
+  .xp-total,
   .category-title i,
   .section-icon,
   .view-link
@@ -6682,6 +7268,13 @@ body.dark-mode .ascendra-page[data-route="profile"] :is(
   .input-wrapper i
 ){
   color:#a5b4fc!important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .achievement-card .view-link:focus-visible,
+body.dark-mode .ascendra-page[data-route="profile"] .profile-stat-link:focus-visible{
+  outline:3px solid #facc15!important;
+  outline-offset:3px;
+  box-shadow:0 0 0 5px var(--dark-surface);
 }
 
 body.dark-mode .ascendra-page[data-route="calendar"] th{

@@ -3,8 +3,18 @@ console.log("Ascendra loaded!")
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
+let progressionToastTimer = null;
 const PASSWORD_ITERATIONS = 600000;
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+const PROGRESSION_STORAGE_KEY = "ascendraProgression";
+const PROGRESSION_VERSION = 1;
+const XP_PER_LEVEL = 100;
+const XP_REWARDS = Object.freeze({
+    task: 10,
+    habit: 5,
+    miniTool: 10
+});
+const MINI_TOOL_IDS = Object.freeze(["coin", "dice", "random-number"]);
 const achievements = [
     {
         id: "firstTask",
@@ -12,6 +22,8 @@ const achievements = [
         description: "Complete your first task.",
         stat: "tasksCompleted",
         goal: 1,
+        icon: "\u2705",
+        category: "productivity",
         progress: 0,
         unlocked: false,
     },
@@ -21,6 +33,8 @@ const achievements = [
         description: "Complete 10 tasks.",
         stat: "tasksCompleted",
         goal: 10,
+        icon: "\u{1F3C6}",
+        category: "productivity",
         progress: 0,
         unlocked: false,
     },
@@ -30,6 +44,8 @@ const achievements = [
         description: "Complete your first habit.",
         stat: "habitsCompleted",
         goal: 1,
+        icon: "\u{1F331}",
+        category: "habits",
         progress: 0,
         unlocked: false,
     },
@@ -39,6 +55,52 @@ const achievements = [
         description: "Complete a seven-day streak with no missed tasks or habits.",
         stat: "noZeroDaysStreak",
         goal: 7,
+        icon: "\u{1F525}",
+        category: "habits",
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "firstCoinFlip",
+        name: "Heads or Tails?",
+        description: "Use the Coin Flip tool for the first time.",
+        eventId: "minitool:coin",
+        goal: 1,
+        icon: "\u{1FA99}",
+        category: "miniTools",
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "firstDiceRoll",
+        name: "Roll With It",
+        description: "Use the Dice Roll tool for the first time.",
+        eventId: "minitool:dice",
+        goal: 1,
+        icon: "\u{1F3B2}",
+        category: "miniTools",
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "firstRandomNumber",
+        name: "By the Numbers",
+        description: "Generate your first valid random number.",
+        eventId: "minitool:random-number",
+        goal: 1,
+        icon: "\u{1F522}",
+        category: "miniTools",
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "miniToolsMaster",
+        name: "Mini Tools Master",
+        description: "Use every Mini Tool at least once.",
+        stat: "miniToolsUsed",
+        goal: 3,
+        icon: "\u{1F9F0}",
+        category: "miniTools",
         progress: 0,
         unlocked: false,
     },
@@ -49,18 +111,21 @@ const badges = [
         id: "genesis",
         name: "GENESIS",
         description: "Awarded to the first person in the world to use Ascendra.",
+        icon: "\u{1F30C}",
         obtained: false,
     },
     {
         id: "coFounder",
         name: "Co-Founder",
         description: "Awarded to someone who helped create and shape Ascendra from the beginning.",
+        icon: "\u{1F91D}",
         obtained: false,
     },
     {
         id: "founder",
         name: "Founder",
         description: "Awarded to the creator and lead developer of Ascendra.",
+        icon: "\u{1F451}",
         obtained: false,
     },
 ];
@@ -291,10 +356,726 @@ function readUserJson(key, fallback = null) {
 
 function getUserArray(key) {
     const value = readUserJson(key, []);
-    return Array.isArray(value)
+    const items = Array.isArray(value)
         ? value.filter(item => item && typeof item === "object" && !Array.isArray(item))
         : [];
+
+    if (key === "todos" || key === "habits") {
+        ensureStableActivityIds(
+            items,
+            key === "todos" ? "task" : "habit",
+            key
+        );
+    }
+
+    return items;
 }
+
+function isPlainRecord(value) {
+    return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function getRewardXp(eventId) {
+    const normalizedEventId = String(eventId || "");
+
+    if (/^task:[^:]{1,240}$/.test(normalizedEventId)) {
+        return XP_REWARDS.task;
+    }
+
+    const habitMatch = normalizedEventId.match(
+        /^habit:([^:]{1,240}):(\d{4}-\d{2}-\d{2})$/
+    );
+    if (habitMatch && parseLocalDateTime(habitMatch[2])) {
+        return XP_REWARDS.habit;
+    }
+
+    if (
+        MINI_TOOL_IDS.some(
+            toolId => normalizedEventId === `minitool:${toolId}`
+        )
+    ) {
+        return XP_REWARDS.miniTool;
+    }
+
+    return 0;
+}
+
+function normalizeStoredTimestamp(value) {
+    if (typeof value !== "string" || !Number.isFinite(Date.parse(value))) {
+        return null;
+    }
+    return new Date(value).toISOString();
+}
+
+function createEmptyProgressionState() {
+    return {
+        version: PROGRESSION_VERSION,
+        rewardedEvents: {},
+        achievements: {},
+        badges: {}
+    };
+}
+
+function normalizeProgressionState(value) {
+    const state = createEmptyProgressionState();
+    if (!isPlainRecord(value)) return state;
+
+    if (isPlainRecord(value.rewardedEvents)) {
+        Object.entries(value.rewardedEvents).forEach(([eventId, storedReward]) => {
+            const xp = getRewardXp(eventId);
+            if (!xp) return;
+
+            const awardedAt = normalizeStoredTimestamp(
+                isPlainRecord(storedReward)
+                    ? storedReward.awardedAt
+                    : storedReward
+            );
+
+            state.rewardedEvents[eventId] = {
+                xp,
+                awardedAt: awardedAt || new Date(0).toISOString()
+            };
+        });
+    }
+
+    const storedAchievements = isPlainRecord(value.achievements)
+        ? value.achievements
+        : {};
+
+    achievements.forEach(achievement => {
+        const stored = isPlainRecord(storedAchievements[achievement.id])
+            ? storedAchievements[achievement.id]
+            : {};
+
+        const progressValue = Number(stored.progress);
+        const progress = Number.isFinite(progressValue)
+            ? Math.min(achievement.goal, Math.max(0, progressValue))
+            : 0;
+        const unlockedAt = normalizeStoredTimestamp(stored.unlockedAt);
+
+        state.achievements[achievement.id] = {
+            progress,
+            unlocked: stored.unlocked === true || Boolean(unlockedAt),
+            unlockedAt
+        };
+    });
+
+    const storedBadges = isPlainRecord(value.badges)
+        ? value.badges
+        : {};
+
+    badges.forEach(badge => {
+        const stored = isPlainRecord(storedBadges[badge.id])
+            ? storedBadges[badge.id]
+            : {};
+
+        state.badges[badge.id] = {
+            obtained: stored.obtained === true,
+            obtainedAt: normalizeStoredTimestamp(stored.obtainedAt)
+        };
+    });
+
+    return state;
+}
+
+function loadProgressionState() {
+    return normalizeProgressionState(
+        readUserJson(PROGRESSION_STORAGE_KEY, null)
+    );
+}
+
+function saveProgressionState(state) {
+    try {
+        setUserItem(
+            PROGRESSION_STORAGE_KEY,
+            JSON.stringify(normalizeProgressionState(state))
+        );
+        return true;
+    } catch (error) {
+        console.warn("Ascendra could not save progression.", error);
+        return false;
+    }
+}
+
+function hashProgressIdentifier(value) {
+    let hash = 2166136261;
+    const textValue = String(value || "");
+
+    for (let index = 0; index < textValue.length; index++) {
+        hash ^= textValue.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+    }
+
+    return (hash >>> 0).toString(36);
+}
+
+function ensureStableActivityIds(items, type, storageKey) {
+    const usedIds = new Set();
+    const changedItems = [];
+    const migrationSeed = Date.now().toString(36);
+
+    items.forEach((item, index) => {
+        const existingId = item?.id ?? item?.createdAt;
+        const normalizedId = existingId === undefined || existingId === null
+            ? ""
+            : String(existingId);
+
+        if (normalizedId && !usedIds.has(normalizedId)) {
+            usedIds.add(normalizedId);
+            return;
+        }
+
+        const previousId = item.id;
+        const hadOwnId = Object.prototype.hasOwnProperty.call(item, "id");
+        const fingerprint = hashProgressIdentifier(JSON.stringify({
+            type,
+            index,
+            name: item?.name || "",
+            title: item?.title || item?.text || item?.task || "",
+            date: item?.date || "",
+            time: item?.time || ""
+        }));
+
+        let generatedId = `legacy-${type}-${migrationSeed}-${index}-${fingerprint}`;
+        let suffix = 1;
+        while (usedIds.has(generatedId)) {
+            generatedId =
+                `legacy-${type}-${migrationSeed}-${index}-${fingerprint}-${suffix}`;
+            suffix++;
+        }
+
+        item.id = generatedId;
+        usedIds.add(generatedId);
+        changedItems.push({ item, previousId, hadOwnId });
+    });
+
+    if (changedItems.length === 0) return true;
+
+    try {
+        setUserItem(storageKey, JSON.stringify(items));
+        return true;
+    } catch (error) {
+        changedItems.forEach(({ item, previousId, hadOwnId }) => {
+            if (hadOwnId) {
+                item.id = previousId;
+            } else {
+                delete item.id;
+            }
+        });
+        console.warn(`Ascendra could not migrate legacy ${storageKey}.`, error);
+        return false;
+    }
+}
+
+function getActivityIdentifier(item) {
+    const storedId = item?.id ?? item?.createdAt;
+    if (storedId !== undefined && storedId !== null && String(storedId) !== "") {
+        return encodeURIComponent(String(storedId));
+    }
+    return null;
+}
+
+function grantProgressReward(state, eventId, awardedAt = new Date()) {
+    if (!isPlainRecord(state.rewardedEvents)) {
+        state.rewardedEvents = {};
+    }
+
+    if (Object.prototype.hasOwnProperty.call(state.rewardedEvents, eventId)) {
+        return false;
+    }
+
+    const xp = getRewardXp(eventId);
+    if (!xp) return false;
+
+    state.rewardedEvents[eventId] = {
+        xp,
+        awardedAt: awardedAt.toISOString()
+    };
+
+    return true;
+}
+
+function addExistingActivityRewards(state) {
+    let xpAwarded = 0;
+    const todos = getUserArray("todos");
+    const habits = getUserArray("habits");
+
+    todos.forEach(todo => {
+        if (!isTodoCompleted(todo)) return;
+
+        const taskId = getActivityIdentifier(todo);
+        if (!taskId) return;
+        const eventId = `task:${taskId}`;
+
+        if (grantProgressReward(state, eventId)) {
+            xpAwarded += getRewardXp(eventId);
+        }
+    });
+
+    habits.forEach(habit => {
+        const habitId = getActivityIdentifier(habit);
+        if (!habitId) return;
+
+        getScheduledHabitHistoryEntries(habit).forEach(([dateKey, result]) => {
+            if (result !== true) return;
+
+            const eventId = `habit:${habitId}:${dateKey}`;
+            if (grantProgressReward(state, eventId)) {
+                xpAwarded += getRewardXp(eventId);
+            }
+        });
+    });
+
+    return xpAwarded;
+}
+
+function getProgressionStatistics(state) {
+    const eventIds = Object.keys(state.rewardedEvents || {});
+    const miniTools = new Set();
+    let tasksCompleted = 0;
+    let habitsCompleted = 0;
+
+    eventIds.forEach(eventId => {
+        if (eventId.startsWith("task:")) {
+            tasksCompleted++;
+        } else if (eventId.startsWith("habit:")) {
+            habitsCompleted++;
+        } else if (eventId.startsWith("minitool:")) {
+            miniTools.add(eventId);
+        }
+    });
+
+    return {
+        tasksCompleted,
+        habitsCompleted,
+        miniToolsUsed: miniTools.size,
+        noZeroDaysStreak: 0
+    };
+}
+
+function reconcileAchievementState(state) {
+    const statistics = getProgressionStatistics(state);
+    const newlyUnlocked = [];
+    let unlockOffset = 0;
+
+    achievements.forEach(achievement => {
+        const existing = isPlainRecord(state.achievements?.[achievement.id])
+            ? state.achievements[achievement.id]
+            : {};
+
+        let progress = 0;
+        if (achievement.id !== "noZeroDays") {
+            if (achievement.eventId) {
+                progress = Object.prototype.hasOwnProperty.call(
+                    state.rewardedEvents,
+                    achievement.eventId
+                ) ? 1 : 0;
+            } else {
+                progress = Number(statistics[achievement.stat] || 0);
+            }
+        }
+
+        progress = Math.min(
+            achievement.goal,
+            Math.max(0, Number.isFinite(progress) ? progress : 0)
+        );
+
+        if (achievement.id === "noZeroDays") {
+            state.achievements[achievement.id] = {
+                progress: 0,
+                unlocked: false,
+                unlockedAt: null
+            };
+            return;
+        }
+
+        let unlockedAt = normalizeStoredTimestamp(existing.unlockedAt);
+        const wasUnlocked = existing.unlocked === true || Boolean(unlockedAt);
+        const shouldUnlock = wasUnlocked || progress >= achievement.goal;
+
+        if (shouldUnlock && !unlockedAt) {
+            unlockedAt = new Date(Date.now() + unlockOffset).toISOString();
+            unlockOffset++;
+        }
+
+        if (!wasUnlocked && shouldUnlock) {
+            newlyUnlocked.push(achievement);
+        }
+
+        if (shouldUnlock) {
+            progress = achievement.goal;
+        }
+
+        state.achievements[achievement.id] = {
+            progress,
+            unlocked: shouldUnlock,
+            unlockedAt: shouldUnlock ? unlockedAt : null
+        };
+    });
+
+    return newlyUnlocked;
+}
+
+function reconcileBadgeState(state) {
+    const normalizedName = String(
+        localStorage.getItem("name") || ""
+    ).trim().toLowerCase();
+
+    badges.forEach(badge => {
+        const existing = isPlainRecord(state.badges?.[badge.id])
+            ? state.badges[badge.id]
+            : {};
+
+        let obtained = false;
+        if (badge.id === "genesis") {
+            obtained = existing.obtained === true;
+        } else if (badge.id === "founder") {
+            obtained = normalizedName === "declan";
+        } else if (badge.id === "coFounder") {
+            obtained = normalizedName === "jayden";
+        }
+
+        state.badges[badge.id] = {
+            obtained,
+            obtainedAt: obtained
+                ? normalizeStoredTimestamp(existing.obtainedAt) ||
+                    new Date().toISOString()
+                : null
+        };
+    });
+}
+
+function syncProgressionFromActivity() {
+    const state = loadProgressionState();
+    const xpAwarded = addExistingActivityRewards(state);
+    const newlyUnlocked = reconcileAchievementState(state);
+    reconcileBadgeState(state);
+    const saved = saveProgressionState(state);
+
+    if (!saved) {
+        return {
+            state: loadProgressionState(),
+            newlyUnlocked: [],
+            xpAwarded: 0,
+            saved: false
+        };
+    }
+
+    return {
+        state,
+        newlyUnlocked,
+        xpAwarded,
+        saved
+    };
+}
+
+function recordMiniToolUse(toolId) {
+    if (!MINI_TOOL_IDS.includes(toolId)) {
+        return {
+            state: loadProgressionState(),
+            newlyUnlocked: [],
+            xpAwarded: 0,
+            saved: false
+        };
+    }
+
+    const state = loadProgressionState();
+    addExistingActivityRewards(state);
+
+    const eventId = `minitool:${toolId}`;
+    const awarded = grantProgressReward(state, eventId);
+    const newlyUnlocked = reconcileAchievementState(state);
+    reconcileBadgeState(state);
+    const saved = saveProgressionState(state);
+
+    if (!saved) {
+        return {
+            state: loadProgressionState(),
+            newlyUnlocked: [],
+            xpAwarded: 0,
+            saved: false
+        };
+    }
+
+    return {
+        state,
+        newlyUnlocked: newlyUnlocked.filter(
+            achievement => achievement.category === "miniTools"
+        ),
+        xpAwarded: awarded && saved ? getRewardXp(eventId) : 0,
+        saved
+    };
+}
+
+function getTotalXp(state) {
+    return Object.keys(state.rewardedEvents || {}).reduce(
+        (total, eventId) => total + getRewardXp(eventId),
+        0
+    );
+}
+
+function getLevelProgress(totalXp) {
+    const safeXp = Math.max(0, Math.floor(Number(totalXp) || 0));
+    const level = Math.floor(safeXp / XP_PER_LEVEL) + 1;
+    const levelStartXp = (level - 1) * XP_PER_LEVEL;
+    const nextLevelXp = level * XP_PER_LEVEL;
+    const currentLevelXp = safeXp - levelStartXp;
+
+    return {
+        totalXp: safeXp,
+        level,
+        levelStartXp,
+        nextLevelXp,
+        currentLevelXp,
+        remainingXp: nextLevelXp - safeXp,
+        percent: Math.min(100, (currentLevelXp / XP_PER_LEVEL) * 100)
+    };
+}
+
+function getUnlockedAchievements(state) {
+    return achievements.filter(
+        achievement => state.achievements?.[achievement.id]?.unlocked === true
+    );
+}
+
+function getLatestUnlockedAchievement(state) {
+    return getUnlockedAchievements(state)
+        .map(achievement => ({
+            definition: achievement,
+            unlockedAt:
+                normalizeStoredTimestamp(
+                    state.achievements[achievement.id].unlockedAt
+                ) || new Date(0).toISOString()
+        }))
+        .sort((first, second) => {
+            return Date.parse(second.unlockedAt) - Date.parse(first.unlockedAt);
+        })[0] || null;
+}
+
+function setProgressText(selector, value) {
+    document.querySelectorAll(selector).forEach(element => {
+        element.textContent = String(value);
+    });
+}
+
+function renderProgressionSummary(state) {
+    const levelProgress = getLevelProgress(getTotalXp(state));
+    const unlockedCount = getUnlockedAchievements(state).length;
+    const miniToolAchievements = achievements.filter(
+        achievement => achievement.category === "miniTools"
+    );
+    const unlockedMiniTools = miniToolAchievements.filter(
+        achievement => state.achievements?.[achievement.id]?.unlocked === true
+    ).length;
+
+    setProgressText("[data-xp-total]", `${levelProgress.totalXp} XP`);
+    setProgressText("[data-xp-number]", levelProgress.totalXp);
+    setProgressText("[data-xp-level]", levelProgress.level);
+    setProgressText("[data-xp-level-start]", `${levelProgress.levelStartXp} XP`);
+    setProgressText("[data-xp-level-end]", `${levelProgress.nextLevelXp} XP`);
+    setProgressText(
+        "[data-xp-message]",
+        `${levelProgress.remainingXp} XP to Level ${levelProgress.level + 1}`
+    );
+    setProgressText("[data-achievement-count]", unlockedCount);
+    setProgressText(
+        "[data-mini-tools-achievement-count]",
+        `${unlockedMiniTools} / ${miniToolAchievements.length}`
+    );
+
+    document.querySelectorAll("[data-xp-progress-fill]").forEach(fill => {
+        fill.style.width = `${levelProgress.percent}%`;
+    });
+
+    document.querySelectorAll("[data-xp-progress]").forEach(progress => {
+        progress.setAttribute("aria-valuemin", "0");
+        progress.setAttribute("aria-valuemax", String(XP_PER_LEVEL));
+        progress.setAttribute(
+            "aria-valuenow",
+            String(levelProgress.currentLevelXp)
+        );
+        progress.setAttribute(
+            "aria-valuetext",
+            `${levelProgress.currentLevelXp} of ${XP_PER_LEVEL} XP toward Level ${levelProgress.level + 1}`
+        );
+    });
+}
+
+function renderLatestAchievement(state) {
+    const icon = document.getElementById("achievement-icon");
+    const title = document.getElementById("achievement-title");
+    const description = document.getElementById("achievement-description");
+    const date = document.getElementById("achievement-unlocked-date");
+
+    if (!icon || !title || !description) return;
+
+    const latest = getLatestUnlockedAchievement(state);
+    if (!latest) {
+        icon.textContent = "\u{1F331}";
+        title.textContent = "Getting Started";
+        description.textContent =
+            "Complete a task, habit, or Mini Tool to unlock your first achievement.";
+        if (date) date.textContent = "No achievements unlocked yet";
+        return;
+    }
+
+    icon.textContent = latest.definition.icon || "\u{1F3C6}";
+    title.textContent = latest.definition.name;
+    description.textContent = latest.definition.description;
+
+    if (date) {
+        date.textContent = `Unlocked ${new Date(
+            latest.unlockedAt
+        ).toLocaleDateString()}`;
+    }
+}
+
+function createAchievementCard(achievement, state) {
+    const achievementState = state.achievements[achievement.id] || {
+        progress: 0,
+        unlocked: false,
+        unlockedAt: null
+    };
+
+    const item = document.createElement("li");
+    item.className = "progress-achievement";
+    item.dataset.state = achievementState.unlocked ? "unlocked" : "locked";
+
+    const icon = document.createElement("div");
+    icon.className = "progress-achievement-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = achievement.icon || "\u{1F3C6}";
+
+    const content = document.createElement("div");
+    content.className = "progress-achievement-content";
+
+    const heading = document.createElement("h3");
+    heading.textContent = achievement.name;
+
+    const description = document.createElement("p");
+    description.textContent = achievement.description;
+
+    const status = document.createElement("strong");
+    status.className = "progress-achievement-status";
+    status.textContent = achievementState.unlocked
+        ? "Unlocked"
+        : `${achievementState.progress} / ${achievement.goal}`;
+
+    const progress = document.createElement("div");
+    progress.className = "achievement-progress-track";
+    progress.setAttribute("role", "progressbar");
+    progress.setAttribute(
+        "aria-label",
+        `${achievement.name} achievement progress`
+    );
+    progress.setAttribute("aria-valuemin", "0");
+    progress.setAttribute("aria-valuemax", String(achievement.goal));
+    progress.setAttribute(
+        "aria-valuenow",
+        String(achievementState.progress)
+    );
+
+    const fill = document.createElement("div");
+    fill.style.width =
+        `${Math.min(100, (achievementState.progress / achievement.goal) * 100)}%`;
+    progress.appendChild(fill);
+
+    content.append(heading, description, status, progress);
+
+    if (achievementState.unlockedAt) {
+        const unlockedDate = document.createElement("span");
+        unlockedDate.className = "progress-achievement-date";
+        unlockedDate.textContent =
+            `Unlocked ${new Date(
+                achievementState.unlockedAt
+            ).toLocaleDateString()}`;
+        content.appendChild(unlockedDate);
+    }
+
+    item.append(icon, content);
+    return item;
+}
+
+function renderAchievementCollection(state) {
+    const container = document.getElementById("achievement-list");
+    if (!container) return;
+
+    const fragment = document.createDocumentFragment();
+    achievements.forEach(achievement => {
+        fragment.appendChild(createAchievementCard(achievement, state));
+    });
+    container.replaceChildren(fragment);
+}
+
+function renderBadgeCollection(state) {
+    const container = document.getElementById("badge-list");
+    if (!container) return;
+
+    const fragment = document.createDocumentFragment();
+
+    badges.forEach(badge => {
+        const badgeState = state.badges[badge.id] || {
+            obtained: false,
+            obtainedAt: null
+        };
+        const item = document.createElement("li");
+        item.className = "progress-badge";
+        item.dataset.state = badgeState.obtained ? "obtained" : "locked";
+
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = badge.icon || "\u{1F396}\uFE0F";
+
+        const content = document.createElement("div");
+        const heading = document.createElement("h3");
+        heading.textContent = badge.name;
+        const description = document.createElement("p");
+        description.textContent = badge.description;
+        const status = document.createElement("strong");
+        status.textContent = badgeState.obtained ? "Earned" : "Locked";
+
+        content.append(heading, description, status);
+        item.append(icon, content);
+        fragment.appendChild(item);
+    });
+
+    container.replaceChildren(fragment);
+}
+
+function announceProgressionReward(progression) {
+    if (!progression?.saved || progression.xpAwarded <= 0) return;
+
+    let toast = document.getElementById("progression-toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "progression-toast";
+        toast.className = "progression-toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        toast.setAttribute("aria-atomic", "true");
+        document.body.appendChild(toast);
+    }
+
+    const unlockedNames = progression.newlyUnlocked
+        .map(achievement => achievement.name)
+        .join(" and ");
+    const unlockText = unlockedNames
+        ? ` \u2022 Unlocked: ${unlockedNames}`
+        : "";
+
+    toast.textContent = `+${progression.xpAwarded} XP${unlockText}`;
+    toast.classList.add("show");
+
+    clearTimeout(progressionToastTimer);
+    progressionToastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+        toast.remove();
+    }, 4500);
+}
+
+window.syncProgressionFromActivity = syncProgressionFromActivity;
+window.getLevelProgress = getLevelProgress;
+window.getTotalXp = getTotalXp;
 
 function isTodoCompleted(todo) {
     return (
@@ -402,16 +1183,18 @@ function moveUserDataNamespace(oldUsername, newUsername) {
 
 function deleteCurrentAccountData() {
     const username = getLoggedInUsername();
-    if (!username) return;
-
-    const dataPrefix = `ascendra:data:${username}:`;
+    const dataPrefix = username
+        ? `ascendra:data:${username}:`
+        : "ascendra:guest:";
     const keysToDelete = [];
     for (let index = 0; index < localStorage.length; index++) {
         const key = localStorage.key(index);
         if (key?.startsWith(dataPrefix)) keysToDelete.push(key);
     }
     keysToDelete.forEach(key => localStorage.removeItem(key));
-    localStorage.removeItem(accountStorageKey(username));
+    if (username) {
+        localStorage.removeItem(accountStorageKey(username));
+    }
 
     ["name", "surname", "username", "loggedInUser", "password"].forEach(key => {
         localStorage.removeItem(key);
@@ -1158,6 +1941,7 @@ return () => clearInterval(starInterval);
 
     function saveTodos() {
         setUserItem("todos", JSON.stringify(todos));
+        announceProgressionReward(syncProgressionFromActivity());
     }
 
     function formatPriority(priority) {
@@ -1375,6 +2159,7 @@ return () => clearInterval(starInterval);
 
     function saveTodos() {
         setUserItem("todos", JSON.stringify(todos));
+        announceProgressionReward(syncProgressionFromActivity());
     }
 
     function updateDueDateFields() {
@@ -1673,6 +2458,7 @@ return () => clearInterval(starInterval);
 
     function saveHabits() {
         setUserItem("habits", JSON.stringify(habits));
+        announceProgressionReward(syncProgressionFromActivity());
     }
 
     function getToday() {
@@ -2944,102 +3730,24 @@ return () => {
             uncheckedToday;
     }
 
-    function updateAchievements(
-        completedTasks,
-        successfulHabitDays
+    function updateAchievements() {
+        const progression = syncProgressionFromActivity();
+        renderProgressionSummary(progression.state);
+        renderLatestAchievement(progression.state);
+        return progression.state;
+    }
+
+    function displayLatestAchievement(
+        state = loadProgressionState()
     ) {
-        const statistics = {
-            tasksCompleted: completedTasks,
-            habitsCompleted: successfulHabitDays,
-            noZeroDaysStreak: 0
-        };
-
-        achievements.forEach(function (achievement) {
-            if (achievement.id === "noZeroDays") {
-                achievement.progress = 0;
-                achievement.unlocked = false;
-                return;
-            }
-
-            const rawStatValue =
-                Number(statistics[achievement.stat] || 0);
-
-            const statValue =
-                Number.isFinite(rawStatValue)
-                    ? Math.max(0, rawStatValue)
-                    : 0;
-
-            achievement.progress = Math.min(
-                statValue,
-                achievement.goal
-            );
-
-            achievement.unlocked =
-                statValue >= achievement.goal;
-        });
-
-        localStorage.setItem(
-            "achievements",
-            JSON.stringify(achievements)
-        );
-
-        displayLatestAchievement();
+        renderLatestAchievement(state);
     }
 
-    function displayLatestAchievement() {
-        const unlockedAchievements =
-            achievements.filter(function (achievement) {
-                return achievement.unlocked;
-            });
-
-        if (unlockedAchievements.length === 0) {
-            achievementIcon.textContent = "🌱";
-
-            achievementTitle.textContent =
-                "Getting Started";
-
-            achievementDescription.textContent =
-                "Complete a task or habit to unlock your first achievement.";
-
-            return;
-        }
-
-        const latestAchievement =
-            unlockedAchievements[
-                unlockedAchievements.length - 1
-            ];
-
-        achievementIcon.textContent = "🏆";
-
-        achievementTitle.textContent =
-            latestAchievement.name;
-
-        achievementDescription.textContent =
-            latestAchievement.description;
-    }
-
-    function updateBadges() {
-        const normalizedName =
-            String(
-                localStorage.getItem("name") || ""
-            ).trim().toLowerCase();
-
-        badges.forEach(function (badge) {
-            if (badge.id === "genesis") {
-                badge.obtained = false;
-            } else if (badge.id === "founder") {
-                badge.obtained =
-                    normalizedName === "declan";
-            } else if (badge.id === "coFounder") {
-                badge.obtained =
-                    normalizedName === "jayden";
-            }
-        });
-
-        localStorage.setItem(
-            "badges",
-            JSON.stringify(badges)
-        );
+    function updateBadges(state = loadProgressionState()) {
+        reconcileBadgeState(state);
+        saveProgressionState(state);
+        renderBadgeCollection(state);
+        return state;
     }
 
     function formatDate(dateString) {
@@ -3188,12 +3896,7 @@ return () => {
 
         updateTodayHabitStatistics(habits);
 
-        updateAchievements(
-            completedTasks,
-            successfulHabitDays
-        );
-
-        updateBadges();
+        updateAchievements();
 
         displayRecentTasks(todos);
     }
@@ -3215,6 +3918,12 @@ window.updateTaskProgressMessage = updateTaskProgressMessage;
 window.updateTaskStatistics = updateTaskStatistics;
 window.updateTodayHabitStatistics = updateTodayHabitStatistics;
 window.updateWelcomeMessage = updateWelcomeMessage;
+},
+"achievements": function init_achievements(){
+    const progression = syncProgressionFromActivity();
+    renderProgressionSummary(progression.state);
+    renderAchievementCollection(progression.state);
+    renderBadgeCollection(progression.state);
 },
 "profile": function init_profile(){
 
@@ -3279,22 +3988,17 @@ window.updateWelcomeMessage = updateWelcomeMessage;
         const todos = getUserArray("todos");
         const habits = getUserArray("habits");
         const completedTasks = todos.filter(isTodoCompleted).length;
-        const successfulHabitDays = habits.reduce((total, habit) => {
-            const successfulDays = getScheduledHabitHistoryEntries(habit)
-                .map(([, result]) => result)
-                .filter(result => result === true).length;
-            return total + successfulDays;
-        }, 0);
         const longestCurrentStreak = habits.reduce((longest, habit) => {
             return Math.max(longest, getHabitCurrentStreak(habit));
         }, 0);
-        const totalWins = completedTasks + successfulHabitDays;
-        const unlockedAchievements = [1, 10, 25, 50, 100]
-            .filter(threshold => totalWins >= threshold).length;
+        const progression = syncProgressionFromActivity();
 
         streakNumber.textContent = String(longestCurrentStreak);
         tasksNumber.textContent = String(completedTasks);
-        achievementsNumber.textContent = String(unlockedAchievements);
+        achievementsNumber.textContent = String(
+            getUnlockedAchievements(progression.state).length
+        );
+        renderProgressionSummary(progression.state);
 
         if (savedPicture) {
             profilePicture.src = savedPicture;
@@ -3409,6 +4113,8 @@ window.updateWelcomeMessage = updateWelcomeMessage;
             "ascendra-profile-bio",
             bio
         );
+        const progression = syncProgressionFromActivity();
+        renderProgressionSummary(progression.state);
 
         displayName.textContent =
             name + " " + surname;
@@ -3528,14 +4234,36 @@ const coinOutput = document.getElementById("coin-flip-output");
 const diceOutput = document.getElementById("dice-roll-output");
 const numberOutput = document.getElementById("random-number-output");
 
+const initialProgression = syncProgressionFromActivity();
+renderProgressionSummary(initialProgression.state);
+
+function addMiniToolReward(resultText, toolId) {
+    const reward = recordMiniToolUse(toolId);
+    renderProgressionSummary(reward.state);
+
+    if (!reward.xpAwarded) return resultText;
+
+    const unlockedNames = reward.newlyUnlocked
+        .map(achievement => achievement.name)
+        .join(" and ");
+    const unlockMessage = unlockedNames
+        ? ` Achievement unlocked \u2014 ${unlockedNames}`
+        : " First-use reward earned";
+
+    return `${resultText}${unlockMessage} (+${reward.xpAwarded} XP)`;
+}
+
 function flipCoin() {
-    coinOutput.textContent =
-        Math.random() < 0.5 ? "Heads!" : "Tails!";
+    const result = Math.random() < 0.5 ? "Heads!" : "Tails!";
+    coinOutput.textContent = addMiniToolReward(result, "coin");
 }
 
 function rollDie() {
     const result = Math.floor(Math.random() * 6) + 1;
-    diceOutput.textContent = "You rolled a " + result + ".";
+    diceOutput.textContent = addMiniToolReward(
+        "You rolled a " + result + ".",
+        "dice"
+    );
 }
 
 function generateRandomNumber() {
@@ -3576,8 +4304,10 @@ function generateRandomNumber() {
     const result =
         Math.floor(Math.random() * range) + minimum;
 
-    numberOutput.textContent =
-        "Your random number is " + result + ".";
+    numberOutput.textContent = addMiniToolReward(
+        "Your random number is " + result + ".",
+        "random-number"
+    );
 }
 
 flipButton.addEventListener("click", flipCoin);
@@ -3631,6 +4361,7 @@ const searchablePages = [
     { name: "To-Dos", route: "todos" },
     { name: "Profile", route: "profile" },
     { name: "Statistics", route: "stats" },
+    { name: "Achievements", route: "achievements" },
     { name: "Settings", route: "settings" },
     { name: "Roadmap", route: "roadmap" },
     { name: "Mini Tools", route: "minitools" }

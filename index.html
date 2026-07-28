@@ -681,6 +681,23 @@
                 Here is how your Ascendra journey is going.
             </p>
 </section>
+<section class="progress-card xp-card" aria-labelledby="stats-xp-heading">
+<div class="section-heading">
+<div>
+<p class="eyebrow">LEVEL PROGRESS</p>
+<h2 id="stats-xp-heading">Level <span data-xp-level>1</span></h2>
+</div>
+<strong class="xp-total" data-xp-total>0 XP</strong>
+</div>
+<div class="xp-meta" aria-hidden="true">
+<span data-xp-level-start>0 XP</span>
+<span data-xp-level-end>100 XP</span>
+</div>
+<div class="progress-track xp-progress-track" data-xp-progress role="progressbar" aria-labelledby="stats-xp-heading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 of 100 XP toward Level 2">
+<div data-xp-progress-fill></div>
+</div>
+<p data-xp-message>100 XP to Level 2</p>
+</section>
 <h2 class="category-title">
 <i class="fa-solid fa-list-check"></i>
             Task Statistics
@@ -845,10 +862,13 @@
 <p class="eyebrow">MOMENTUM</p>
 <h2>Latest Achievement</h2>
 </div>
-<i class="fa-solid fa-trophy section-icon"></i>
+<a class="view-link" href="#/achievements">
+                    View All
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+</a>
 </div>
 <div class="achievement-box">
-<div id="achievement-icon">🌱</div>
+<div aria-hidden="true" id="achievement-icon">🌱</div>
 <div>
 <h3 id="achievement-title">
                         Getting Started
@@ -856,6 +876,7 @@
 <p id="achievement-description">
                         Complete a task or habit check-in to begin.
                     </p>
+<span id="achievement-unlocked-date">No achievements unlocked yet</span>
 </div>
 </div>
 </section>
@@ -876,6 +897,69 @@
 
 
 
+</template>
+<template id="page-achievements">
+<header class="top-bar">
+<h1>Achievements</h1>
+<a aria-label="Open Statistics" class="icon-button" href="#/stats">
+<i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+</a>
+</header>
+<main class="progression-main">
+<section class="progression-hero" aria-labelledby="progression-title">
+<p class="progression-eyebrow">YOUR ASCENDRA JOURNEY</p>
+<h2 id="progression-title">Level <span data-xp-level>1</span></h2>
+<p>Complete meaningful actions, earn XP, and collect achievements as you build momentum.</p>
+<div class="progression-summary" aria-label="Progress summary">
+<article>
+<i class="fa-solid fa-bolt" aria-hidden="true"></i>
+<strong data-xp-total>0 XP</strong>
+<span>Total XP</span>
+</article>
+<article>
+<i class="fa-solid fa-trophy" aria-hidden="true"></i>
+<strong data-achievement-count>0</strong>
+<span>Unlocked</span>
+</article>
+<article>
+<i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i>
+<strong data-xp-level>1</strong>
+<span>Current Level</span>
+</article>
+</div>
+<div class="progression-xp-heading">
+<span data-xp-level-start>0 XP</span>
+<span data-xp-level-end>100 XP</span>
+</div>
+<div class="progression-xp-track" data-xp-progress role="progressbar" aria-label="XP toward the next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 of 100 XP toward Level 2">
+<div data-xp-progress-fill></div>
+</div>
+<p class="progression-xp-message" data-xp-message>100 XP to Level 2</p>
+</section>
+
+<section class="progression-section" aria-labelledby="achievement-list-heading">
+<div class="progression-section-heading">
+<div>
+<p class="progression-eyebrow">MILESTONES</p>
+<h2 id="achievement-list-heading">Achievements</h2>
+</div>
+<a href="#/stats">View Statistics <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+</div>
+<ul class="progress-achievement-grid" id="achievement-list"></ul>
+</section>
+
+<section class="progression-section" aria-labelledby="badge-list-heading">
+<div class="progression-section-heading">
+<div>
+<p class="progression-eyebrow">SPECIAL RECOGNITION</p>
+<h2 id="badge-list-heading">Badges</h2>
+</div>
+<a href="#/profile">View Profile <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+</div>
+<ul class="progress-badge-grid" id="badge-list"></ul>
+<p class="progression-note">Special badges are separate from achievements. GENESIS is awarded manually.</p>
+</section>
+</main>
 </template>
 <template id="page-profile">
 
@@ -912,10 +996,20 @@
 <h3 id="tasks-number">0</h3>
 <p>Tasks Done</p>
 </div>
-<div class="stat-card">
-<i class="fa-solid fa-trophy"></i>
-<h3 id="achievements-number">0</h3>
+<a class="stat-card profile-stat-link" href="#/achievements">
+<i aria-hidden="true" class="fa-solid fa-trophy"></i>
+<h3 data-achievement-count id="achievements-number">0</h3>
 <p>Achievements</p>
+</a>
+<div class="stat-card">
+<i class="fa-solid fa-bolt"></i>
+<h3 data-xp-number>0</h3>
+<p>Total XP</p>
+</div>
+<div class="stat-card">
+<i class="fa-solid fa-arrow-trend-up"></i>
+<h3 data-xp-level>1</h3>
+<p>Level</p>
 </div>
 </section>
 <section class="edit-profile-card">
@@ -969,7 +1063,7 @@
 <button class="options" id="time-capsule" onclick="navigate('comingsoon')">Time Capsule<br/><i class="fa-solid fa-hourglass-half"></i></button>
 <button class="options" id="soundscape" onclick="navigate('comingsoon')">Soundscape<br/><i class="fa-solid fa-music"></i></button>
 <button class="options" id="unwind" onclick="navigate('comingsoon')">Unwind<br/><i class="fa-solid fa-cloud-moon"></i></button>
-<button class="options" id="achievements" onclick="navigate('comingsoon')">Achievements<br/><i class="fa-solid fa-medal"></i></button>
+<button class="options" id="achievements" onclick="navigate('achievements')" type="button">Achievements<br/><i class="fa-solid fa-medal"></i></button>
 <button class="options" id="mini-tools" onclick="navigate('minitools')" type="button">Mini Tools<br/><i class="fa-solid fa-gamepad"></i></button>
 </div>
 <div class="navbar">
@@ -1418,28 +1512,28 @@
           <p class="roadmap-subtitle">Ascendra's first major update</p>
         </div>
 
-        <span class="roadmap-status">Under Development</span>
+        <span class="roadmap-status">Feature Complete</span>
       </div>
 
       <hr>
 
       <div class="roadmap-progress">
         <h3>Development Progress</h3>
-        <p><strong>7 of 8 major features completed</strong></p>
+        <p><strong>8 of 8 major features completed</strong></p>
 
-        <div aria-label="Genesis development progress: 7 of 8 major features completed" aria-valuemax="8" aria-valuemin="0" aria-valuenow="7" class="progress-bar" role="progressbar">
+        <div aria-label="Genesis development progress: 8 of 8 major features completed" aria-valuemax="8" aria-valuemin="0" aria-valuenow="8" class="progress-bar" role="progressbar">
           <div class="progress-fill"></div>
         </div>
 
-        <p class="progress-text">1 major feature remaining</p>
+        <p class="progress-text">All major features completed</p>
       </div>
 
       <div class="roadmap-details">
-        <h3>What to expect</h3>
+        <h3>What's included</h3>
 
         <p>
           Update Genesis is Ascendra's first major update, focused on turning
-          the app into a more connected progress system. It will introduce
+          the app into a more connected progress system. It brings together
           habit streaks, expanded statistics, XP and levels, achievements,
           improved alerts, profile upgrades, and overall polish.
         </p>
@@ -1462,6 +1556,27 @@
 <template id="page-minitools">
   <h1>Mini Tools</h1>
   <strong>Quick little tools for decisions, randomness, and everyday tasks.</strong>
+
+  <section class="mini-tools-progress card" aria-labelledby="mini-tools-progress-title">
+    <div>
+      <h2 id="mini-tools-progress-title">Mini Tools Rewards</h2>
+      <p>Use each tool successfully once to earn XP and achievements.</p>
+    </div>
+    <dl class="mini-tools-totals">
+      <div>
+        <dt>Overall XP</dt>
+        <dd data-xp-total>0 XP</dd>
+      </div>
+      <div>
+        <dt>Tool achievements</dt>
+        <dd data-mini-tools-achievement-count>0 / 4</dd>
+      </div>
+    </dl>
+    <a class="mini-tools-achievement-link" href="#/achievements">
+      View Achievements
+      <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+    </a>
+  </section>
 
   <section class="mini-tools-grid">
     <!-- Coin Flip -->
