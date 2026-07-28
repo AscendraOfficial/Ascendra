@@ -955,7 +955,7 @@ body::before{content:"";position:fixed;inset:0;background-image:url("background.
 
 .ascendra-page[data-route="alerts"] .navbar .current{
     background-color: rgb(37, 99, 235);
-    color: white;
+    color: black;
     border-radius: 25px;
 }
 
