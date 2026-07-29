@@ -33,7 +33,8 @@ const LEGACY_JOURNAL_PREFIX = "journal-";
 const XP_REWARDS = Object.freeze({
     task: 10,
     habit: 5,
-    miniTool: 10
+    miniTool: 10,
+    zenSession: 10
 });
 const MINI_TOOL_IDS = Object.freeze(["coin", "dice", "random-number"]);
 const achievements = [
@@ -122,6 +123,28 @@ const achievements = [
         goal: 3,
         icon: "\u{1F9F0}",
         category: "miniTools",
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "momentOfZen",
+        name: "A Moment of Zen",
+        description: "Complete your first Zen Timer session.",
+        stat: "zenSessionsCompleted",
+        goal: 1,
+        icon: "\u{1F9D8}",
+        category: "wellbeing",
+        progress: 0,
+        unlocked: false,
+    },
+    {
+        id: "zenRegular",
+        name: "Zen Regular",
+        description: "Complete 5 Zen Timer sessions.",
+        stat: "zenSessionsCompleted",
+        goal: 5,
+        icon: "\u{1F33F}",
+        category: "wellbeing",
         progress: 0,
         unlocked: false,
     },
@@ -697,6 +720,10 @@ function getRewardXp(eventId) {
         return XP_REWARDS.miniTool;
     }
 
+    if (/^unwind:zen:\d{1,9}$/.test(normalizedEventId)) {
+        return XP_REWARDS.zenSession;
+    }
+
     return 0;
 }
 
@@ -939,6 +966,7 @@ function getProgressionStatistics(state) {
     const miniTools = new Set();
     let tasksCompleted = 0;
     let habitsCompleted = 0;
+    let zenSessionsCompleted = 0;
 
     eventIds.forEach(eventId => {
         if (eventId.startsWith("task:")) {
@@ -947,6 +975,8 @@ function getProgressionStatistics(state) {
             habitsCompleted++;
         } else if (eventId.startsWith("minitool:")) {
             miniTools.add(eventId);
+        } else if (eventId.startsWith("unwind:zen:")) {
+            zenSessionsCompleted++;
         }
     });
 
@@ -954,6 +984,7 @@ function getProgressionStatistics(state) {
         tasksCompleted,
         habitsCompleted,
         miniToolsUsed: miniTools.size,
+        zenSessionsCompleted,
         noZeroDaysStreak: 0
     };
 }
@@ -1108,6 +1139,44 @@ function recordMiniToolUse(toolId) {
             achievement => achievement.category === "miniTools"
         ),
         xpAwarded: awarded && saved ? getRewardXp(eventId) : 0,
+        saved
+    };
+}
+
+function recordZenSession() {
+    const state = loadProgressionState();
+    addExistingActivityRewards(state);
+
+    const completedSessionIds = Object.keys(state.rewardedEvents || {})
+        .filter(eventId => /^unwind:zen:\d{1,9}$/.test(eventId));
+    let sessionNumber = completedSessionIds.length + 1;
+    let eventId = `unwind:zen:${sessionNumber}`;
+
+    while (Object.prototype.hasOwnProperty.call(state.rewardedEvents, eventId)) {
+        sessionNumber++;
+        eventId = `unwind:zen:${sessionNumber}`;
+    }
+
+    const awarded = grantProgressReward(state, eventId);
+    const newlyUnlocked = reconcileAchievementState(state);
+    reconcileBadgeState(state);
+    const saved = saveProgressionState(state);
+
+    if (!saved) {
+        return {
+            state: loadProgressionState(),
+            newlyUnlocked: [],
+            xpAwarded: 0,
+            saved: false
+        };
+    }
+
+    return {
+        state,
+        newlyUnlocked: newlyUnlocked.filter(
+            achievement => achievement.category === "wellbeing"
+        ),
+        xpAwarded: awarded ? getRewardXp(eventId) : 0,
         saved
     };
 }
@@ -4727,19 +4796,147 @@ return () => {
 },
 
 "unwind": function init_unwind() {
-    const start = document.getElementById("start");
-    let elapsed = document.getElementById("elapsed");
-    const reset = document.getElementById("reset");
-    const pause = document.getElementById("pause");
+    const startButton = document.getElementById("start");
+    const elapsedInput = document.getElementById("elapsed");
+    const resetButton = document.getElementById("reset");
+    const pauseButton = document.getElementById("pause");
     const timerDisplay = document.getElementById("timer-display");
+    const timerCard = document.getElementById("display-card");
+    const timerStatus = document.getElementById("timer-status");
+    let timerId = null;
+    let remainingSeconds = 5 * 60;
+    let sessionInProgress = false;
 
-    elapsed = elasped * 60000;
+    function readDuration() {
+        const minutes = Number(elapsedInput.value);
+        if (!Number.isInteger(minutes) || minutes < 1 || minutes > 120) {
+            return null;
+        }
+        return minutes * 60;
+    }
 
-    start.addEventListener("click", () => {
-        setInterval(() => {
+    function formatTime(seconds) {
+        const safeSeconds = Math.max(0, Math.floor(seconds));
+        const minutes = Math.floor(safeSeconds / 60);
+        const remainder = safeSeconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+    }
 
-        }, elapsed);
-    })
+    function updateDisplay() {
+        timerDisplay.textContent = formatTime(remainingSeconds);
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        timerCard.setAttribute(
+            "aria-label",
+            `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ` +
+            `${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`
+        );
+    }
+
+    function setRunning(running) {
+        startButton.disabled = running;
+        pauseButton.disabled = !running;
+        elapsedInput.disabled = sessionInProgress;
+        timerCard.classList.toggle("is-running", running);
+    }
+
+    function clearTimer() {
+        if (timerId !== null) {
+            clearInterval(timerId);
+            timerId = null;
+        }
+    }
+
+    function finishSession() {
+        clearTimer();
+        remainingSeconds = 0;
+        sessionInProgress = false;
+        setRunning(false);
+        updateDisplay();
+
+        const reward = recordZenSession();
+        announceProgressionReward(reward);
+
+        if (!reward.saved) {
+            timerStatus.textContent =
+                "Session complete. Your progress could not be saved.";
+            return;
+        }
+
+        const unlockedNames = reward.newlyUnlocked
+            .map(achievement => achievement.name)
+            .join(" and ");
+        timerStatus.textContent = unlockedNames
+            ? `Session complete! Achievement unlocked: ${unlockedNames}.`
+            : `Session complete! You earned ${reward.xpAwarded} XP.`;
+    }
+
+    function tick() {
+        remainingSeconds--;
+        updateDisplay();
+        if (remainingSeconds <= 0) finishSession();
+    }
+
+    function startTimer() {
+        if (timerId !== null) return;
+
+        if (!sessionInProgress || remainingSeconds <= 0) {
+            const duration = readDuration();
+            if (duration === null) {
+                timerStatus.textContent =
+                    "Enter a whole number from 1 to 120 minutes.";
+                elapsedInput.focus();
+                return;
+            }
+            remainingSeconds = duration;
+            sessionInProgress = true;
+            updateDisplay();
+        }
+
+        timerStatus.textContent = "Your quiet time has started.";
+        timerId = setInterval(tick, 1000);
+        setRunning(true);
+    }
+
+    function pauseTimer() {
+        if (timerId === null) return;
+        clearTimer();
+        setRunning(false);
+        timerStatus.textContent = "Paused. Start again when you are ready.";
+    }
+
+    function resetTimer() {
+        clearTimer();
+        sessionInProgress = false;
+        remainingSeconds = readDuration() || 5 * 60;
+        setRunning(false);
+        updateDisplay();
+        timerStatus.textContent = "Ready when you are.";
+    }
+
+    function handleDurationInput() {
+        if (sessionInProgress) return;
+        const duration = readDuration();
+        if (duration !== null) {
+            remainingSeconds = duration;
+            updateDisplay();
+            timerStatus.textContent = "Ready when you are.";
+        }
+    }
+
+    startButton.addEventListener("click", startTimer);
+    pauseButton.addEventListener("click", pauseTimer);
+    resetButton.addEventListener("click", resetTimer);
+    elapsedInput.addEventListener("input", handleDurationInput);
+    updateDisplay();
+
+    return () => {
+        clearTimer();
+        startButton.removeEventListener("click", startTimer);
+        pauseButton.removeEventListener("click", pauseTimer);
+        resetButton.removeEventListener("click", resetTimer);
+        elapsedInput.removeEventListener("input", handleDurationInput);
+    };
 },
 "profile": function init_profile(){
 

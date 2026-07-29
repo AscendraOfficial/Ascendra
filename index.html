@@ -1671,18 +1671,79 @@
 </template>
 
 <template id="page-unwind">
-    <!-- Zen timer -->
-    <article class="card">
-        <h2>Zen timer <i class="fa-solid fa-spa"></i></h2>
-        <input min="1" value="5" type="number" id="elapsed">
-        <button id="start">Start <i class="fa-solid fa-play"></i></button>
-        <button id="reset">Reset <i class="fa-solid fa-repeat"></i></button>
-        <button id="pause">Pause <i class="fa-solid fa-pause"></i></button>
+    <main class="unwind-page">
+        <header class="unwind-heading">
+            <span class="unwind-eyebrow">
+                <i class="fa-solid fa-cloud-moon" aria-hidden="true"></i>
+                Slow down
+            </span>
+            <h1>Unwind</h1>
+            <p>Take a quiet moment to breathe, reset, and recharge.</p>
+        </header>
 
-        <div id="display-card">
-            <p><strong id="timer-display"></strong></p>
-        </div>
-    </article>
+        <section class="unwind-timer card" aria-labelledby="zen-timer-title">
+            <div class="unwind-icon" aria-hidden="true">
+                <i class="fa-solid fa-spa"></i>
+            </div>
+
+            <h2 id="zen-timer-title">Zen Timer</h2>
+            <p class="unwind-description">
+                Choose how many minutes you need. Completing a session earns
+                XP and counts toward Unwind achievements.
+            </p>
+
+            <label for="elapsed">Session length</label>
+            <div class="unwind-duration">
+                <input
+                    aria-describedby="elapsed-hint"
+                    id="elapsed"
+                    inputmode="numeric"
+                    max="120"
+                    min="1"
+                    step="1"
+                    type="number"
+                    value="5"
+                >
+                <span>minutes</span>
+            </div>
+            <p class="unwind-hint" id="elapsed-hint">
+                Choose from 1 to 120 minutes.
+            </p>
+
+            <div
+                aria-label="5 minutes remaining"
+                class="unwind-display"
+                id="display-card"
+                role="timer"
+            >
+                <span>Time remaining</span>
+                <strong id="timer-display">05:00</strong>
+                <p aria-live="polite" id="timer-status" role="status">
+                    Ready when you are.
+                </p>
+            </div>
+
+            <div class="unwind-actions">
+                <button id="start" type="button">
+                    <i class="fa-solid fa-play" aria-hidden="true"></i>
+                    Start
+                </button>
+                <button disabled id="pause" type="button">
+                    <i class="fa-solid fa-pause" aria-hidden="true"></i>
+                    Pause
+                </button>
+                <button class="secondary" id="reset" type="button">
+                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
+                    Reset
+                </button>
+            </div>
+
+            <a class="unwind-achievements-link" href="#/achievements">
+                View Unwind achievements
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+        </section>
+    </main>
 </template>
 
   <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

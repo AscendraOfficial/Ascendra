@@ -5306,6 +5306,312 @@ body.dark-mode .ascendra-page[data-route="minitools"] .card :is(h2, h2 i, .tool-
     }
 }
 
+/* ===== UNWIND ===== */
+.ascendra-page[data-route="unwind"]{
+    min-height: 100dvh;
+    padding:
+        calc(74px + env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        calc(52px + env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
+    color: #292333;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-page{
+    width: min(720px, 100%);
+    margin: 0 auto;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-heading{
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-eyebrow{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #6d28d9;
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-heading h1{
+    margin: 8px 0 6px;
+    color: #5b21b6;
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    line-height: 1;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-heading p{
+    margin: 0;
+    color: #625b70;
+    font-size: clamp(1rem, 2.5vw, 1.12rem);
+    line-height: 1.55;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-timer{
+    padding: clamp(24px, 5vw, 42px);
+    color: #292333;
+    background:
+        radial-gradient(circle at top, rgba(221, 214, 254, 0.72), transparent 45%),
+        rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(109, 40, 217, 0.16);
+    border-radius: 28px;
+    box-shadow: 0 18px 48px rgba(55, 32, 93, 0.14);
+    text-align: center;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-icon{
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 14px;
+    display: grid;
+    place-items: center;
+    color: #6d28d9;
+    background: #eee7ff;
+    border-radius: 50%;
+    font-size: 1.7rem;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-timer h2{
+    margin: 0;
+    color: #4c1d95;
+    font-size: clamp(1.7rem, 4vw, 2.2rem);
+}
+
+.ascendra-page[data-route="unwind"] .unwind-description{
+    max-width: 540px;
+    margin: 10px auto 24px;
+    color: #625b70;
+    line-height: 1.55;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-timer > label{
+    display: block;
+    margin-bottom: 8px;
+    color: #403848;
+    font-weight: 800;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-duration{
+    width: min(260px, 100%);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #c9bddb;
+    border-radius: 14px;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-duration:focus-within{
+    border-color: #6d28d9;
+    box-shadow: 0 0 0 3px rgba(109, 40, 217, 0.18);
+}
+
+.ascendra-page[data-route="unwind"] #elapsed{
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    color: #292333;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    font-weight: 800;
+    text-align: right;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-duration span{
+    padding-right: 14px;
+    color: #625b70;
+    font-size: 0.92rem;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-hint{
+    margin: 7px 0 20px;
+    color: #756d80;
+    font-size: 0.84rem;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-display{
+    width: min(420px, 100%);
+    margin: 0 auto 20px;
+    padding: 22px 18px;
+    background: #f6f1ff;
+    border: 1px solid rgba(109, 40, 217, 0.14);
+    border-radius: 22px;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-display > span{
+    color: #625b70;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ascendra-page[data-route="unwind"] #timer-display{
+    display: block;
+    margin: 6px 0;
+    color: #5b21b6;
+    font-size: clamp(3rem, 14vw, 5.4rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.ascendra-page[data-route="unwind"] #timer-status{
+    min-height: 1.5em;
+    margin: 10px 0 0;
+    color: #625b70;
+    line-height: 1.45;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-display.is-running{
+    animation: unwind-breathe 4s ease-in-out infinite;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-actions{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-actions button{
+    min-height: 48px;
+    padding: 11px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: #fff;
+    background: #6d28d9;
+    border: 1px solid #6d28d9;
+    border-radius: 14px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 800;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-actions button.secondary{
+    color: #5b21b6;
+    background: #fff;
+    border-color: #b8a7cf;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-actions button:disabled{
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-actions button:not(:disabled):hover{
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(109, 40, 217, 0.22);
+}
+
+.ascendra-page[data-route="unwind"] .unwind-achievements-link{
+    min-height: 44px;
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #5b21b6;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.ascendra-page[data-route="unwind"] .unwind-achievements-link:hover{
+    text-decoration: underline;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-eyebrow,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-timer h2,
+body.dark-mode .ascendra-page[data-route="unwind"] #timer-display,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-achievements-link{
+    color: #d8b4fe !important;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-heading p,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-description,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-hint,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-duration span,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-display > span,
+body.dark-mode .ascendra-page[data-route="unwind"] #timer-status{
+    color: var(--dark-muted) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-timer{
+    background:
+        radial-gradient(circle at top, rgba(109, 40, 217, 0.22), transparent 45%),
+        var(--dark-surface) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-icon,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-display{
+    color: #d8b4fe !important;
+    background: var(--dark-surface-raised) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-duration{
+    background: var(--dark-surface-raised) !important;
+    border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] #elapsed,
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-timer > label{
+    color: var(--dark-text) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="unwind"] .unwind-actions button.secondary{
+    color: #ddd6fe !important;
+    background: var(--dark-surface-raised) !important;
+    border-color: var(--dark-border) !important;
+}
+
+@keyframes unwind-breathe{
+    0%,
+    100%{
+        box-shadow: 0 0 0 0 rgba(109, 40, 217, 0);
+    }
+    50%{
+        box-shadow: 0 0 0 8px rgba(109, 40, 217, 0.13);
+    }
+}
+
+@media (max-width: 520px){
+    .ascendra-page[data-route="unwind"]{
+        padding:
+            calc(70px + env(safe-area-inset-top))
+            max(12px, env(safe-area-inset-right))
+            calc(38px + env(safe-area-inset-bottom))
+            max(12px, env(safe-area-inset-left)) !important;
+    }
+
+    .ascendra-page[data-route="unwind"] .unwind-timer{
+        padding: 22px 16px;
+        border-radius: 22px;
+    }
+
+    .ascendra-page[data-route="unwind"] .unwind-actions{
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .ascendra-page[data-route="unwind"] .unwind-display.is-running{
+        animation: none;
+    }
+}
+
 /* ===== PRIVACY ===== */
 .ascendra-page[data-route="privacy"]{
     background-color: rgb(240, 248, 255);
