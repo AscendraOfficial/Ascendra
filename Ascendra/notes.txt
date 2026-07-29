@@ -67,6 +67,9 @@ Declan:
 
 Jayden:
 "I'm going to start with xp levels. We will start making kids mode by doing a page to let a parent signup to take control over certain parts of the child's account"
+
+Jayden:
+"Global css doesn't actually control ALL of the css, but it does control all the main functions, I want to add the xp bar to every necessary file."
 ────────────────────────────────────────
 
 🚀 Version Roadmap
