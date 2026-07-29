@@ -161,13 +161,9 @@ The project does not currently use a frontend framework.
 ```text
 Ascendra/
 ├── assets/
-│   ├── css/
-│   │   └── style.css
 │   ├── images/
 │   │   ├── background.png
 │   │   └── favicon.png
-│   ├── js/
-│   │   └── script.js
 │   └── music/
 │       └── Fluidscape.mp3
 ├── docs/
@@ -175,13 +171,18 @@ Ascendra/
 ├── google63ee988164adfd68.html
 ├── index.html
 ├── LICENSE
-└── README.md
+├── README.md
+└── src/
+    ├── css/
+    │   └── style.css
+    └── js/
+        └── script.js
 ```
 
-GitHub Pages serves `index.html` from the repository root. Supporting styles,
-scripts, and images are grouped inside `assets` so their purpose and paths are
-easy to understand. Repository documentation stays easy to find through the
-root README and the `docs` directory.
+GitHub Pages serves `index.html` from the repository root. CSS and JavaScript
+source files live inside `src`, while images and music stay grouped inside
+`assets`. Repository documentation remains easy to find through the root README
+and the `docs` directory.
 
 ## Single-Page App Structure
 
@@ -249,7 +250,7 @@ Recent updates included:
 - Improving logout behavior
 - Making search keyboard accessible
 - Replacing the embedded favicon with `assets/images/favicon.png`
-- Organizing styles, scripts, and images into the `assets` directory
+- Organizing CSS and JavaScript into `src`, with media files inside `assets`
 
 ## Current Status
 

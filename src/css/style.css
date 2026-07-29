@@ -27,7 +27,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: url("../images/background.png");
+  background-image: url("../../assets/images/background.png");
   background-position: top center;
   background-size: 100% auto;
   background-repeat: repeat-y;
