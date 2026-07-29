@@ -10,3 +10,9 @@ body {
 #sub_heading {
     colour: rgb(0, 0, 255);
 }
+
+#policy {
+    width: 75%;
+    height: 10%;
+    overflow: auto;
+}
