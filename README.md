@@ -289,6 +289,11 @@ Possible future improvements include:
 - Cross-device syncing
 - More customization options
 
+## Documentation
+
+- [Credits](docs/CREDITS.md)
+- [Code of Conduct](docs/CODE_OF_CONDUCT.md)
+
 ## Project Goal
 
 Ascendra's goal is to help users organize their responsibilities while also supporting personal growth, reflection, and healthy routines.
