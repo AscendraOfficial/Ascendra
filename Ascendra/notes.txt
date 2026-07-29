@@ -10,6 +10,7 @@
 - Replace menu with rotating buttons
 - Add kids mode starting with more interaction
 - Add parental-controls.html to merged index.html in the real branch
+- Connect everything to the real branch
 ────────────────────────────────────────
 
 💬 Messages
