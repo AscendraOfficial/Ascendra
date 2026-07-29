@@ -1,1 +1,105 @@
+.global-xp {
+    position: fixed;
 
+    top: 15px;
+    right: 20px;
+
+    width: 170px;
+
+    padding: 10px 12px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+    z-index: 1000;
+}
+
+
+/* XP information */
+
+.xp-info {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 6px;
+
+    font-size: 12px;
+
+    font-weight: bold;
+}
+
+
+/* Level text */
+
+.xp-level {
+    color: #8b5cf6;
+}
+
+
+/* XP number */
+
+.xp-number {
+    color: #666;
+}
+
+
+/* XP bar background */
+
+.xp-bar {
+    width: 100%;
+
+    height: 7px;
+
+    background: #e5e7eb;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+/* Actual XP progress */
+
+.xp-progress {
+    width: 0%;
+
+    height: 100%;
+
+    background: #8b5cf6;
+
+    border-radius: 10px;
+
+    transition: width 0.4s ease;
+}
+
+
+/* =========================================
+   MOBILE SUPPORT
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    .global-xp {
+        top: 10px;
+        right: 10px;
+
+        width: 145px;
+
+        padding: 8px 10px;
+    }
+
+    .xp-info {
+        font-size: 10px;
+    }
+
+    .xp-bar {
+        height: 6px;
+    }
+
+}
