@@ -4728,13 +4728,17 @@ return () => {
 
 "unwind": function init_unwind() {
     const start = document.getElementById("start");
-    const elapsed = document.getElementById("elapsed");
+    let elapsed = document.getElementById("elapsed");
     const reset = document.getElementById("reset");
     const pause = document.getElementById("pause");
     const timerDisplay = document.getElementById("timer-display");
 
+    elapsed = elasped * 60000;
+
     start.addEventListener("click", () => {
-        
+        setInterval(() => {
+
+        }, elapsed);
     })
 },
 "profile": function init_profile(){
