@@ -74,6 +74,12 @@ Jayden:
 
 Jayden:
 "how do you connect things sto the real branch?"
+
+Reply:
+"you have to transfer the js in script.js, add the route. for css idk how to so ask chatgpt, for html you make a template and you put the code in there."
+
+Declan:
+"NEW RULE, YOU HAVE TO DISCUSS WITH OTHER PERSON BEFORE YOU ADD STUFF I ALREADY ADDED THE XP AND LEVELS, CHECK IN THE ROADMAP PAGE"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
