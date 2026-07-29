@@ -2,3 +2,7 @@ body {
     text-align: center;
     font-family: sans-serif;
 }
+
+#page_title {
+    color: rgb(138, 43, 226);
+}
