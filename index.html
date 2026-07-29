@@ -1,1767 +1,2047 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Ascendra - Tasks, Habits, Goals and Focus</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Ascendra - Tasks, Habits, Goals and Focus</title>
 
-<meta name="description" content="Ascendra is a productivity app that helps you manage tasks, build habits, track goals, stay focused and grow with XP and progress tools.">
-  <link rel="icon" href="favicon.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="style.css">
-  <meta name="keywords" content="productivity, to-do list, habits, calendar, journal, Ascendra">
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
-</head>
-<body>
-  <noscript><div class="spa-error"><h1>JavaScript is required</h1><p>Ascendra needs JavaScript enabled to work.</p></div></noscript>
-  <button id="spaBackButton" class="spa-back-button" type="button" onclick="goBack()" aria-label="Go back"><i class="fa-solid fa-arrow-left"></i></button>
-  <div id="app"></div>
-<template id="page-welcome">
-
-
-<h1 id="title">🦊 Upgrade Your Life</h1>
-<h5 id="subtitle1">
-        The productivity app of your dreams.
-    </h5>
-<p id="main_paragraph">
-<strong class="ascendra">Ascendra</strong> is more than a productivity app—it's your life companion.
-        Organize your schedule, build better habits, reflect through journaling, and work toward your goals, all in one place.
-        Whether you're planning tomorrow or remembering yesterday, Ascendra is built to help you live a better day.
-        <br/><br/>
-<a href="#/login">Log In</a>
+    <meta
+      name="description"
+      content="Ascendra is a productivity app that helps you manage tasks, build habits, track goals, stay focused and grow with XP and progress tools."
+    />
+    <link rel="icon" href="assets/images/favicon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <meta
+      name="keywords"
+      content="productivity, to-do list, habits, calendar, journal, Ascendra"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <noscript
+      ><div class="spa-error">
+        <h1>JavaScript is required</h1>
+        <p>Ascendra needs JavaScript enabled to work.</p>
+      </div></noscript
+    >
+    <button
+      id="spaBackButton"
+      class="spa-back-button"
+      type="button"
+      onclick="goBack()"
+      aria-label="Go back"
+    >
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+    <div id="app"></div>
+    <template id="page-welcome">
+      <h1 id="title">🦊 Upgrade Your Life</h1>
+      <h5 id="subtitle1">The productivity app of your dreams.</h5>
+      <p id="main_paragraph">
+        <strong class="ascendra">Ascendra</strong> is more than a productivity
+        app—it's your life companion. Organize your schedule, build better
+        habits, reflect through journaling, and work toward your goals, all in
+        one place. Whether you're planning tomorrow or remembering yesterday,
+        Ascendra is built to help you live a better day. <br /><br />
+        <a href="#/login">Log In</a>
          • 
         <a href="#/signup">Create an Account</a>
-</p>
-<h2 id="version">
-        Version <em>1.0</em> — Genesis
-</h2>
-<a class="credits-link" href="#/credits">ⓘ Credits</a>
-<br/>
-<footer>
-<a class="privacy-link" href="#/privacy">Privacy Policy</a> —
-    <a class="terms-link" href="#/terms">Terms of Service</a>
-</footer>
-
-
-</template>
-<template id="page-loading-screen">
-
-
-<canvas id="canvas"></canvas>
-
-
-
-</template>
-<template id="page-login">
-
-
-<form id="login">
-<h1>Welcome back to <a id="ascendraLogo">Ascendra!</a></h1>
-<h2>Log In</h2>
-<input aria-label="Username" autocomplete="username" id="username" maxlength="60" placeholder="Username" required="" type="text"/>
-<br/><br/>
-<input aria-label="Password" autocomplete="current-password" id="password" maxlength="128" placeholder="Password" required="" type="password"/>
-<br/><br/>
-<input type="submit" value="Log In"/>
-<br/><br/>
-<p>Don't have an account? <a href="#/signup">Sign up</a></p>
-</form>
-
-
-
-</template>
-<template id="page-signup">
-
-
-<form id="signupForm">
-<h1>Welcome to <a id="ascendraLogo">Ascendra</a></h1>
-<h2>Sign Up</h2>
-<input aria-label="First name" autocomplete="given-name" id="name" maxlength="60" placeholder="First Name" required="" type="text"/>
-<br/><br/>
-<input aria-label="Last name" autocomplete="family-name" id="surname" maxlength="60" placeholder="Last Name" required="" type="text"/>
-<br/><br/>
-<input aria-label="Username" autocomplete="username" id="username" maxlength="20" placeholder="Username" required="" type="text"/>
-<br/><br/>
-<input aria-label="Password" autocomplete="new-password" id="password" maxlength="128" minlength="8" placeholder="Password (8+ characters)" required="" type="password"/>
-<br/><br/>
-<p>Have an account? <a href="#/login">Sign in</a></p>
-<br/>
-<input type="submit" value="Create account"/>
-<br/><br/>
-</form>
-<br/><br/>
-
-
-
-
-</template>
-<template id="page-home">
-
-
-<main class="home">
-<section class="hero">
-<div id="shootingStars"></div>
-<h1 id="greeting"></h1>
-<p><strong id="motivational-message"></strong></p>
-<p id="dateText"></p>
-</section>
-<section class="widget-grid">
-<div class="widget">
-<h2>Today's Progress</h2>
-<div
-  aria-label="Today's completion"
-  aria-valuemax="100"
-  aria-valuemin="0"
-  aria-valuenow="0"
-  aria-valuetext="0% complete"
-  class="progress-bar"
-  id="home-progress-track"
-  role="progressbar"
->
-<div id="progressFill"></div>
-</div>
-<p id="progressText">0% complete</p>
-</div>
-<div class="widget">
-<h2>Today's To-Dos</h2>
-<ul id="todoList"></ul>
-</div>
-<div class="widget">
-<h2>Upcoming Events</h2>
-<ul id="calendarList"></ul>
-</div>
-<div class="widget">
-<h2>Habits</h2>
-<ul id="habitList"></ul>
-</div>
-</section>
-</main>
-<nav class="navbar">
-<button class="current"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-<button onclick="navigate('alerts')"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-<button onclick="navigate('todos')"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-<button onclick="navigate('habits')"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-<button onclick="navigate('breathing')"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-<button onclick="navigate('calendar')"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-<button onclick="navigate('journal')"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-<button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-</nav>
-
-
-
-
-</template>
-<template id="page-alerts">
-
-
-<h1 id="alert">Alerts</h1>
-<h5 id="subtitle2">For convenience and notifications</h5>
-<div id="alertList"></div>
-
-<nav class="navbar">
-<button onclick="navigate('home')">
-<i class="fa-solid fa-mug-saucer"></i><br/>Home
-    </button>
-<button class="current">
-<i class="fa-regular fa-bell"></i><br/>Alerts
-    </button>
-<button onclick="navigate('todos')">
-<i class="fa-solid fa-list-check"></i><br/>To-Dos
-    </button>
-<button onclick="navigate('habits')">
-<i class="fa-regular fa-thumbs-up"></i><br/>Habits
-    </button>
-<button onclick="navigate('breathing')">
-<i class="fa-solid fa-wind"></i><br/>Breathing
-    </button>
-<button onclick="navigate('calendar')">
-<i class="fa-regular fa-calendar"></i><br/>Calendar
-    </button>
-<button onclick="navigate('journal')">
-<i class="fa-solid fa-book-open"></i><br/>Journal
-    </button>
-<button onclick="navigate('menu')">
-<i class="fa-solid fa-bars-staggered"></i><br/>Menu
-    </button>
-</nav>
-
-
-
-</template>
-<template id="page-todos">
-
-<h1 id="todo_list">To-Dos</h1>
-<h5 id="subtitle3">For better task management</h5>
-
-<button id="add-btn"><strong>+ Add Task</strong></button>
-
-<div class="todo-toolbar" aria-label="Filter tasks" role="group">
-    <button class="todo-filter active" data-filter="all" type="button">All</button>
-    <button class="todo-filter" data-filter="active" type="button">Active</button>
-    <button class="todo-filter" data-filter="completed" type="button">Completed</button>
-</div>
-
-<p id="todo-summary" aria-live="polite"></p>
-<div id="todo-list" aria-live="polite"></div>
-
-<div
-    aria-hidden="true"
-    aria-labelledby="todo-dialog-title"
-    aria-modal="true"
-    class="popup"
-    id="popup"
-    role="dialog"
-    tabindex="-1"
->
-    <form class="popup-box" id="todo-form">
-
-        <h2 id="todo-dialog-title">Add Task</h2>
-
-        <label for="task-input">Task name</label>
+      </p>
+      <h2 id="version">Version <em>1.0</em> — Genesis</h2>
+      <a class="credits-link" href="#/credits">ⓘ Credits</a>
+      <br />
+      <footer>
+        <a class="privacy-link" href="#/privacy">Privacy Policy</a> —
+        <a class="terms-link" href="#/terms">Terms of Service</a>
+      </footer>
+    </template>
+    <template id="page-loading-screen">
+      <canvas id="canvas"></canvas>
+    </template>
+    <template id="page-login">
+      <form id="login">
+        <h1>Welcome back to <a id="ascendraLogo">Ascendra!</a></h1>
+        <h2>Log In</h2>
         <input
+          aria-label="Username"
+          autocomplete="username"
+          id="username"
+          maxlength="60"
+          placeholder="Username"
+          required=""
+          type="text"
+        />
+        <br /><br />
+        <input
+          aria-label="Password"
+          autocomplete="current-password"
+          id="password"
+          maxlength="128"
+          placeholder="Password"
+          required=""
+          type="password"
+        />
+        <br /><br />
+        <input type="submit" value="Log In" />
+        <br /><br />
+        <p>Don't have an account? <a href="#/signup">Sign up</a></p>
+      </form>
+    </template>
+    <template id="page-signup">
+      <form id="signupForm">
+        <h1>Welcome to <a id="ascendraLogo">Ascendra</a></h1>
+        <h2>Sign Up</h2>
+        <input
+          aria-label="First name"
+          autocomplete="given-name"
+          id="name"
+          maxlength="60"
+          placeholder="First Name"
+          required=""
+          type="text"
+        />
+        <br /><br />
+        <input
+          aria-label="Last name"
+          autocomplete="family-name"
+          id="surname"
+          maxlength="60"
+          placeholder="Last Name"
+          required=""
+          type="text"
+        />
+        <br /><br />
+        <input
+          aria-label="Username"
+          autocomplete="username"
+          id="username"
+          maxlength="20"
+          placeholder="Username"
+          required=""
+          type="text"
+        />
+        <br /><br />
+        <input
+          aria-label="Password"
+          autocomplete="new-password"
+          id="password"
+          maxlength="128"
+          minlength="8"
+          placeholder="Password (8+ characters)"
+          required=""
+          type="password"
+        />
+        <br /><br />
+        <p>Have an account? <a href="#/login">Sign in</a></p>
+        <br />
+        <input type="submit" value="Create account" />
+        <br /><br />
+      </form>
+      <br /><br />
+    </template>
+    <template id="page-home">
+      <main class="home">
+        <section class="hero">
+          <div id="shootingStars"></div>
+          <h1 id="greeting"></h1>
+          <p><strong id="motivational-message"></strong></p>
+          <p id="dateText"></p>
+        </section>
+        <section class="widget-grid">
+          <div class="widget">
+            <h2>Today's Progress</h2>
+            <div
+              aria-label="Today's completion"
+              aria-valuemax="100"
+              aria-valuemin="0"
+              aria-valuenow="0"
+              aria-valuetext="0% complete"
+              class="progress-bar"
+              id="home-progress-track"
+              role="progressbar"
+            >
+              <div id="progressFill"></div>
+            </div>
+            <p id="progressText">0% complete</p>
+          </div>
+          <div class="widget">
+            <h2>Today's To-Dos</h2>
+            <ul id="todoList"></ul>
+          </div>
+          <div class="widget">
+            <h2>Upcoming Events</h2>
+            <ul id="calendarList"></ul>
+          </div>
+          <div class="widget">
+            <h2>Habits</h2>
+            <ul id="habitList"></ul>
+          </div>
+        </section>
+      </main>
+      <nav class="navbar">
+        <button class="current">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </nav>
+    </template>
+    <template id="page-alerts">
+      <h1 id="alert">Alerts</h1>
+      <h5 id="subtitle2">For convenience and notifications</h5>
+      <div id="alertList"></div>
+
+      <nav class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button class="current">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </nav>
+    </template>
+    <template id="page-todos">
+      <h1 id="todo_list">To-Dos</h1>
+      <h5 id="subtitle3">For better task management</h5>
+
+      <button id="add-btn"><strong>+ Add Task</strong></button>
+
+      <div class="todo-toolbar" aria-label="Filter tasks" role="group">
+        <button class="todo-filter active" data-filter="all" type="button">
+          All
+        </button>
+        <button class="todo-filter" data-filter="active" type="button">
+          Active
+        </button>
+        <button class="todo-filter" data-filter="completed" type="button">
+          Completed
+        </button>
+      </div>
+
+      <p id="todo-summary" aria-live="polite"></p>
+      <div id="todo-list" aria-live="polite"></div>
+
+      <div
+        aria-hidden="true"
+        aria-labelledby="todo-dialog-title"
+        aria-modal="true"
+        class="popup"
+        id="popup"
+        role="dialog"
+        tabindex="-1"
+      >
+        <form class="popup-box" id="todo-form">
+          <h2 id="todo-dialog-title">Add Task</h2>
+
+          <label for="task-input">Task name</label>
+          <input
             id="task-input"
             maxlength="120"
             placeholder="Task name"
             required
             type="text"
-        >
+          />
 
-        <label for="priority-input">Priority</label>
-        <select id="priority-input">
+          <label for="priority-input">Priority</label>
+          <select id="priority-input">
             <option value="low">Low</option>
             <option value="medium" selected>Medium</option>
             <option value="high">High</option>
-        </select>
+          </select>
 
-        <label for="estimated-input">Estimated minutes</label>
-        <input
+          <label for="estimated-input">Estimated minutes</label>
+          <input
             id="estimated-input"
             min="1"
             max="1440"
             placeholder="Example: 30"
             type="number"
-        >
+          />
 
-        <label class="no-date-label">
-            <input id="no-date-input" type="checkbox">
+          <label class="no-date-label">
+            <input id="no-date-input" type="checkbox" />
             No due date
-        </label>
+          </label>
 
-        <div id="due-date-fields">
+          <div id="due-date-fields">
             <label for="date-input">Due date</label>
-            <input id="date-input" type="date">
+            <input id="date-input" type="date" />
 
             <label for="time-input">Due time</label>
-            <input id="time-input" type="time">
-        </div>
+            <input id="time-input" type="time" />
+          </div>
 
-        <label for="notes-input">Notes</label>
-        <textarea
+          <label for="notes-input">Notes</label>
+          <textarea
             id="notes-input"
             maxlength="500"
             placeholder="Extra details about this task"
             rows="4"
-        ></textarea>
+          ></textarea>
 
-        <br><br>
+          <br /><br />
 
-        <button id="save-btn" type="submit">Save</button>
-        <button id="cancel-btn" type="button">Cancel</button>
+          <button id="save-btn" type="submit">Save</button>
+          <button id="cancel-btn" type="button">Cancel</button>
+        </form>
+      </div>
 
-    </form>
-</div>
+      <div class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
 
-<div class="navbar">
-    <button onclick="navigate('home')">
-        <i class="fa-solid fa-mug-saucer"></i><br>Home
-    </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
 
-    <button onclick="navigate('alerts')">
-        <i class="fa-regular fa-bell"></i><br>Alerts
-    </button>
+        <button class="current">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
 
-    <button class="current">
-        <i class="fa-solid fa-list-check"></i><br>To-Dos
-    </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
 
-    <button onclick="navigate('habits')">
-        <i class="fa-regular fa-thumbs-up"></i><br>Habits
-    </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
 
-    <button onclick="navigate('breathing')">
-        <i class="fa-solid fa-wind"></i><br>Breathing
-    </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
 
-    <button onclick="navigate('calendar')">
-        <i class="fa-regular fa-calendar"></i><br>Calendar
-    </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
 
-    <button onclick="navigate('journal')">
-        <i class="fa-solid fa-book-open"></i><br>Journal
-    </button>
+        <button onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </div>
+    </template>
+    <template id="page-habits">
+      <h1>Habit Tracker</h1>
+      <h5>Build better routines</h5>
 
-    <button onclick="navigate('menu')">
-        <i class="fa-solid fa-bars-staggered"></i><br>Menu
-    </button>
-</div>
+      <button id="addHabitBtn">+ Add Habit</button>
 
-</template>
-<template id="page-habits">
+      <div id="habitList" aria-live="polite"></div>
 
-<h1>Habit Tracker</h1>
-<h5>Build better routines</h5>
+      <div
+        aria-hidden="true"
+        aria-labelledby="habit-dialog-title"
+        aria-modal="true"
+        class="popup"
+        id="habitPopup"
+        role="dialog"
+        tabindex="-1"
+      >
+        <form class="popup-box" id="habitForm">
+          <h2 id="habit-dialog-title">Add Habit</h2>
 
-<button id="addHabitBtn">+ Add Habit</button>
-
-<div id="habitList" aria-live="polite"></div>
-
-<div
-    aria-hidden="true"
-    aria-labelledby="habit-dialog-title"
-    aria-modal="true"
-    class="popup"
-    id="habitPopup"
-    role="dialog"
-    tabindex="-1"
->
-    <form class="popup-box" id="habitForm">
-
-        <h2 id="habit-dialog-title">Add Habit</h2>
-
-        <label for="habitInput">Habit name</label>
-        <input
+          <label for="habitInput">Habit name</label>
+          <input
             id="habitInput"
             maxlength="120"
             placeholder="Example: Practice piano"
             required
             type="text"
-        >
+          />
 
-        <label for="habitEmoji">Emoji</label>
-        <input
-            id="habitEmoji"
-            maxlength="4"
-            placeholder="🎹"
-            type="text"
-        >
+          <label for="habitEmoji">Emoji</label>
+          <input id="habitEmoji" maxlength="4" placeholder="🎹" type="text" />
 
-        <label for="habitType">Habit type</label>
-        <select id="habitType">
+          <label for="habitType">Habit type</label>
+          <select id="habitType">
             <option value="good">Good habit</option>
             <option value="bad">Bad habit</option>
-        </select>
+          </select>
 
-        <label for="habitFrequency">Frequency</label>
-        <select id="habitFrequency">
+          <label for="habitFrequency">Frequency</label>
+          <select id="habitFrequency">
             <option value="daily">Every day</option>
             <option value="weekdays">Weekdays</option>
             <option value="weekends">Weekends</option>
-        </select>
+          </select>
 
-        <label for="habitGoal">Goal amount</label>
-        <input
+          <label for="habitGoal">Goal amount</label>
+          <input
             id="habitGoal"
             min="1"
             placeholder="Example: 20"
             type="number"
-        >
+          />
 
-        <label for="habitUnit">Goal unit</label>
-        <input
+          <label for="habitUnit">Goal unit</label>
+          <input
             id="habitUnit"
             maxlength="30"
             placeholder="minutes, glasses, pages..."
             type="text"
-        >
+          />
 
-        <label for="habitNotes">Notes</label>
-        <textarea
+          <label for="habitNotes">Notes</label>
+          <textarea
             id="habitNotes"
             maxlength="500"
             placeholder="Why are you building this habit?"
             rows="4"
-        ></textarea>
+          ></textarea>
 
-        <br><br>
+          <br /><br />
 
-        <button id="saveHabitBtn" type="submit">Save</button>
-        <button id="cancelHabitBtn" type="button">Cancel</button>
+          <button id="saveHabitBtn" type="submit">Save</button>
+          <button id="cancelHabitBtn" type="button">Cancel</button>
+        </form>
+      </div>
 
-    </form>
-</div>
+      <div class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
 
-<div class="navbar">
-    <button onclick="navigate('home')">
-        <i class="fa-solid fa-mug-saucer"></i><br>Home
-    </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
 
-    <button onclick="navigate('alerts')">
-        <i class="fa-regular fa-bell"></i><br>Alerts
-    </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
 
-    <button onclick="navigate('todos')">
-        <i class="fa-solid fa-list-check"></i><br>To-Dos
-    </button>
+        <button class="current">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
 
-    <button class="current">
-        <i class="fa-regular fa-thumbs-up"></i><br>Habits
-    </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
 
-    <button onclick="navigate('breathing')">
-        <i class="fa-solid fa-wind"></i><br>Breathing
-    </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
 
-    <button onclick="navigate('calendar')">
-        <i class="fa-regular fa-calendar"></i><br>Calendar
-    </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
 
-    <button onclick="navigate('journal')">
-        <i class="fa-solid fa-book-open"></i><br>Journal
-    </button>
-
-    <button onclick="navigate('menu')">
-        <i class="fa-solid fa-bars-staggered"></i><br>Menu
-    </button>
-</div>
-
-</template>
-<template id="page-breathing">
-
-
-<main>
-<h1>Breathing Exercises</h1>
-<p class="subtitle">Choose a breathing exercise</p>
-<section class="menu" id="exerciseMenu">
-<button onclick="chooseExercise('box')">Box Breathing<br/><span>4-4-4-4</span></button>
-<button onclick="chooseExercise('calm')">Calm Breathing<br/><span>5-5</span></button>
-<button onclick="chooseExercise('relax')">4-7-8 Breathing<br/><span>4-7-8</span></button>
-</section>
-<section class="breathing-box">
-<h2 id="exerciseTitle">Box Breathing</h2>
-<p id="instructions">Breathe in, hold, exhale, and hold again.</p>
-<div id="circle">
-<h3 id="phaseText">Ready</h3>
-<p id="countdown">0</p>
-</div>
-<button id="startBtn" onclick="startBreathing()">Start</button>
-<button id="stopBtn" onclick="stopBreathing()">Stop</button>
-</section>
-</main>
-<nav class="navbar">
-<button onclick="navigate('home')"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-<button onclick="navigate('alerts')"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-<button onclick="navigate('todos')"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-<button onclick="navigate('habits')"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-<button class="current"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-<button onclick="navigate('calendar')"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-<button onclick="navigate('journal')"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-<button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-</nav>
-
-
-
-
-</template>
-<template id="page-calendar">
-
-
-<div class="calendar-container">
-<div class="top-title">
-<h1>Calendar</h1>
-<button class="addEvent" type="button">+ Add Event</button>
-</div>
-<div class="calendar-card">
-<div class="calendar-header">
-<button aria-label="Previous month" id="prevMonth" type="button">‹</button>
-<h2></h2>
-<button aria-label="Next month" id="nextMonth" type="button">›</button>
-</div>
-<table>
-<thead>
-<tr>
-<th>Sun</th>
-<th>Mon</th>
-<th>Tue</th>
-<th>Wed</th>
-<th>Thu</th>
-<th>Fri</th>
-<th>Sat</th>
-</tr>
-</thead>
-<tbody id="calendarBody"></tbody>
-</table>
-</div>
-<div aria-hidden="true" aria-labelledby="event-dialog-title" aria-modal="true" class="popup" id="eventPopup" role="dialog" tabindex="-1">
-<div class="popup-box">
-<h2 id="event-dialog-title">New Event</h2>
-<input aria-label="Event name" id="eventTitle" maxlength="120" placeholder="Event name" type="text"/>
-<input aria-label="Event date and time" id="eventDate" placeholder="Choose date" type="text"/>
-<button id="saveEvent" type="button">Save</button>
-<button id="closePopup" type="button">Close</button>
-</div>
-</div>
-<div class="navbar">
-<button onclick="navigate('home')"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-<button onclick="navigate('alerts')"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-<button onclick="navigate('todos')"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-<button onclick="navigate('habits')"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-<button onclick="navigate('breathing')"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-<button class="current" onclick="navigate('calendar')"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-<button onclick="navigate('journal')"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-<button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-</div>
-
-
-
-
-</div>
-</template>
-<template id="page-journal">
-
-
-<div class="journal-container">
-<div class="journal-header">
-<h1>Journal</h1>
-<p>Reflect on today. Remember tomorrow.</p>
-</div>
-<div class="journal-layout">
-<div class="date-grid-card">
-<div class="mini-calendar-header">
-<button aria-label="Previous month" id="prevMonth" type="button">‹</button>
-<h2 id="monthTitle">Month</h2>
-<button aria-label="Next month" id="nextMonth" type="button">›</button>
-</div>
-<div class="date-grid" id="dateGrid"></div>
-</div>
-<div class="entry-card">
-<h2 id="entryTitle">Today's Entry</h2>
-<label for="mood">Mood</label>
-<select id="mood">
-    <option value="Happy">😁 Happy</option>
-    <option value="Good">🙂 Good</option>
-    <option value="Okay">😐 Okay</option>
-    <option value="Sad">☹️ Sad</option>
-    <option value="Angry">😠 Angry</option>
-    <option value="Tired">🥱 Tired</option>
-</select>
-<label for="dayText">How was your day?</label>
-<textarea id="dayText"></textarea>
-<label for="gratefulText">What are you grateful for?</label>
-<textarea id="gratefulText"></textarea>
-<label for="learnText">What did you learn today?</label>
-<textarea id="learnText"></textarea>
-<label for="goalText">Goal for tomorrow</label>
-<textarea id="goalText"></textarea>
-<button id="saveEntry" type="button">Save Entry</button>
-<p aria-live="polite" id="statusMessage"></p>
-</div>
-</div>
-</div>
-<div class="navbar">
-<button onclick="navigate('home')"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-<button onclick="navigate('alerts')"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-<button onclick="navigate('todos')"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-<button onclick="navigate('habits')"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-<button onclick="navigate('breathing')"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-<button onclick="navigate('calendar')"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-<button class="current"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-<button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-</div>
-
-
-
-
-</template>
-<template id="page-menu">
-
-
-<h1 id="menuTitle">Menu</h1>
-<div id="nav">
-<button id="settings" onclick="navigate('settings')">
-        Settings<br/>
-<i class="fa-solid fa-gears"></i>
-</button>
-<button id="statistics" onclick="navigate('stats')">
-        Statistics<br/>
-<i class="fa-solid fa-chart-line"></i>
-</button>
-<button id="profile" onclick="navigate('profile')">
-        Profile<br/>
-<i class="fa-regular fa-user"></i>
-</button>
-<button id="extras" onclick="navigate('extras')">
-        Extras<br/>
-<i class="fa-solid fa-wand-magic-sparkles"></i>
-</button>
-<button id="privacy-security" onclick="navigate('privacy')">
-        Privacy<br/>
-<i class="fa-solid fa-user-shield"></i>
-</button>
-<button id="terms" onclick="navigate('terms')">
-        Terms of Service<br/>
-<i class="fa-solid fa-file-contract"></i>
-</button>
-<button id="about" onclick="navigate('about')">
-        About<br/>
-<i class="fa-solid fa-circle-info"></i>
-</button>
-<button id="roadmap" onclick="navigate('roadmap')" type="button">
-        Roadmap<br/>
-<i aria-hidden="true" class="fa-solid fa-map"></i>
-</button>
-<button id="credits" onclick="navigate('credits')">
-        Credits<br/>
-<i class="fa-solid fa-users"></i>
-</button>
-</div>
-<div class="navbar">
-<button onclick="navigate('home')"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-<button onclick="navigate('alerts')"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-<button onclick="navigate('todos')"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-<button onclick="navigate('habits')"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-<button onclick="navigate('breathing')"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-<button onclick="navigate('calendar')"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-<button onclick="navigate('journal')"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-<button class="current"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-</div>
-
-
-
-
-</template>
-<template id="page-settings">
-
-
-<div class="page">
-<main class="content">
-<header>
-<h2>Settings</h2>
-</header>
-
-<section class="card settings">
-  <label>
-    <input type="checkbox" id="mode">
-    <i class="fa-solid fa-cloud-moon"></i> Dark mode
-  </label>
-</section>
-  
-<section class="card danger">
-<h3><i class="fa-solid fa-biohazard"></i> Danger Zone</h3>
-<p>Be careful. These actions can remove your Ascendra data.</p>
-<div class="danger-item">
-<div>
-<h4>Reset Settings</h4>
-<p>Resets settings back to default.</p>
-</div>
-<button onclick="resetSettings()">Reset</button>
-</div>
-<div class="danger-item">
-<div>
-<h4>Delete All Local Data</h4>
-<p>Deletes saved Ascendra data from this browser.</p>
-</div>
-<button onclick="deleteAllData()">Delete</button>
-</div>
-</section>
-</main>
-</div>
-
-
-
-
-</template>
-<template id="page-stats">
-
-<header class="top-bar">
-
-<h1>Statistics</h1>
-<a aria-label="Open profile" class="icon-button" href="#/profile">
-<i class="fa-solid fa-user"></i>
-</a>
-</header>
-<main>
-<section class="welcome-section">
-<p class="eyebrow">YOUR PROGRESS</p>
-<h2 id="welcome-message">
-                Keep building momentum.
-            </h2>
-<p>
-                Here is how your Ascendra journey is going.
-            </p>
-</section>
-<section class="progress-card xp-card" aria-labelledby="stats-xp-heading">
-<div class="section-heading">
-<div>
-<p class="eyebrow">LEVEL PROGRESS</p>
-<h2 id="stats-xp-heading">Level <span data-xp-level>1</span></h2>
-</div>
-<strong class="xp-total" data-xp-total>0 XP</strong>
-</div>
-<div class="xp-meta" aria-hidden="true">
-<span data-xp-level-start>0 XP</span>
-<span data-xp-level-end>100 XP</span>
-</div>
-<div class="progress-track xp-progress-track" data-xp-progress role="progressbar" aria-labelledby="stats-xp-heading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 of 100 XP toward Level 2">
-<div data-xp-progress-fill></div>
-</div>
-<p data-xp-message>100 XP to Level 2</p>
-</section>
-<h2 class="category-title">
-<i class="fa-solid fa-list-check"></i>
-            Task Statistics
-        </h2>
-<section class="stats-grid">
-<article class="stat-card">
-<div class="stat-icon">
-<i class="fa-solid fa-list"></i>
-</div>
-<div>
-<h3 id="total-tasks">0</h3>
-<p>Total Tasks</p>
-</div>
-</article>
-<article class="stat-card">
-<div class="stat-icon">
-<i class="fa-solid fa-circle-check"></i>
-</div>
-<div>
-<h3 id="completed-tasks">0</h3>
-<p>Completed Tasks</p>
-</div>
-</article>
-<article class="stat-card">
-<div class="stat-icon">
-<i class="fa-solid fa-hourglass-half"></i>
-</div>
-<div>
-<h3 id="remaining-tasks">0</h3>
-<p>Remaining Tasks</p>
-</div>
-</article>
-<article class="stat-card">
-<div class="stat-icon">
-<i class="fa-solid fa-percent"></i>
-</div>
-<div>
-<h3 id="task-completion-rate">0%</h3>
-<p>Task Completion</p>
-</div>
-</article>
-</section>
-<section class="progress-card">
-<div class="section-heading">
-<div>
-<p class="eyebrow">TASK PROGRESS</p>
-<h2>Overall Task Completion</h2>
-</div>
-<strong id="task-progress-label">0%</strong>
-</div>
-<div
-  aria-label="Overall task completion"
-  aria-valuemax="100"
-  aria-valuemin="0"
-  aria-valuenow="0"
-  aria-valuetext="0% of tasks completed"
-  class="progress-track"
-  id="task-progress-track"
-  role="progressbar"
->
-<div id="task-progress-fill"></div>
-</div>
-<p id="task-progress-message">
-                Add your first task to begin tracking progress.
-            </p>
-</section>
-<h2 class="category-title">
-<i class="fa-solid fa-repeat"></i>
-            Habit Statistics
-        </h2>
-<section class="stats-grid">
-<article class="stat-card habit-stat-card">
-<div class="stat-icon habit-icon">
-<i class="fa-solid fa-layer-group"></i>
-</div>
-<div>
-<h3 id="total-habits">0</h3>
-<p>Total Habits</p>
-</div>
-</article>
-<article class="stat-card habit-stat-card">
-<div class="stat-icon habit-icon">
-<i class="fa-solid fa-thumbs-up"></i>
-</div>
-<div>
-<h3 id="successful-habit-days">0</h3>
-<p>Successful Check-ins</p>
-</div>
-</article>
-<article class="stat-card habit-stat-card">
-<div class="stat-icon habit-icon">
-<i class="fa-solid fa-xmark"></i>
-</div>
-<div>
-<h3 id="missed-habit-days">0</h3>
-<p>Missed Check-ins</p>
-</div>
-</article>
-<article class="stat-card habit-stat-card">
-<div class="stat-icon habit-icon">
-<i class="fa-solid fa-chart-line"></i>
-</div>
-<div>
-<h3 id="habit-success-rate">0%</h3>
-<p>Habit Success Rate</p>
-</div>
-</article>
-</section>
-<section class="progress-card">
-<div class="section-heading">
-<div>
-<p class="eyebrow habit-eyebrow">HABIT PROGRESS</p>
-<h2>Overall Habit Success</h2>
-</div>
-<strong id="habit-progress-label">0%</strong>
-</div>
-<div
-  aria-label="Overall habit success"
-  aria-valuemax="100"
-  aria-valuemin="0"
-  aria-valuenow="0"
-  aria-valuetext="0% successful habit check-ins"
-  class="progress-track"
-  id="habit-progress-track"
-  role="progressbar"
->
-<div id="habit-progress-fill"></div>
-</div>
-<p id="habit-progress-message">
-                Check off a habit to begin tracking it.
-            </p>
-</section>
-<section class="details-grid">
-<article class="details-card">
-<div class="section-heading">
-<div>
-<p class="eyebrow">TASK OVERVIEW</p>
-<h2>Due Dates</h2>
-</div>
-<i class="fa-solid fa-calendar-days section-icon"></i>
-</div>
-<div class="detail-row">
-<span>Due today</span>
-<strong id="due-today">0</strong>
-</div>
-<div class="detail-row">
-<span>Overdue</span>
-<strong id="overdue-tasks">0</strong>
-</div>
-<div class="detail-row">
-<span>Future tasks</span>
-<strong id="future-tasks">0</strong>
-</div>
-</article>
-<article class="details-card">
-<div class="section-heading">
-<div>
-<p class="eyebrow habit-eyebrow">TODAY</p>
-<h2>Habit Check-ins</h2>
-</div>
-<i class="fa-solid fa-calendar-check section-icon"></i>
-</div>
-<div class="detail-row">
-<span>Successful today</span>
-<strong id="habits-successful-today">0</strong>
-</div>
-<div class="detail-row">
-<span>Missed today</span>
-<strong id="habits-missed-today">0</strong>
-</div>
-<div class="detail-row">
-<span>Not checked today</span>
-<strong id="habits-unchecked-today">0</strong>
-</div>
-</article>
-</section>
-<section class="details-card achievement-card">
-<div class="section-heading">
-<div>
-<p class="eyebrow">MOMENTUM</p>
-<h2>Latest Achievement</h2>
-</div>
-<a class="view-link" href="#/achievements">
-                    View All
-                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-</a>
-</div>
-<div class="achievement-box">
-<div aria-hidden="true" id="achievement-icon">🌱</div>
-<div>
-<h3 id="achievement-title">
-                        Getting Started
-                    </h3>
-<p id="achievement-description">
-                        Complete a task or habit check-in to begin.
-                    </p>
-<span id="achievement-unlocked-date">No achievements unlocked yet</span>
-</div>
-</div>
-</section>
-<section class="recent-card">
-<div class="section-heading">
-<div>
-<p class="eyebrow">RECENT ACTIVITY</p>
-<h2>Latest Tasks</h2>
-</div>
-<a class="view-link" href="#/todos">
-                    View Tasks
-                    <i class="fa-solid fa-arrow-right"></i>
-</a>
-</div>
-<div id="recent-tasks"></div>
-</section>
-</main>
-
-
-
-</template>
-<template id="page-achievements">
-<header class="top-bar">
-<h1>Achievements</h1>
-<a aria-label="Open Statistics" class="icon-button" href="#/stats">
-<i class="fa-solid fa-chart-line" aria-hidden="true"></i>
-</a>
-</header>
-<main class="progression-main">
-<section class="progression-hero" aria-labelledby="progression-title">
-<p class="progression-eyebrow">YOUR ASCENDRA JOURNEY</p>
-<h2 id="progression-title">Level <span data-xp-level>1</span></h2>
-<p>Complete meaningful actions, earn XP, and collect achievements as you build momentum.</p>
-<dl class="progression-summary" aria-label="Progress summary">
-<div>
-<dt><i class="fa-solid fa-bolt" aria-hidden="true"></i><span>Total XP</span></dt>
-<dd data-xp-total>0 XP</dd>
-</div>
-<div>
-<dt><i class="fa-solid fa-trophy" aria-hidden="true"></i><span>Unlocked achievements</span></dt>
-<dd data-achievement-count>0</dd>
-</div>
-<div>
-<dt><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i><span>Current level</span></dt>
-<dd data-xp-level>1</dd>
-</div>
-</dl>
-<div class="progression-xp-heading">
-<span data-xp-level-start>0 XP</span>
-<span data-xp-level-end>100 XP</span>
-</div>
-<div class="progression-xp-track" data-xp-progress role="progressbar" aria-label="XP toward the next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 of 100 XP toward Level 2">
-<div data-xp-progress-fill></div>
-</div>
-<p class="progression-xp-message" data-xp-message>100 XP to Level 2</p>
-</section>
-
-<section class="progression-section" aria-labelledby="achievement-list-heading">
-<div class="progression-section-heading">
-<div>
-<p class="progression-eyebrow">MILESTONES</p>
-<h2 id="achievement-list-heading">Achievements</h2>
-</div>
-<a href="#/stats">View Statistics <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-</div>
-<ul class="progress-achievement-grid" id="achievement-list"></ul>
-</section>
-
-<section class="progression-section" aria-labelledby="badge-list-heading">
-<div class="progression-section-heading">
-<div>
-<p class="progression-eyebrow">SPECIAL RECOGNITION</p>
-<h2 id="badge-list-heading">Badges</h2>
-</div>
-<a href="#/profile">View Profile <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
-</div>
-<ul class="progress-badge-grid" id="badge-list"></ul>
-<p class="progression-note">Special badges are separate from achievements. GENESIS is awarded manually.</p>
-</section>
-</main>
-</template>
-<template id="page-profile">
-
-<header class="top-bar">
-
-<h1>My Profile</h1>
-<a aria-label="Open settings" class="icon-button" href="#/settings">
-<i class="fa-solid fa-gear"></i>
-</a>
-</header>
-<main>
-<section class="profile-card">
-<div class="profile-picture-container">
-<img alt="Profile picture" id="profile-picture" src="https://placehold.co/160x160?text=Profile"/>
-<label aria-label="Upload profile picture" class="camera-button" for="profile-upload" role="button" tabindex="0">
-<i class="fa-solid fa-camera"></i>
-</label>
-<input accept="image/*" hidden="" id="profile-upload" type="file"/>
-</div>
-<h2 id="display-name">Ascendra User</h2>
-<p id="display-username">@ascendrauser</p>
-<p id="display-bio">
-                Becoming better, one day at a time.
-            </p>
-</section>
-<section class="stats-container">
-<div class="stat-card">
-<i class="fa-solid fa-fire"></i>
-<h3 id="streak-number">0</h3>
-<p>Day Streak</p>
-</div>
-<div class="stat-card">
-<i class="fa-solid fa-list-check"></i>
-<h3 id="tasks-number">0</h3>
-<p>Tasks Done</p>
-</div>
-<a class="stat-card profile-stat-link" href="#/achievements">
-<i aria-hidden="true" class="fa-solid fa-trophy"></i>
-<h3 data-achievement-count id="achievements-number">0</h3>
-<p>Achievements</p>
-</a>
-<div class="stat-card">
-<i class="fa-solid fa-bolt"></i>
-<h3 data-xp-number>0</h3>
-<p>Total XP</p>
-</div>
-<div class="stat-card">
-<i class="fa-solid fa-arrow-trend-up"></i>
-<h3 data-xp-level>1</h3>
-<p>Level</p>
-</div>
-</section>
-<section class="edit-profile-card">
-<h2>
-<i class="fa-solid fa-user-pen"></i>
-                Edit Profile
-            </h2>
-<div class="input-group">
-<label for="name-input">First Name</label>
-<div class="input-wrapper">
-<i class="fa-solid fa-user"></i>
-<input id="name-input" maxlength="30" placeholder="Enter your first name" type="text"/>
-</div>
-</div>
-<div class="input-group">
-<label for="surname-input">Surname</label>
-<div class="input-wrapper">
-<i class="fa-solid fa-user"></i>
-<input id="surname-input" maxlength="30" placeholder="Enter your surname" type="text"/>
-</div>
-</div>
-<div class="input-group">
-<label for="username-input">Username</label>
-<div class="input-wrapper">
-<i class="fa-solid fa-at"></i>
-<input id="username-input" maxlength="20" placeholder="Enter your username" type="text"/>
-</div>
-</div>
-<div class="input-group">
-<label for="bio-input">Bio</label>
-<textarea id="bio-input" maxlength="120" placeholder="Write something about yourself..."></textarea>
-<p id="character-count">0 / 120</p>
-</div>
-<button id="save-button" type="button">
-<i class="fa-solid fa-floppy-disk"></i>
-                Save Changes
+        <button onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </div>
+    </template>
+    <template id="page-breathing">
+      <main>
+        <h1>Breathing Exercises</h1>
+        <p class="subtitle">Choose a breathing exercise</p>
+        <section class="menu" id="exerciseMenu">
+          <button onclick="chooseExercise('box')">
+            Box Breathing<br /><span>4-4-4-4</span>
+          </button>
+          <button onclick="chooseExercise('calm')">
+            Calm Breathing<br /><span>5-5</span>
+          </button>
+          <button onclick="chooseExercise('relax')">
+            4-7-8 Breathing<br /><span>4-7-8</span>
+          </button>
+        </section>
+        <section class="breathing-box">
+          <h2 id="exerciseTitle">Box Breathing</h2>
+          <p id="instructions">Breathe in, hold, exhale, and hold again.</p>
+          <div id="circle">
+            <h3 id="phaseText">Ready</h3>
+            <p id="countdown">0</p>
+          </div>
+          <button id="startBtn" onclick="startBreathing()">Start</button>
+          <button id="stopBtn" onclick="stopBreathing()">Stop</button>
+        </section>
+      </main>
+      <nav class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button class="current">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </nav>
+    </template>
+    <template id="page-calendar">
+      <div class="calendar-container">
+        <div class="top-title">
+          <h1>Calendar</h1>
+          <button class="addEvent" type="button">+ Add Event</button>
+        </div>
+        <div class="calendar-card">
+          <div class="calendar-header">
+            <button aria-label="Previous month" id="prevMonth" type="button">
+              ‹
             </button>
-<p aria-live="polite" id="save-message"></p>
-<button id="logout-button" type="button">Log Out <i class="fa-solid fa-right-from-bracket"></i></button>
-</section>
-</main>
-
-
-
-</template>
-<template id="page-extras">
-
-
-<h1>Extras</h1>
-<div id="button-container">
-<button class="options" id="time-capsule" onclick="navigate('comingsoon')">Time Capsule<br/><i class="fa-solid fa-hourglass-half"></i></button>
-<button class="options" id="soundscape" onclick="navigate('comingsoon')">Soundscape<br/><i class="fa-solid fa-music"></i></button>
-<button class="options" id="unwind" onclick="navigate('unwind')">Unwind<br/><i class="fa-solid fa-cloud-moon"></i></button>
-<button class="options" id="achievements" onclick="navigate('achievements')" type="button">Achievements<br/><i class="fa-solid fa-medal"></i></button>
-<button class="options" id="mini-tools" onclick="navigate('minitools')" type="button">Mini Tools<br/><i class="fa-solid fa-gamepad"></i></button>
-</div>
-<div class="navbar">
-<button onclick="navigate('home')"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-<button onclick="navigate('alerts')"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-<button onclick="navigate('todos')"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-<button onclick="navigate('habits')"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-<button onclick="navigate('breathing')"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-<button onclick="navigate('calendar')"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-<button onclick="navigate('journal')"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-<button class="current" onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-</div>
-
-
-</template>
-<template id="page-privacy">
-
-<div class="policy-container">
-    <h1 class="policies">Privacy Policy</h1>
-
-    <p class="policies">
-        <strong>Last Updated:</strong> July 16, 2026
-    </p>
-
-    <p class="policies">
-        Your privacy is important to us. This Privacy Policy explains how
-        Ascendra handles the information you choose to enter into the application.
-    </p>
-
-    <h2 class="policies">Information Stored by Ascendra</h2>
-
-    <p class="policies">
-        Ascendra stores information that you choose to enter, including:
-    </p>
-
-    <ul class="policies">
-        <li>Calendar events</li>
-        <li>Journal entries</li>
-        <li>To-do items</li>
-        <li>Habits</li>
-        <li>App preferences</li>
-    </ul>
-
-    <h2 class="policies">How Your Information Is Stored</h2>
-
-    <p class="policies">
-        Currently, your information is stored locally in your web browser using
-        Local Storage. Ascendra does not upload this information to its own servers.
-    </p>
-
-    <p class="policies">
-        Your saved information may be lost if you clear your browser data, use a
-        different browser, switch devices, or reset Ascendra.
-    </p>
-
-    <h2 class="policies">Information We Collect</h2>
-
-    <p class="policies">
-        Ascendra does not currently collect, sell, rent, or share the personal
-        information you enter into the application.
-    </p>
-
-    <h2 class="policies">Third-Party Services</h2>
-
-    <p class="policies">
-        Ascendra may load third-party resources, such as Font Awesome, to provide
-        icons and other website features. These services may operate under their
-        own privacy policies.
-    </p>
-
-    <h2 class="policies">Cookies</h2>
-
-    <p class="policies">
-        Ascendra does not currently use cookies for advertising or user tracking.
-    </p>
-
-    <h2 class="policies">Security</h2>
-
-    <p class="policies">
-        Because information is stored in your browser, anyone with access to your
-        device or browser profile may be able to view it. Do not store highly
-        sensitive information in Ascendra.
-    </p>
-
-    <h2 class="policies">Your Control</h2>
-
-    <p class="policies">
-        You can remove stored information by deleting items within Ascendra,
-        using the reset option in Settings, or clearing your browser data.
-    </p>
-
-    <h2 class="policies">Future Updates</h2>
-
-    <p class="policies">
-        If Ascendra later adds user accounts, cloud storage, synchronization,
-        analytics, or other online features, this Privacy Policy will be updated
-        to explain how those features handle information.
-    </p>
-
-    <h2 class="policies">Changes to This Policy</h2>
-
-    <p class="policies">
-        This Privacy Policy may be updated as Ascendra changes. The date shown at
-        the top of this page will indicate when it was last updated.
-    </p>
-
-    <p class="policies">
-        © 2026 Ascendra. All rights reserved.
-    </p>
-</div>
-
-</template>
-
-
-<template id="page-terms">
-
-<div class="terms-container">
-    <h1>Terms of Service</h1>
-
-    <p>
-        <strong>Last Updated:</strong> July 16, 2026
-    </p>
-
-    <p>
-        Welcome to Ascendra. By using this application, you agree to these Terms
-        of Service. If you do not agree with these terms, please do not use Ascendra.
-    </p>
-
-    <h2>Use of Ascendra</h2>
-
-    <p>
-        Ascendra is a productivity application designed to help users organize
-        calendars, journal entries, to-do lists, habits, and other information.
-    </p>
-
-    <p>
-        You agree to use Ascendra responsibly, lawfully, and without attempting
-        to damage, disrupt, misuse, or interfere with the application.
-    </p>
-
-    <h2>Your Data</h2>
-
-    <p>
-        You are responsible for the information you choose to store in Ascendra.
-        At this time, information is stored locally in your web browser.
-    </p>
-
-    <p>
-        You should keep separate backups of any information that is important to
-        you. Clearing browser data, switching devices, or resetting Ascendra may
-        permanently remove saved information.
-    </p>
-
-    <h2>No Guarantees</h2>
-
-    <p>
-        Ascendra is provided <strong>"as is"</strong> and
-        <strong>"as available."</strong>
-    </p>
-
-    <p>
-        We do not guarantee that Ascendra will always be available, uninterrupted,
-        secure, error-free, or free from bugs.
-    </p>
-
-    <h2>Feature Changes</h2>
-
-    <p>
-        Features may be added, changed, temporarily unavailable, or removed as
-        Ascendra continues to develop.
-    </p>
-
-    <h2>Limitation of Liability</h2>
-
-    <p>
-        To the fullest extent permitted by applicable law, the creators of
-        Ascendra are not responsible for lost data, interrupted access, device
-        issues, or other damages resulting from the use or inability to use the
-        application.
-    </p>
-
-    <h2>Intellectual Property</h2>
-
-    <p>
-        The Ascendra name, logo, original code, design, and original content belong
-        to the Ascendra project unless otherwise stated.
-    </p>
-
-    <p>
-        Third-party libraries, icons, and resources remain the property of their
-        respective owners and may be subject to separate licences.
-    </p>
-
-    <h2>Changes to These Terms</h2>
-
-    <p>
-        These Terms of Service may be updated as Ascendra changes. Continued use
-        of Ascendra after an update means that you agree to the updated terms.
-    </p>
-
-    <hr>
-
-    <p>
-        © 2026 Ascendra. All rights reserved.
-    </p>
-</div>
-
-</template>
-<template id="page-about">
-
-<header class="about-header">
-
-<h1>About Ascendra</h1>
-<p class="header-description">
-            Organize your life, build better habits, reflect on your journey,
-            and keep moving forward.
-        </p>
-</header>
-<main class="about-container">
-<section class="about-section intro-section">
-<div class="section-icon">
-<i class="fa-solid fa-mountain-sun"></i>
-</div>
-<div class="section-content">
-<h2>What Is Ascendra?</h2>
-<p>
-                    Ascendra is a productivity and personal growth app designed
-                    to help people organize their lives in one simple place.
-                </p>
-<p>
-                    It includes tools for planning, journaling, tracking habits,
-                    completing tasks, managing events, and reflecting on progress.
-                </p>
-</div>
-</section>
-<section class="about-section">
-<div class="section-icon">
-<i class="fa-solid fa-bullseye"></i>
-</div>
-<div class="section-content">
-<h2>Our Mission</h2>
-<p>
-                    Ascendra's mission is to make everyday life feel more organized,
-                    balanced, and meaningful.
-                </p>
-<p>
-                    Productivity is not only about doing more. It is also about
-                    building healthy routines, making time for yourself, and
-                    recognizing how far you have come.
-                </p>
-</div>
-</section>
-<section class="features-section">
-<h2>What You Can Do</h2>
-<div class="features-grid">
-<article class="feature-card">
-<i class="fa-solid fa-calendar-days"></i>
-<h3>Plan Your Time</h3>
-<p>
-                        Organize events, schedules, deadlines, and important dates.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-list-check"></i>
-<h3>Manage Tasks</h3>
-<p>
-                        Create to-do lists and keep track of what needs to be done.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-book-open"></i>
-<h3>Write and Reflect</h3>
-<p>
-                        Record thoughts, memories, ideas, and experiences in your journal.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-chart-line"></i>
-<h3>Build Habits</h3>
-<p>
-                        Develop routines and track your progress over time.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-hourglass-half"></i>
-<h3>Create Time Capsules</h3>
-<p>
-                        Save messages and memories to revisit in the future.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-music"></i>
-<h3>Use Soundscapes</h3>
-<p>
-                        Listen to calming sounds while studying, working, or relaxing.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-cloud-moon"></i>
-<h3>Unwind</h3>
-<p>
-                        Take a break with peaceful tools designed to help you relax.
-                    </p>
-</article>
-<article class="feature-card">
-<i class="fa-solid fa-medal"></i>
-<h3>Earn Achievements</h3>
-<p>
-                        Celebrate milestones and stay motivated as you make progress.
-                    </p>
-</article>
-</div>
-</section>
-<section class="about-section">
-<div class="section-icon">
-<i class="fa-solid fa-seedling"></i>
-</div>
-<div class="section-content">
-<h2>More Than Productivity</h2>
-<p>
-                    Ascendra is not only about checking boxes or completing tasks.
-                    It is designed to help users grow, reflect, stay motivated, and
-                    create a life that feels more manageable.
-                </p>
-<p>
-                    Every feature is built around the idea that small steps can lead
-                    to meaningful progress.
-                </p>
-</div>
-</section>
-<section class="about-section">
-<div class="section-icon">
-<i class="fa-solid fa-code"></i>
-</div>
-<div class="section-content">
-<h2>How It Started</h2>
-<p>
-                    Ascendra began as a small coding project and slowly grew into
-                    something much bigger.
-                </p>
-<p>
-                    The goal was to create one place where people could organize
-                    different parts of their lives without needing several separate apps.
-                </p>
-</div>
-</section>
-<section class="about-section">
-<div class="section-icon">
-<i class="fa-solid fa-wand-magic-sparkles"></i>
-</div>
-<div class="section-content">
-<h2>The Future of Ascendra</h2>
-<p>
-                    Ascendra is still growing. Future updates may include more themes,
-                    customization options, productivity tools, wellness features,
-                    achievements, and new ways to track personal growth.
-                </p>
-<p>
-                    New ideas will continue to be added as Ascendra develops.
-                </p>
-<a class="about-roadmap-link" href="#/roadmap">
-<i aria-hidden="true" class="fa-solid fa-map"></i>
-                    View Roadmap
-                </a>
-</div>
-</section>
-<section class="creator-section">
-<i class="fa-solid fa-laptop-code"></i>
-<h2>Created By Declan and Jayden</h2>
-<p>
-                Ascendra was designed and developed by Declan and Jayden as a long-term coding
-                project combining creativity, organization, and personal growth.
-            </p>
-</section>
-</main>
-<footer class="about-footer">
-<p>© 2026 Ascendra. All rights reserved.</p>
-<div class="footer-links">
-<a href="#/privacy">Privacy Policy</a>
-<a href="#/terms">Terms of Service</a>
-</div>
-</footer>
-
-
-</template>
-<template id="page-credits">
-
-
-<div class="credit-card">
-<h1>🦊 Ascendra</h1>
-<p>Version 1.0</p>
-<hr/>
-<h2>Created By</h2>
-<p><strong>Declan Chong</strong></p>
-<p><strong>Jayden Wang</strong></p>
-<h2>Developers</h2>
-<p>Lead Developer: Declan Chong</p>
-<p>Backend &amp; Frontend: Jayden Wang</p>
-<h2>Special Thanks</h2>
-<p>FlatPickr — For the Calendar</p>
-<p>Font Awesome — For the icons</p>
-<!-- Add more people here -->
-<hr>
-<h2>Sources</h2>
-<a href="https://github.com/Jedicuber/Ascendra" target="_blank" rel="noopener" class="github-button"><i aria-hidden="true" class="fa-brands fa-github"></i>Source code on GitHub</a>
-<h3>Made using:</h3>
-<p><i aria-hidden="true" class="fa-brands fa-html5"></i><span class="visually-hidden">HTML5</span></p>
-<p><i aria-hidden="true" class="fa-brands fa-css3"></i><span class="visually-hidden">CSS3</span></p>
-<p><i aria-hidden="true" class="fa-brands fa-js"></i><span class="visually-hidden">JavaScript</span></p>
-
-<hr/>
-<p><em>Built to help people live a better day.</em></p>
-<p><i class="fa-regular fa-copyright"></i> 2026 Ascendra</p>
-</div>
-
-
-</template>
-<template id="page-comingsoon">
-
-
-<main>
-<h1><i class="fa-solid fa-person-digging"></i> Under Development</h1>
-<p>We're working hard to bring this feature to Ascendra.<br/>Check back soon!</p>
-</main>
-
-
-</template>
-<template id="page-projects">
-
-
-<main>
-<h1><i class="fa-solid fa-person-digging"></i> Under Development</h1>
-<p>We're working hard to bring this feature to Ascendra.<br/>Check back soon!</p>
-</main>
-
-
-</template>
-<template id="page-roadmap">
-  <main class="roadmap-page">
-    <h1>Ascendra Roadmap</h1>
-
-    <section class="roadmap-card" id="horizon">
-        <div class="roadmap-header">
+            <h2></h2>
+            <button aria-label="Next month" id="nextMonth" type="button">
+              ›
+            </button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+              </tr>
+            </thead>
+            <tbody id="calendarBody"></tbody>
+          </table>
+        </div>
+        <div
+          aria-hidden="true"
+          aria-labelledby="event-dialog-title"
+          aria-modal="true"
+          class="popup"
+          id="eventPopup"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div class="popup-box">
+            <h2 id="event-dialog-title">New Event</h2>
+            <input
+              aria-label="Event name"
+              id="eventTitle"
+              maxlength="120"
+              placeholder="Event name"
+              type="text"
+            />
+            <input
+              aria-label="Event date and time"
+              id="eventDate"
+              placeholder="Choose date"
+              type="text"
+            />
+            <button id="saveEvent" type="button">Save</button>
+            <button id="closePopup" type="button">Close</button>
+          </div>
+        </div>
+        <div class="navbar">
+          <button onclick="navigate('home')">
+            <i class="fa-solid fa-mug-saucer"></i><br />Home
+          </button>
+          <button onclick="navigate('alerts')">
+            <i class="fa-regular fa-bell"></i><br />Alerts
+          </button>
+          <button onclick="navigate('todos')">
+            <i class="fa-solid fa-list-check"></i><br />To-Dos
+          </button>
+          <button onclick="navigate('habits')">
+            <i class="fa-regular fa-thumbs-up"></i><br />Habits
+          </button>
+          <button onclick="navigate('breathing')">
+            <i class="fa-solid fa-wind"></i><br />Breathing
+          </button>
+          <button class="current" onclick="navigate('calendar')">
+            <i class="fa-regular fa-calendar"></i><br />Calendar
+          </button>
+          <button onclick="navigate('journal')">
+            <i class="fa-solid fa-book-open"></i><br />Journal
+          </button>
+          <button onclick="navigate('menu')">
+            <i class="fa-solid fa-bars-staggered"></i><br />Menu
+          </button>
+        </div>
+      </div>
+    </template>
+    <template id="page-journal">
+      <div class="journal-container">
+        <div class="journal-header">
+          <h1>Journal</h1>
+          <p>Reflect on today. Remember tomorrow.</p>
+        </div>
+        <div class="journal-layout">
+          <div class="date-grid-card">
+            <div class="mini-calendar-header">
+              <button aria-label="Previous month" id="prevMonth" type="button">
+                ‹
+              </button>
+              <h2 id="monthTitle">Month</h2>
+              <button aria-label="Next month" id="nextMonth" type="button">
+                ›
+              </button>
+            </div>
+            <div class="date-grid" id="dateGrid"></div>
+          </div>
+          <div class="entry-card">
+            <h2 id="entryTitle">Today's Entry</h2>
+            <label for="mood">Mood</label>
+            <select id="mood">
+              <option value="Happy">😁 Happy</option>
+              <option value="Good">🙂 Good</option>
+              <option value="Okay">😐 Okay</option>
+              <option value="Sad">☹️ Sad</option>
+              <option value="Angry">😠 Angry</option>
+              <option value="Tired">🥱 Tired</option>
+            </select>
+            <label for="dayText">How was your day?</label>
+            <textarea id="dayText"></textarea>
+            <label for="gratefulText">What are you grateful for?</label>
+            <textarea id="gratefulText"></textarea>
+            <label for="learnText">What did you learn today?</label>
+            <textarea id="learnText"></textarea>
+            <label for="goalText">Goal for tomorrow</label>
+            <textarea id="goalText"></textarea>
+            <button id="saveEntry" type="button">Save Entry</button>
+            <p aria-live="polite" id="statusMessage"></p>
+          </div>
+        </div>
+      </div>
+      <div class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button class="current">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </div>
+    </template>
+    <template id="page-menu">
+      <h1 id="menuTitle">Menu</h1>
+      <div id="nav">
+        <button id="settings" onclick="navigate('settings')">
+          Settings<br />
+          <i class="fa-solid fa-gears"></i>
+        </button>
+        <button id="statistics" onclick="navigate('stats')">
+          Statistics<br />
+          <i class="fa-solid fa-chart-line"></i>
+        </button>
+        <button id="profile" onclick="navigate('profile')">
+          Profile<br />
+          <i class="fa-regular fa-user"></i>
+        </button>
+        <button id="extras" onclick="navigate('extras')">
+          Extras<br />
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </button>
+        <button id="privacy-security" onclick="navigate('privacy')">
+          Privacy<br />
+          <i class="fa-solid fa-user-shield"></i>
+        </button>
+        <button id="terms" onclick="navigate('terms')">
+          Terms of Service<br />
+          <i class="fa-solid fa-file-contract"></i>
+        </button>
+        <button id="about" onclick="navigate('about')">
+          About<br />
+          <i class="fa-solid fa-circle-info"></i>
+        </button>
+        <button id="roadmap" onclick="navigate('roadmap')" type="button">
+          Roadmap<br />
+          <i aria-hidden="true" class="fa-solid fa-map"></i>
+        </button>
+        <button id="credits" onclick="navigate('credits')">
+          Credits<br />
+          <i class="fa-solid fa-users"></i>
+        </button>
+      </div>
+      <div class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button class="current">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </div>
+    </template>
+    <template id="page-settings">
+      <div class="page">
+        <main class="content">
+          <header>
+            <h2>Settings</h2>
+          </header>
+
+          <section class="card settings">
+            <label>
+              <input type="checkbox" id="mode" />
+              <i class="fa-solid fa-cloud-moon"></i> Dark mode
+            </label>
+          </section>
+
+          <section class="card danger">
+            <h3><i class="fa-solid fa-biohazard"></i> Danger Zone</h3>
+            <p>Be careful. These actions can remove your Ascendra data.</p>
+            <div class="danger-item">
+              <div>
+                <h4>Reset Settings</h4>
+                <p>Resets settings back to default.</p>
+              </div>
+              <button onclick="resetSettings()">Reset</button>
+            </div>
+            <div class="danger-item">
+              <div>
+                <h4>Delete All Local Data</h4>
+                <p>Deletes saved Ascendra data from this browser.</p>
+              </div>
+              <button onclick="deleteAllData()">Delete</button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </template>
+    <template id="page-stats">
+      <header class="top-bar">
+        <h1>Statistics</h1>
+        <a aria-label="Open profile" class="icon-button" href="#/profile">
+          <i class="fa-solid fa-user"></i>
+        </a>
+      </header>
+      <main>
+        <section class="welcome-section">
+          <p class="eyebrow">YOUR PROGRESS</p>
+          <h2 id="welcome-message">Keep building momentum.</h2>
+          <p>Here is how your Ascendra journey is going.</p>
+        </section>
+        <section
+          class="progress-card xp-card"
+          aria-labelledby="stats-xp-heading"
+        >
+          <div class="section-heading">
             <div>
-                <h2>Update Horizon</h2>
-                <p class="roadmap subtitle">Ascendra'a second major update</p>
+              <p class="eyebrow">LEVEL PROGRESS</p>
+              <h2 id="stats-xp-heading">Level <span data-xp-level>1</span></h2>
+            </div>
+            <strong class="xp-total" data-xp-total>0 XP</strong>
+          </div>
+          <div class="xp-meta" aria-hidden="true">
+            <span data-xp-level-start>0 XP</span>
+            <span data-xp-level-end>100 XP</span>
+          </div>
+          <div
+            class="progress-track xp-progress-track"
+            data-xp-progress
+            role="progressbar"
+            aria-labelledby="stats-xp-heading"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-valuetext="0 of 100 XP toward Level 2"
+          >
+            <div data-xp-progress-fill></div>
+          </div>
+          <p data-xp-message>100 XP to Level 2</p>
+        </section>
+        <h2 class="category-title">
+          <i class="fa-solid fa-list-check"></i>
+          Task Statistics
+        </h2>
+        <section class="stats-grid">
+          <article class="stat-card">
+            <div class="stat-icon">
+              <i class="fa-solid fa-list"></i>
+            </div>
+            <div>
+              <h3 id="total-tasks">0</h3>
+              <p>Total Tasks</p>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <h3 id="completed-tasks">0</h3>
+              <p>Completed Tasks</p>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div>
+              <h3 id="remaining-tasks">0</h3>
+              <p>Remaining Tasks</p>
+            </div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-icon">
+              <i class="fa-solid fa-percent"></i>
+            </div>
+            <div>
+              <h3 id="task-completion-rate">0%</h3>
+              <p>Task Completion</p>
+            </div>
+          </article>
+        </section>
+        <section class="progress-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">TASK PROGRESS</p>
+              <h2>Overall Task Completion</h2>
+            </div>
+            <strong id="task-progress-label">0%</strong>
+          </div>
+          <div
+            aria-label="Overall task completion"
+            aria-valuemax="100"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuetext="0% of tasks completed"
+            class="progress-track"
+            id="task-progress-track"
+            role="progressbar"
+          >
+            <div id="task-progress-fill"></div>
+          </div>
+          <p id="task-progress-message">
+            Add your first task to begin tracking progress.
+          </p>
+        </section>
+        <h2 class="category-title">
+          <i class="fa-solid fa-repeat"></i>
+          Habit Statistics
+        </h2>
+        <section class="stats-grid">
+          <article class="stat-card habit-stat-card">
+            <div class="stat-icon habit-icon">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+              <h3 id="total-habits">0</h3>
+              <p>Total Habits</p>
+            </div>
+          </article>
+          <article class="stat-card habit-stat-card">
+            <div class="stat-icon habit-icon">
+              <i class="fa-solid fa-thumbs-up"></i>
+            </div>
+            <div>
+              <h3 id="successful-habit-days">0</h3>
+              <p>Successful Check-ins</p>
+            </div>
+          </article>
+          <article class="stat-card habit-stat-card">
+            <div class="stat-icon habit-icon">
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div>
+              <h3 id="missed-habit-days">0</h3>
+              <p>Missed Check-ins</p>
+            </div>
+          </article>
+          <article class="stat-card habit-stat-card">
+            <div class="stat-icon habit-icon">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+              <h3 id="habit-success-rate">0%</h3>
+              <p>Habit Success Rate</p>
+            </div>
+          </article>
+        </section>
+        <section class="progress-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow habit-eyebrow">HABIT PROGRESS</p>
+              <h2>Overall Habit Success</h2>
+            </div>
+            <strong id="habit-progress-label">0%</strong>
+          </div>
+          <div
+            aria-label="Overall habit success"
+            aria-valuemax="100"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            aria-valuetext="0% successful habit check-ins"
+            class="progress-track"
+            id="habit-progress-track"
+            role="progressbar"
+          >
+            <div id="habit-progress-fill"></div>
+          </div>
+          <p id="habit-progress-message">
+            Check off a habit to begin tracking it.
+          </p>
+        </section>
+        <section class="details-grid">
+          <article class="details-card">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">TASK OVERVIEW</p>
+                <h2>Due Dates</h2>
+              </div>
+              <i class="fa-solid fa-calendar-days section-icon"></i>
+            </div>
+            <div class="detail-row">
+              <span>Due today</span>
+              <strong id="due-today">0</strong>
+            </div>
+            <div class="detail-row">
+              <span>Overdue</span>
+              <strong id="overdue-tasks">0</strong>
+            </div>
+            <div class="detail-row">
+              <span>Future tasks</span>
+              <strong id="future-tasks">0</strong>
+            </div>
+          </article>
+          <article class="details-card">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow habit-eyebrow">TODAY</p>
+                <h2>Habit Check-ins</h2>
+              </div>
+              <i class="fa-solid fa-calendar-check section-icon"></i>
+            </div>
+            <div class="detail-row">
+              <span>Successful today</span>
+              <strong id="habits-successful-today">0</strong>
+            </div>
+            <div class="detail-row">
+              <span>Missed today</span>
+              <strong id="habits-missed-today">0</strong>
+            </div>
+            <div class="detail-row">
+              <span>Not checked today</span>
+              <strong id="habits-unchecked-today">0</strong>
+            </div>
+          </article>
+        </section>
+        <section class="details-card achievement-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">MOMENTUM</p>
+              <h2>Latest Achievement</h2>
+            </div>
+            <a class="view-link" href="#/achievements">
+              View All
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="achievement-box">
+            <div aria-hidden="true" id="achievement-icon">🌱</div>
+            <div>
+              <h3 id="achievement-title">Getting Started</h3>
+              <p id="achievement-description">
+                Complete a task or habit check-in to begin.
+              </p>
+              <span id="achievement-unlocked-date"
+                >No achievements unlocked yet</span
+              >
+            </div>
+          </div>
+        </section>
+        <section class="recent-card">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">RECENT ACTIVITY</p>
+              <h2>Latest Tasks</h2>
+            </div>
+            <a class="view-link" href="#/todos">
+              View Tasks
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+          <div id="recent-tasks"></div>
+        </section>
+      </main>
+    </template>
+    <template id="page-achievements">
+      <header class="top-bar">
+        <h1>Achievements</h1>
+        <a aria-label="Open Statistics" class="icon-button" href="#/stats">
+          <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+        </a>
+      </header>
+      <main class="progression-main">
+        <section class="progression-hero" aria-labelledby="progression-title">
+          <p class="progression-eyebrow">YOUR ASCENDRA JOURNEY</p>
+          <h2 id="progression-title">Level <span data-xp-level>1</span></h2>
+          <p>
+            Complete meaningful actions, earn XP, and collect achievements as
+            you build momentum.
+          </p>
+          <dl class="progression-summary" aria-label="Progress summary">
+            <div>
+              <dt>
+                <i class="fa-solid fa-bolt" aria-hidden="true"></i
+                ><span>Total XP</span>
+              </dt>
+              <dd data-xp-total>0 XP</dd>
+            </div>
+            <div>
+              <dt>
+                <i class="fa-solid fa-trophy" aria-hidden="true"></i
+                ><span>Unlocked achievements</span>
+              </dt>
+              <dd data-achievement-count>0</dd>
+            </div>
+            <div>
+              <dt>
+                <i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i
+                ><span>Current level</span>
+              </dt>
+              <dd data-xp-level>1</dd>
+            </div>
+          </dl>
+          <div class="progression-xp-heading">
+            <span data-xp-level-start>0 XP</span>
+            <span data-xp-level-end>100 XP</span>
+          </div>
+          <div
+            class="progression-xp-track"
+            data-xp-progress
+            role="progressbar"
+            aria-label="XP toward the next level"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            aria-valuetext="0 of 100 XP toward Level 2"
+          >
+            <div data-xp-progress-fill></div>
+          </div>
+          <p class="progression-xp-message" data-xp-message>
+            100 XP to Level 2
+          </p>
+        </section>
+
+        <section
+          class="progression-section"
+          aria-labelledby="achievement-list-heading"
+        >
+          <div class="progression-section-heading">
+            <div>
+              <p class="progression-eyebrow">MILESTONES</p>
+              <h2 id="achievement-list-heading">Achievements</h2>
+            </div>
+            <a href="#/stats"
+              >View Statistics
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i
+            ></a>
+          </div>
+          <ul class="progress-achievement-grid" id="achievement-list"></ul>
+        </section>
+
+        <section
+          class="progression-section"
+          aria-labelledby="badge-list-heading"
+        >
+          <div class="progression-section-heading">
+            <div>
+              <p class="progression-eyebrow">SPECIAL RECOGNITION</p>
+              <h2 id="badge-list-heading">Badges</h2>
+            </div>
+            <a href="#/profile"
+              >View Profile
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i
+            ></a>
+          </div>
+          <ul class="progress-badge-grid" id="badge-list"></ul>
+          <p class="progression-note">
+            Special badges are separate from achievements. GENESIS is awarded
+            manually.
+          </p>
+        </section>
+      </main>
+    </template>
+    <template id="page-profile">
+      <header class="top-bar">
+        <h1>My Profile</h1>
+        <a aria-label="Open settings" class="icon-button" href="#/settings">
+          <i class="fa-solid fa-gear"></i>
+        </a>
+      </header>
+      <main>
+        <section class="profile-card">
+          <div class="profile-picture-container">
+            <img
+              alt="Profile picture"
+              id="profile-picture"
+              src="https://placehold.co/160x160?text=Profile"
+            />
+            <label
+              aria-label="Upload profile picture"
+              class="camera-button"
+              for="profile-upload"
+              role="button"
+              tabindex="0"
+            >
+              <i class="fa-solid fa-camera"></i>
+            </label>
+            <input accept="image/*" hidden="" id="profile-upload" type="file" />
+          </div>
+          <h2 id="display-name">Ascendra User</h2>
+          <p id="display-username">@ascendrauser</p>
+          <p id="display-bio">Becoming better, one day at a time.</p>
+        </section>
+        <section class="stats-container">
+          <div class="stat-card">
+            <i class="fa-solid fa-fire"></i>
+            <h3 id="streak-number">0</h3>
+            <p>Day Streak</p>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-list-check"></i>
+            <h3 id="tasks-number">0</h3>
+            <p>Tasks Done</p>
+          </div>
+          <a class="stat-card profile-stat-link" href="#/achievements">
+            <i aria-hidden="true" class="fa-solid fa-trophy"></i>
+            <h3 data-achievement-count id="achievements-number">0</h3>
+            <p>Achievements</p>
+          </a>
+          <div class="stat-card">
+            <i class="fa-solid fa-bolt"></i>
+            <h3 data-xp-number>0</h3>
+            <p>Total XP</p>
+          </div>
+          <div class="stat-card">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+            <h3 data-xp-level>1</h3>
+            <p>Level</p>
+          </div>
+        </section>
+        <section class="edit-profile-card">
+          <h2>
+            <i class="fa-solid fa-user-pen"></i>
+            Edit Profile
+          </h2>
+          <div class="input-group">
+            <label for="name-input">First Name</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user"></i>
+              <input
+                id="name-input"
+                maxlength="30"
+                placeholder="Enter your first name"
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="surname-input">Surname</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user"></i>
+              <input
+                id="surname-input"
+                maxlength="30"
+                placeholder="Enter your surname"
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="username-input">Username</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-at"></i>
+              <input
+                id="username-input"
+                maxlength="20"
+                placeholder="Enter your username"
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="bio-input">Bio</label>
+            <textarea
+              id="bio-input"
+              maxlength="120"
+              placeholder="Write something about yourself..."
+            ></textarea>
+            <p id="character-count">0 / 120</p>
+          </div>
+          <button id="save-button" type="button">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save Changes
+          </button>
+          <p aria-live="polite" id="save-message"></p>
+          <button id="logout-button" type="button">
+            Log Out <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </section>
+      </main>
+    </template>
+    <template id="page-extras">
+      <h1>Extras</h1>
+      <div id="button-container">
+        <button
+          class="options"
+          id="time-capsule"
+          onclick="navigate('comingsoon')"
+        >
+          Time Capsule<br /><i class="fa-solid fa-hourglass-half"></i>
+        </button>
+        <button
+          class="options"
+          id="soundscape"
+          onclick="navigate('comingsoon')"
+        >
+          Soundscape<br /><i class="fa-solid fa-music"></i>
+        </button>
+        <button class="options" id="unwind" onclick="navigate('unwind')">
+          Unwind<br /><i class="fa-solid fa-cloud-moon"></i>
+        </button>
+        <button
+          class="options"
+          id="achievements"
+          onclick="navigate('achievements')"
+          type="button"
+        >
+          Achievements<br /><i class="fa-solid fa-medal"></i>
+        </button>
+        <button
+          class="options"
+          id="mini-tools"
+          onclick="navigate('minitools')"
+          type="button"
+        >
+          Mini Tools<br /><i class="fa-solid fa-gamepad"></i>
+        </button>
+      </div>
+      <div class="navbar">
+        <button onclick="navigate('home')">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button onclick="navigate('alerts')">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button onclick="navigate('breathing')">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button onclick="navigate('journal')">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button class="current" onclick="navigate('menu')">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </div>
+    </template>
+    <template id="page-privacy">
+      <div class="policy-container">
+        <h1 class="policies">Privacy Policy</h1>
+
+        <p class="policies"><strong>Last Updated:</strong> July 16, 2026</p>
+
+        <p class="policies">
+          Your privacy is important to us. This Privacy Policy explains how
+          Ascendra handles the information you choose to enter into the
+          application.
+        </p>
+
+        <h2 class="policies">Information Stored by Ascendra</h2>
+
+        <p class="policies">
+          Ascendra stores information that you choose to enter, including:
+        </p>
+
+        <ul class="policies">
+          <li>Calendar events</li>
+          <li>Journal entries</li>
+          <li>To-do items</li>
+          <li>Habits</li>
+          <li>App preferences</li>
+        </ul>
+
+        <h2 class="policies">How Your Information Is Stored</h2>
+
+        <p class="policies">
+          Currently, your information is stored locally in your web browser
+          using Local Storage. Ascendra does not upload this information to its
+          own servers.
+        </p>
+
+        <p class="policies">
+          Your saved information may be lost if you clear your browser data, use
+          a different browser, switch devices, or reset Ascendra.
+        </p>
+
+        <h2 class="policies">Information We Collect</h2>
+
+        <p class="policies">
+          Ascendra does not currently collect, sell, rent, or share the personal
+          information you enter into the application.
+        </p>
+
+        <h2 class="policies">Third-Party Services</h2>
+
+        <p class="policies">
+          Ascendra may load third-party resources, such as Font Awesome, to
+          provide icons and other website features. These services may operate
+          under their own privacy policies.
+        </p>
+
+        <h2 class="policies">Cookies</h2>
+
+        <p class="policies">
+          Ascendra does not currently use cookies for advertising or user
+          tracking.
+        </p>
+
+        <h2 class="policies">Security</h2>
+
+        <p class="policies">
+          Because information is stored in your browser, anyone with access to
+          your device or browser profile may be able to view it. Do not store
+          highly sensitive information in Ascendra.
+        </p>
+
+        <h2 class="policies">Your Control</h2>
+
+        <p class="policies">
+          You can remove stored information by deleting items within Ascendra,
+          using the reset option in Settings, or clearing your browser data.
+        </p>
+
+        <h2 class="policies">Future Updates</h2>
+
+        <p class="policies">
+          If Ascendra later adds user accounts, cloud storage, synchronization,
+          analytics, or other online features, this Privacy Policy will be
+          updated to explain how those features handle information.
+        </p>
+
+        <h2 class="policies">Changes to This Policy</h2>
+
+        <p class="policies">
+          This Privacy Policy may be updated as Ascendra changes. The date shown
+          at the top of this page will indicate when it was last updated.
+        </p>
+
+        <p class="policies">© 2026 Ascendra. All rights reserved.</p>
+      </div>
+    </template>
+
+    <template id="page-terms">
+      <div class="terms-container">
+        <h1>Terms of Service</h1>
+
+        <p><strong>Last Updated:</strong> July 16, 2026</p>
+
+        <p>
+          Welcome to Ascendra. By using this application, you agree to these
+          Terms of Service. If you do not agree with these terms, please do not
+          use Ascendra.
+        </p>
+
+        <h2>Use of Ascendra</h2>
+
+        <p>
+          Ascendra is a productivity application designed to help users organize
+          calendars, journal entries, to-do lists, habits, and other
+          information.
+        </p>
+
+        <p>
+          You agree to use Ascendra responsibly, lawfully, and without
+          attempting to damage, disrupt, misuse, or interfere with the
+          application.
+        </p>
+
+        <h2>Your Data</h2>
+
+        <p>
+          You are responsible for the information you choose to store in
+          Ascendra. At this time, information is stored locally in your web
+          browser.
+        </p>
+
+        <p>
+          You should keep separate backups of any information that is important
+          to you. Clearing browser data, switching devices, or resetting
+          Ascendra may permanently remove saved information.
+        </p>
+
+        <h2>No Guarantees</h2>
+
+        <p>
+          Ascendra is provided <strong>"as is"</strong> and
+          <strong>"as available."</strong>
+        </p>
+
+        <p>
+          We do not guarantee that Ascendra will always be available,
+          uninterrupted, secure, error-free, or free from bugs.
+        </p>
+
+        <h2>Feature Changes</h2>
+
+        <p>
+          Features may be added, changed, temporarily unavailable, or removed as
+          Ascendra continues to develop.
+        </p>
+
+        <h2>Limitation of Liability</h2>
+
+        <p>
+          To the fullest extent permitted by applicable law, the creators of
+          Ascendra are not responsible for lost data, interrupted access, device
+          issues, or other damages resulting from the use or inability to use
+          the application.
+        </p>
+
+        <h2>Intellectual Property</h2>
+
+        <p>
+          The Ascendra name, logo, original code, design, and original content
+          belong to the Ascendra project unless otherwise stated.
+        </p>
+
+        <p>
+          Third-party libraries, icons, and resources remain the property of
+          their respective owners and may be subject to separate licences.
+        </p>
+
+        <h2>Changes to These Terms</h2>
+
+        <p>
+          These Terms of Service may be updated as Ascendra changes. Continued
+          use of Ascendra after an update means that you agree to the updated
+          terms.
+        </p>
+
+        <hr />
+
+        <p>© 2026 Ascendra. All rights reserved.</p>
+      </div>
+    </template>
+    <template id="page-about">
+      <header class="about-header">
+        <h1>About Ascendra</h1>
+        <p class="header-description">
+          Organize your life, build better habits, reflect on your journey, and
+          keep moving forward.
+        </p>
+      </header>
+      <main class="about-container">
+        <section class="about-section intro-section">
+          <div class="section-icon">
+            <i class="fa-solid fa-mountain-sun"></i>
+          </div>
+          <div class="section-content">
+            <h2>What Is Ascendra?</h2>
+            <p>
+              Ascendra is a productivity and personal growth app designed to
+              help people organize their lives in one simple place.
+            </p>
+            <p>
+              It includes tools for planning, journaling, tracking habits,
+              completing tasks, managing events, and reflecting on progress.
+            </p>
+          </div>
+        </section>
+        <section class="about-section">
+          <div class="section-icon">
+            <i class="fa-solid fa-bullseye"></i>
+          </div>
+          <div class="section-content">
+            <h2>Our Mission</h2>
+            <p>
+              Ascendra's mission is to make everyday life feel more organized,
+              balanced, and meaningful.
+            </p>
+            <p>
+              Productivity is not only about doing more. It is also about
+              building healthy routines, making time for yourself, and
+              recognizing how far you have come.
+            </p>
+          </div>
+        </section>
+        <section class="features-section">
+          <h2>What You Can Do</h2>
+          <div class="features-grid">
+            <article class="feature-card">
+              <i class="fa-solid fa-calendar-days"></i>
+              <h3>Plan Your Time</h3>
+              <p>Organize events, schedules, deadlines, and important dates.</p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-list-check"></i>
+              <h3>Manage Tasks</h3>
+              <p>Create to-do lists and keep track of what needs to be done.</p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-book-open"></i>
+              <h3>Write and Reflect</h3>
+              <p>
+                Record thoughts, memories, ideas, and experiences in your
+                journal.
+              </p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-chart-line"></i>
+              <h3>Build Habits</h3>
+              <p>Develop routines and track your progress over time.</p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-hourglass-half"></i>
+              <h3>Create Time Capsules</h3>
+              <p>Save messages and memories to revisit in the future.</p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-music"></i>
+              <h3>Use Soundscapes</h3>
+              <p>
+                Listen to calming sounds while studying, working, or relaxing.
+              </p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-cloud-moon"></i>
+              <h3>Unwind</h3>
+              <p>
+                Take a break with peaceful tools designed to help you relax.
+              </p>
+            </article>
+            <article class="feature-card">
+              <i class="fa-solid fa-medal"></i>
+              <h3>Earn Achievements</h3>
+              <p>
+                Celebrate milestones and stay motivated as you make progress.
+              </p>
+            </article>
+          </div>
+        </section>
+        <section class="about-section">
+          <div class="section-icon">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+          <div class="section-content">
+            <h2>More Than Productivity</h2>
+            <p>
+              Ascendra is not only about checking boxes or completing tasks. It
+              is designed to help users grow, reflect, stay motivated, and
+              create a life that feels more manageable.
+            </p>
+            <p>
+              Every feature is built around the idea that small steps can lead
+              to meaningful progress.
+            </p>
+          </div>
+        </section>
+        <section class="about-section">
+          <div class="section-icon">
+            <i class="fa-solid fa-code"></i>
+          </div>
+          <div class="section-content">
+            <h2>How It Started</h2>
+            <p>
+              Ascendra began as a small coding project and slowly grew into
+              something much bigger.
+            </p>
+            <p>
+              The goal was to create one place where people could organize
+              different parts of their lives without needing several separate
+              apps.
+            </p>
+          </div>
+        </section>
+        <section class="about-section">
+          <div class="section-icon">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+          </div>
+          <div class="section-content">
+            <h2>The Future of Ascendra</h2>
+            <p>
+              Ascendra is still growing. Future updates may include more themes,
+              customization options, productivity tools, wellness features,
+              achievements, and new ways to track personal growth.
+            </p>
+            <p>New ideas will continue to be added as Ascendra develops.</p>
+            <a class="about-roadmap-link" href="#/roadmap">
+              <i aria-hidden="true" class="fa-solid fa-map"></i>
+              View Roadmap
+            </a>
+          </div>
+        </section>
+        <section class="creator-section">
+          <i class="fa-solid fa-laptop-code"></i>
+          <h2>Created By Declan and Jayden</h2>
+          <p>
+            Ascendra was designed and developed by Declan and Jayden as a
+            long-term coding project combining creativity, organization, and
+            personal growth.
+          </p>
+        </section>
+      </main>
+      <footer class="about-footer">
+        <p>© 2026 Ascendra. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#/privacy">Privacy Policy</a>
+          <a href="#/terms">Terms of Service</a>
+        </div>
+      </footer>
+    </template>
+    <template id="page-credits">
+      <div class="credit-card">
+        <h1>🦊 Ascendra</h1>
+        <p>Version 1.0</p>
+        <hr />
+        <h2>Created By</h2>
+        <p><strong>Declan Chong</strong></p>
+        <p><strong>Jayden Wang</strong></p>
+        <h2>Developers</h2>
+        <p>Lead Developer: Declan Chong</p>
+        <p>Backend &amp; Frontend: Jayden Wang</p>
+        <h2>Special Thanks</h2>
+        <p>FlatPickr — For the Calendar</p>
+        <p>Font Awesome — For the icons</p>
+        <!-- Add more people here -->
+        <hr />
+        <h2>Sources</h2>
+        <a
+          href="https://github.com/Jedicuber/Ascendra"
+          target="_blank"
+          rel="noopener"
+          class="github-button"
+          ><i aria-hidden="true" class="fa-brands fa-github"></i>Source code on
+          GitHub</a
+        >
+        <h3>Made using:</h3>
+        <p>
+          <i aria-hidden="true" class="fa-brands fa-html5"></i
+          ><span class="visually-hidden">HTML5</span>
+        </p>
+        <p>
+          <i aria-hidden="true" class="fa-brands fa-css3"></i
+          ><span class="visually-hidden">CSS3</span>
+        </p>
+        <p>
+          <i aria-hidden="true" class="fa-brands fa-js"></i
+          ><span class="visually-hidden">JavaScript</span>
+        </p>
+
+        <hr />
+        <p><em>Built to help people live a better day.</em></p>
+        <p><i class="fa-regular fa-copyright"></i> 2026 Ascendra</p>
+      </div>
+    </template>
+    <template id="page-comingsoon">
+      <main>
+        <h1><i class="fa-solid fa-person-digging"></i> Under Development</h1>
+        <p>
+          We're working hard to bring this feature to Ascendra.<br />Check back
+          soon!
+        </p>
+      </main>
+    </template>
+    <template id="page-projects">
+      <main>
+        <h1><i class="fa-solid fa-person-digging"></i> Under Development</h1>
+        <p>
+          We're working hard to bring this feature to Ascendra.<br />Check back
+          soon!
+        </p>
+      </main>
+    </template>
+    <template id="page-roadmap">
+      <main class="roadmap-page">
+        <h1>Ascendra Roadmap</h1>
+
+        <section class="roadmap-card" id="horizon">
+          <div class="roadmap-header">
+            <div>
+              <h2>Update Horizon</h2>
+              <p class="roadmap subtitle">Ascendra'a second major update</p>
             </div>
 
             <span class="roadmap-statusH">Under Development</span>
-        </div>
+          </div>
 
-        <hr>
+          <hr />
 
-        <div class="roadmap-progress">
+          <div class="roadmap-progress">
             <h3>Development Progress</h3>
             <p><strong>0 out of 3 features completed</strong></p>
 
-            <div aria-label="Genesis development progress: 0 out of 3 major features completed" aria-valuemax="3" aria-valuemin="0" aria-valuenow="0" class="progress-bar" role="progressbar">
-                <div class="progress-fillH"></div>
+            <div
+              aria-label="Genesis development progress: 0 out of 3 major features completed"
+              aria-valuemax="3"
+              aria-valuemin="0"
+              aria-valuenow="0"
+              class="progress-bar"
+              role="progressbar"
+            >
+              <div class="progress-fillH"></div>
             </div>
 
             <p class="progress-text">3 major features remaining</p>
-        </div>
-        
-      <div class="roadmap-details">
-        <h3>What's included</h3>
+          </div>
 
-        <p>
-          Update Horizon is Ascendra’s second major update, introducing new ways to reflect, focus, and recharge. The Time Capsule lets users save messages and memories to unlock in the future, Soundscapes provide calming background audio for studying or relaxing, and Unwind helps users slow down with peaceful activities after a busy day. Together, these features expand Ascendra beyond productivity and help users take care of both their goals and their well-being.
-        </p>
-      </div>
+          <div class="roadmap-details">
+            <h3>What's included</h3>
 
-    </section>
-    <br><br>
-    <section class="roadmap-card" id="genesis">
-      <div class="roadmap-header">
+            <p>
+              Update Horizon is Ascendra’s second major update, introducing new
+              ways to reflect, focus, and recharge. The Time Capsule lets users
+              save messages and memories to unlock in the future, Soundscapes
+              provide calming background audio for studying or relaxing, and
+              Unwind helps users slow down with peaceful activities after a busy
+              day. Together, these features expand Ascendra beyond productivity
+              and help users take care of both their goals and their well-being.
+            </p>
+          </div>
+        </section>
+        <br /><br />
+        <section class="roadmap-card" id="genesis">
+          <div class="roadmap-header">
+            <div>
+              <h2>Update Genesis</h2>
+              <p class="roadmap-subtitle">Ascendra's first major update</p>
+            </div>
+
+            <span class="roadmap-status">Feature Complete</span>
+          </div>
+
+          <hr />
+
+          <div class="roadmap-progress">
+            <h3>Development Progress</h3>
+            <p><strong>8 of 8 major features completed</strong></p>
+
+            <div
+              aria-label="Genesis development progress: 8 of 8 major features completed"
+              aria-valuemax="8"
+              aria-valuemin="0"
+              aria-valuenow="8"
+              class="progress-bar"
+              role="progressbar"
+            >
+              <div class="progress-fill"></div>
+            </div>
+
+            <p class="progress-text">All major features completed</p>
+          </div>
+
+          <div class="roadmap-details">
+            <h3>What's included</h3>
+
+            <p>
+              Update Genesis is Ascendra's first major update, focused on
+              turning the app into a more connected progress system. It brings
+              together habit streaks, expanded statistics, XP and levels,
+              achievements, improved alerts, profile upgrades, and overall
+              polish.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <nav aria-label="Primary navigation" class="navbar">
+        <button onclick="navigate('home')" type="button">
+          <i class="fa-solid fa-mug-saucer"></i><br />Home
+        </button>
+        <button onclick="navigate('alerts')" type="button">
+          <i class="fa-regular fa-bell"></i><br />Alerts
+        </button>
+        <button onclick="navigate('todos')" type="button">
+          <i class="fa-solid fa-list-check"></i><br />To-Dos
+        </button>
+        <button onclick="navigate('habits')" type="button">
+          <i class="fa-regular fa-thumbs-up"></i><br />Habits
+        </button>
+        <button onclick="navigate('breathing')" type="button">
+          <i class="fa-solid fa-wind"></i><br />Breathing
+        </button>
+        <button onclick="navigate('calendar')" type="button">
+          <i class="fa-regular fa-calendar"></i><br />Calendar
+        </button>
+        <button onclick="navigate('journal')" type="button">
+          <i class="fa-solid fa-book-open"></i><br />Journal
+        </button>
+        <button onclick="navigate('menu')" type="button">
+          <i class="fa-solid fa-bars-staggered"></i><br />Menu
+        </button>
+      </nav>
+    </template>
+
+    <template id="page-minitools">
+      <h1>Mini Tools</h1>
+      <strong
+        >Quick little tools for decisions, randomness, and everyday
+        tasks.</strong
+      >
+
+      <section
+        class="mini-tools-progress card"
+        aria-labelledby="mini-tools-progress-title"
+      >
         <div>
-          <h2>Update Genesis</h2>
-          <p class="roadmap-subtitle">Ascendra's first major update</p>
+          <h2 id="mini-tools-progress-title">Mini Tools Rewards</h2>
+          <p>Use each tool successfully once to earn XP and achievements.</p>
         </div>
+        <dl class="mini-tools-totals">
+          <div>
+            <dt>Overall XP</dt>
+            <dd data-xp-total>0 XP</dd>
+          </div>
+          <div>
+            <dt>Tool achievements</dt>
+            <dd data-mini-tools-achievement-count>0 / 4</dd>
+          </div>
+        </dl>
+        <a class="mini-tools-achievement-link" href="#/achievements">
+          View Achievements
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </section>
 
-        <span class="roadmap-status">Feature Complete</span>
-      </div>
+      <section class="mini-tools-grid">
+        <!-- Coin Flip -->
+        <article class="card">
+          <h2>Coin Flip <i class="fa-solid fa-coins"></i></h2>
+          <p>Flip a coin.</p>
+          <button id="flip" type="button">Flip</button>
+          <p class="tool-result" id="coin-flip-output" aria-live="polite"></p>
+        </article>
 
-      <hr>
+        <!-- Dice Roll -->
+        <article class="card">
+          <h2>Dice Roll <i class="fa-solid fa-dice"></i></h2>
+          <p>Roll a six-sided die.</p>
+          <br />
+          <button id="roll" type="button">Roll</button>
+          <p class="tool-result" id="dice-roll-output" aria-live="polite"></p>
+        </article>
 
-      <div class="roadmap-progress">
-        <h3>Development Progress</h3>
-        <p><strong>8 of 8 major features completed</strong></p>
+        <!-- Random Number Generator -->
+        <article class="card">
+          <h2>Random Number Generator <i class="fa-solid fa-hashtag"></i></h2>
+          <p>Generate a random whole number.</p>
+          <label for="min">Minimum number</label>
+          <input type="number" id="min" step="1" />
+          <br />
+          <label for="max">Maximum number</label>
+          <input type="number" id="max" step="1" />
+          <br />
+          <br />
+          <button id="gen" type="button">Generate</button>
+          <p
+            class="tool-result"
+            id="random-number-output"
+            aria-live="polite"
+          ></p>
+        </article>
+      </section>
+    </template>
 
-        <div aria-label="Genesis development progress: 8 of 8 major features completed" aria-valuemax="8" aria-valuemin="0" aria-valuenow="8" class="progress-bar" role="progressbar">
-          <div class="progress-fill"></div>
-        </div>
-
-        <p class="progress-text">All major features completed</p>
-      </div>
-
-      <div class="roadmap-details">
-        <h3>What's included</h3>
-
-        <p>
-          Update Genesis is Ascendra's first major update, focused on turning
-          the app into a more connected progress system. It brings together
-          habit streaks, expanded statistics, XP and levels, achievements,
-          improved alerts, profile upgrades, and overall polish.
-        </p>
-      </div>
-    </section>
-  </main>
-
-  <nav aria-label="Primary navigation" class="navbar">
-    <button onclick="navigate('home')" type="button"><i class="fa-solid fa-mug-saucer"></i><br/>Home</button>
-    <button onclick="navigate('alerts')" type="button"><i class="fa-regular fa-bell"></i><br/>Alerts</button>
-    <button onclick="navigate('todos')" type="button"><i class="fa-solid fa-list-check"></i><br/>To-Dos</button>
-    <button onclick="navigate('habits')" type="button"><i class="fa-regular fa-thumbs-up"></i><br/>Habits</button>
-    <button onclick="navigate('breathing')" type="button"><i class="fa-solid fa-wind"></i><br/>Breathing</button>
-    <button onclick="navigate('calendar')" type="button"><i class="fa-regular fa-calendar"></i><br/>Calendar</button>
-    <button onclick="navigate('journal')" type="button"><i class="fa-solid fa-book-open"></i><br/>Journal</button>
-    <button onclick="navigate('menu')" type="button"><i class="fa-solid fa-bars-staggered"></i><br/>Menu</button>
-  </nav>
-</template>
-
-<template id="page-minitools">
-  <h1>Mini Tools</h1>
-  <strong>Quick little tools for decisions, randomness, and everyday tasks.</strong>
-
-  <section class="mini-tools-progress card" aria-labelledby="mini-tools-progress-title">
-    <div>
-      <h2 id="mini-tools-progress-title">Mini Tools Rewards</h2>
-      <p>Use each tool successfully once to earn XP and achievements.</p>
-    </div>
-    <dl class="mini-tools-totals">
-      <div>
-        <dt>Overall XP</dt>
-        <dd data-xp-total>0 XP</dd>
-      </div>
-      <div>
-        <dt>Tool achievements</dt>
-        <dd data-mini-tools-achievement-count>0 / 4</dd>
-      </div>
-    </dl>
-    <a class="mini-tools-achievement-link" href="#/achievements">
-      View Achievements
-      <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-    </a>
-  </section>
-
-  <section class="mini-tools-grid">
-    <!-- Coin Flip -->
-    <article class="card">
-      <h2>Coin Flip <i class="fa-solid fa-coins"></i></h2>
-      <p>Flip a coin.</p>
-      <button id="flip" type="button">Flip</button>
-      <p class="tool-result" id="coin-flip-output" aria-live="polite"></p>
-    </article>
-
-    <!-- Dice Roll -->
-    <article class="card">
-      <h2>Dice Roll <i class="fa-solid fa-dice"></i></h2>
-      <p>Roll a six-sided die.</p>
-      <br>
-      <button id="roll" type="button">Roll</button>
-      <p class="tool-result" id="dice-roll-output" aria-live="polite"></p>
-    </article>
-
-    <!-- Random Number Generator -->
-    <article class="card">
-      <h2>Random Number Generator <i class="fa-solid fa-hashtag"></i></h2>
-      <p>Generate a random whole number.</p>
-      <label for="min">Minimum number</label>
-      <input type="number" id="min" step="1">
-      <br>
-      <label for="max">Maximum number</label>
-      <input type="number" id="max" step="1">
-      <br>
-      <br>
-      <button id="gen" type="button">Generate</button>
-      <p class="tool-result" id="random-number-output" aria-live="polite"></p>
-    </article>
-  </section>
-</template>
-
-<template id="page-unwind">
-    <main class="unwind-page">
+    <template id="page-unwind">
+      <main class="unwind-page">
         <header class="unwind-heading">
-            <span class="unwind-eyebrow">
-                <i class="fa-solid fa-cloud-moon" aria-hidden="true"></i>
-                Slow down
-            </span>
-            <h1>Unwind</h1>
-            <p>Take a quiet moment to breathe, reset, and recharge.</p>
+          <span class="unwind-eyebrow">
+            <i class="fa-solid fa-cloud-moon" aria-hidden="true"></i>
+            Slow down
+          </span>
+          <h1>Unwind</h1>
+          <p>Take a quiet moment to breathe, reset, and recharge.</p>
         </header>
 
         <section class="unwind-timer card" aria-labelledby="zen-timer-title">
-            <div class="unwind-icon" aria-hidden="true">
-                <i class="fa-solid fa-spa"></i>
-            </div>
+          <div class="unwind-icon" aria-hidden="true">
+            <i class="fa-solid fa-spa"></i>
+          </div>
 
-            <h2 id="zen-timer-title">Zen Timer</h2>
-            <p class="unwind-description">
-                Choose how many minutes you need. Completing a session earns
-                XP and counts toward Unwind achievements.
+          <h2 id="zen-timer-title">Zen Timer</h2>
+          <p class="unwind-description">
+            Choose how many minutes you need. Completing a session earns XP and
+            counts toward Unwind achievements.
+          </p>
+
+          <label for="elapsed">Session length</label>
+          <div class="unwind-duration">
+            <input
+              aria-describedby="elapsed-hint"
+              id="elapsed"
+              inputmode="numeric"
+              max="120"
+              min="1"
+              step="1"
+              type="number"
+              value="5"
+            />
+            <span>minutes</span>
+          </div>
+          <p class="unwind-hint" id="elapsed-hint">
+            Choose from 1 to 120 minutes.
+          </p>
+
+          <div
+            aria-label="5 minutes remaining"
+            class="unwind-display"
+            id="display-card"
+            role="timer"
+          >
+            <span>Time remaining</span>
+            <strong id="timer-display">05:00</strong>
+            <p aria-live="polite" id="timer-status" role="status">
+              Ready when you are.
             </p>
+          </div>
 
-            <label for="elapsed">Session length</label>
-            <div class="unwind-duration">
-                <input
-                    aria-describedby="elapsed-hint"
-                    id="elapsed"
-                    inputmode="numeric"
-                    max="120"
-                    min="1"
-                    step="1"
-                    type="number"
-                    value="5"
-                >
-                <span>minutes</span>
-            </div>
-            <p class="unwind-hint" id="elapsed-hint">
-                Choose from 1 to 120 minutes.
-            </p>
+          <div class="unwind-actions">
+            <button id="start" type="button">
+              <i class="fa-solid fa-play" aria-hidden="true"></i>
+              Start
+            </button>
+            <button disabled id="pause" type="button">
+              <i class="fa-solid fa-pause" aria-hidden="true"></i>
+              Pause
+            </button>
+            <button class="secondary" id="reset" type="button">
+              <i class="fa-solid fa-repeat" aria-hidden="true"></i>
+              Reset
+            </button>
+          </div>
 
-            <div
-                aria-label="5 minutes remaining"
-                class="unwind-display"
-                id="display-card"
-                role="timer"
-            >
-                <span>Time remaining</span>
-                <strong id="timer-display">05:00</strong>
-                <p aria-live="polite" id="timer-status" role="status">
-                    Ready when you are.
-                </p>
-            </div>
-
-            <div class="unwind-actions">
-                <button id="start" type="button">
-                    <i class="fa-solid fa-play" aria-hidden="true"></i>
-                    Start
-                </button>
-                <button disabled id="pause" type="button">
-                    <i class="fa-solid fa-pause" aria-hidden="true"></i>
-                    Pause
-                </button>
-                <button class="secondary" id="reset" type="button">
-                    <i class="fa-solid fa-repeat" aria-hidden="true"></i>
-                    Reset
-                </button>
-            </div>
-
-            <a class="unwind-achievements-link" href="#/achievements">
-                View Unwind achievements
-                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            </a>
+          <a class="unwind-achievements-link" href="#/achievements">
+            View Unwind achievements
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </a>
         </section>
-    </main>
-</template>
+      </main>
+    </template>
 
-  <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script defer src="script.js"></script>
-  <div aria-label="Search Ascendra" aria-modal="true" class="search-overlay" hidden id="searchOverlay" role="dialog">
-    <div class="search-box">
-        <button aria-label="Close search" class="search-close" id="searchClose" type="button">×</button>
-        <input
-            aria-label="Search pages"
-            id="searchInput"
-            type="search"
-            placeholder="Search Ascendra..."
-            autocomplete="off"
+    <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script defer src="assets/js/script.js"></script>
+    <div
+      aria-label="Search Ascendra"
+      aria-modal="true"
+      class="search-overlay"
+      hidden
+      id="searchOverlay"
+      role="dialog"
+    >
+      <div class="search-box">
+        <button
+          aria-label="Close search"
+          class="search-close"
+          id="searchClose"
+          type="button"
         >
+          ×
+        </button>
+        <input
+          aria-label="Search pages"
+          id="searchInput"
+          type="search"
+          placeholder="Search Ascendra..."
+          autocomplete="off"
+        />
 
         <div aria-live="polite" id="searchResults"></div>
+      </div>
     </div>
-</div>
-
-</body>
+  </body>
 </html>

@@ -156,6 +156,33 @@ Ascendra is built using:
 
 The project does not currently use a frontend framework.
 
+## Project Structure
+
+```text
+Ascendra/
+├── assets/
+│   ├── css/
+│   │   └── style.css
+│   ├── images/
+│   │   ├── background.png
+│   │   └── favicon.png
+│   ├── js/
+│   │   └── script.js
+│   └── music/
+│       └── Fluidscape.mp3
+├── docs/
+│   └── CODE_OF_CONDUCT.md
+├── google63ee988164adfd68.html
+├── index.html
+├── LICENSE
+└── README.md
+```
+
+GitHub Pages serves `index.html` from the repository root. Supporting styles,
+scripts, and images are grouped inside `assets` so their purpose and paths are
+easy to understand. Repository documentation stays easy to find through the
+root README and the `docs` directory.
+
 ## Single-Page App Structure
 
 Ascendra works as a single-page application.
@@ -221,7 +248,8 @@ Recent updates included:
 - Fixing route loading
 - Improving logout behavior
 - Making search keyboard accessible
-- Replacing the embedded favicon with `favicon.png`
+- Replacing the embedded favicon with `assets/images/favicon.png`
+- Organizing styles, scripts, and images into the `assets` directory
 
 ## Current Status
 
