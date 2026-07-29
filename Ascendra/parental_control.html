@@ -18,100 +18,152 @@
         </p>
         <!-- Parent Login -->
 
-    <div class="card">
+    <div class="container" id="parentControlsContainer">
 
-        <h2>Parent Verification</h2>
+    <h1 id="pageTitle">🛡️ Parent Controls</h1>
 
-        <p>
+    <p class="intro" id="introText">
+        Welcome to Parent Controls. Before Kids Mode can be enabled,
+        please verify your Ascendra account. Parent Controls help you
+        manage your child's experience while keeping important settings secure.
+    </p>
+
+    <!-- Parent Verification -->
+
+    <section class="card" id="parentVerificationCard">
+
+        <h2 class="cardTitle">Parent Verification</h2>
+
+        <p class="cardDescription">
             Sign in using your existing Ascendra account.
-            This confirms that you are the parent or guardian.
+            This confirms that you are the child's parent or legal guardian.
         </p>
 
-        <label>Email</label>
-        <input type="email" placeholder="you@example.com">
+        <label for="parentEmail">Email</label>
+        <input
+            type="email"
+            id="parentEmail"
+            class="textInput"
+            placeholder="you@example.com">
 
-        <label>Password</label>
-        <input type="password" placeholder="Enter your password">
+        <label for="parentPassword">Password</label>
+        <input
+            type="password"
+            id="parentPassword"
+            class="textInput"
+            placeholder="Enter your password">
 
-        <button>Verify Parent Account</button>
+        <button
+            id="verifyParentButton"
+            class="primaryButton">
+            Verify Parent Account
+        </button>
 
-    </div>
+    </section>
 
-    <!-- Child Information -->
+    <!-- Child Profile -->
 
-    <div class="card">
+    <section class="card" id="childProfileCard">
 
-        <h2>Child Profile</h2>
+        <h2 class="cardTitle">Child Profile</h2>
 
-        <label>Child's Name</label>
-        <input type="text" placeholder="Enter your child's name">
+        <label for="childName">Child's Name</label>
+        <input
+            type="text"
+            id="childName"
+            class="textInput"
+            placeholder="Enter your child's name">
 
-        <label>Username (optional)</label>
-        <input type="text" placeholder="@child">
+        <label for="childUsername">Username (Optional)</label>
+        <input
+            type="text"
+            id="childUsername"
+            class="textInput"
+            placeholder="@child">
 
-    </div>
+    </section>
 
     <!-- Parent PIN -->
 
-    <div class="card">
+    <section class="card" id="pinCard">
 
-        <h2>Create Parent PIN</h2>
+        <h2 class="cardTitle">Create Parent PIN</h2>
 
-        <p>
-            Create a 4-digit PIN for quick access to Parent Controls.
-            This PIN will be required whenever someone attempts to:
+        <p class="cardDescription">
+            Your PIN will be required whenever someone attempts to:
         </p>
 
-        <ul>
+        <ul class="pinList">
+
             <li>Exit Kids Mode</li>
             <li>Edit goals or habits</li>
             <li>Manage rewards</li>
-            <li>Modify XP or coins</li>
+            <li>Modify XP or Coins</li>
             <li>Change parental settings</li>
             <li>Delete child data</li>
+
         </ul>
 
-        <label>Create PIN</label>
-        <input type="password" maxlength="4" placeholder="••••">
+        <label for="parentPin">Create PIN</label>
+        <input
+            type="password"
+            id="parentPin"
+            class="textInput pinInput"
+            maxlength="4"
+            placeholder="••••">
 
-        <label>Confirm PIN</label>
-        <input type="password" maxlength="4" placeholder="••••">
+        <label for="confirmParentPin">Confirm PIN</label>
+        <input
+            type="password"
+            id="confirmParentPin"
+            class="textInput pinInput"
+            maxlength="4"
+            placeholder="••••">
 
-    </div>
+    </section>
 
-    <!-- Notice -->
+    <!-- Parent Notice -->
 
-    <div class="card">
+    <section class="card" id="noticeCard">
 
-        <h2>Parent Notice</h2>
+        <h2 class="cardTitle">Parent Notice</h2>
 
-        <p>
+        <p class="cardDescription">
             Ascendra Kids Mode is designed to encourage healthy habits,
             responsibility, and positive routines through age-appropriate
             challenges and rewards.
         </p>
 
-        <p>
+        <p class="cardDescription">
             Parent Controls allow you to monitor progress, manage goals,
             approve rewards, and protect important settings.
         </p>
 
-        <p>
+        <p class="cardDescription">
             Ascendra is intended to support—not replace—parental guidance.
             We encourage parents to review their child's progress regularly
             and celebrate achievements together.
         </p>
 
-        <label>
-            <input type="checkbox">
-            I confirm that I am the child's parent or legal guardian and
-            agree to supervise their use of Ascendra Kids Mode.
-        </label>
+        <div class="checkboxContainer">
 
-    </div>
+            <input
+                type="checkbox"
+                id="parentAgreement">
 
-    <button class="continueButton">
-        Enable Parent Controls
+            <label for="parentAgreement" id="agreementLabel">
+                I confirm that I am the child's parent or legal guardian
+                and agree to supervise their use of Ascendra Kids Mode.
+            </label>
+
+        </div>
+
+    </section>
+
+    <button
+        id="enableParentControlsButton"
+        class="continueButton">
+        Set Up Parent Controls
     </button>
 
 </div>
