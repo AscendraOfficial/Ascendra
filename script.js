@@ -4732,6 +4732,10 @@ return () => {
     const reset = document.getElementById("reset");
     const pause = document.getElementById("pause");
     const timerDisplay = document.getElementById("timer-display");
+
+    start.addEventListener("click", () => {
+        
+    })
 },
 "profile": function init_profile(){
 
