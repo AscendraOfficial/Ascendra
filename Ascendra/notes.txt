@@ -71,6 +71,9 @@ Jayden:
 
 Jayden:
 "Global css doesn't actually control ALL of the css, but it does control all the main functions, I want to add the xp bar to every necessary file."
+
+Jayden:
+"how do you connect things sto the real branch?"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
