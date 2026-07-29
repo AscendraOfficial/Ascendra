@@ -29,7 +29,7 @@ const LEGACY_USER_KEYS = Object.freeze([
   "ascendra-achievements",
   "ascendraProgression",
 ]);
-const LEGACY_JOURNAL_PREFIX = "journal-";
+const LEGACY_JOURNAL_PREFIX = 'journal-';
 const XP_REWARDS = Object.freeze({
   task: 10,
   habit: 5,
