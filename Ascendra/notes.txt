@@ -87,6 +87,9 @@ Genesis is 1.0.0 because it was the first full release. Horizon will be 1.1.0 be
 
 Jayden:
 "From now on, you just connect everything to the real branch, I can't be bothered"
+
+Jayden:
+"For extras.html, how do you get the icons that link to the other things, I never really saw any code for that."
 ────────────────────────────────────────
 
 🚀 Version Roadmap
