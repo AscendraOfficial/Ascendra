@@ -93,6 +93,12 @@ Jayden:
 
 Jayden:
 "Can I suggest some badges for achievements"
+
+Declan:
+"I added the Founder, Co-founder and the genesis badge, it checks if our names are declan or jayden, then it gives us the badge (beta prototype)"
+
+Declan:
+"I finished every page except Time Capsule and Study Space"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
