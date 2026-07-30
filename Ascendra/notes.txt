@@ -80,6 +80,10 @@ Reply:
 
 Declan:
 "NEW RULE, YOU HAVE TO DISCUSS WITH OTHER PERSON BEFORE YOU ADD STUFF I ALREADY ADDED THE XP AND LEVELS, CHECK IN THE ROADMAP PAGE"
+
+Declan:
+"I’m changing Ascendra’s version numbers to Semantic Versioning, which uses MAJOR.MINOR.PATCH.
+Genesis is 1.0.0 because it was the first full release. Horizon will be 1.1.0 because it adds new features without completely rebuilding or breaking the app. Bug fixes after that would be 1.1.1, 1.1.2, etc. A huge redesign would eventually become 2.0.0."
 ────────────────────────────────────────
 
 🚀 Version Roadmap
