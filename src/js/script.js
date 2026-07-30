@@ -18,7 +18,8 @@ const APP_NAME_ATTRIBUTES = Object.freeze([
 ]);
 
 function configuredAppText(value) {
-  const configuredName = String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
+  const configuredName =
+    String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
   return String(value).split(DEFAULT_APP_NAME).join(configuredName);
 }
 
@@ -525,9 +526,7 @@ function readTabIdentityItem(field) {
     }
   } catch (error) {
     console.warn(
-      configuredAppText(
-        "Ascendra could not read this tab's session identity.",
-      ),
+      configuredAppText("Ascendra could not read this tab's session identity."),
       error,
     );
   }
@@ -550,9 +549,7 @@ function writeTabIdentityItem(field, value) {
     }
   } catch (error) {
     console.warn(
-      configuredAppText(
-        "Ascendra could not save this tab's session identity.",
-      ),
+      configuredAppText("Ascendra could not save this tab's session identity."),
       error,
     );
   }
@@ -966,9 +963,7 @@ function ensureStableActivityIds(
       }
     });
     console.warn(
-      configuredAppText(
-        `Ascendra could not migrate legacy ${storageKey}.`,
-      ),
+      configuredAppText(`Ascendra could not migrate legacy ${storageKey}.`),
       error,
     );
     return false;
@@ -1903,9 +1898,7 @@ function migrateLegacyUserData(username) {
         .toLowerCase() !== cleanUsername
     ) {
       throw new Error(
-        configuredAppText(
-          "Ascendra could not verify the legacy data owner.",
-        ),
+        configuredAppText("Ascendra could not verify the legacy data owner."),
       );
     }
   } catch (error) {
@@ -4312,6 +4305,12 @@ const ROUTE_INITIALIZERS = {
       setUserItem("ascendraSettings", JSON.stringify(settings));
       applySavedSettings();
     }
+    
+  const parentalLink = document.getElementById("parental-link");
+
+  if (USER_CONFIG.parentalMode) {
+      parentalLink.innerHTML = 'Parental Controls are set up. <a href="#/settings">Turn them off</a>';
+  }
 
     if (modeToggle) {
       modeToggle.checked = getSavedSettings().lightMode === false;
