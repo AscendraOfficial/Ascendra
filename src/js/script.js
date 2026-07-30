@@ -1,6 +1,4 @@
-document.getElementById("app-version").textContent = APP_CONFIG.version;
-document.getElementById("app-update").textContent = APP_CONFIG.update;
-("use strict");
+"use strict";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -10,6 +8,16 @@ const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 const PROGRESSION_STORAGE_KEY = "ascendraProgression";
 const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
+
+function renderAppMetadata(root = document) {
+  root.querySelectorAll("[data-app-version]").forEach((element) => {
+    element.textContent = APP_CONFIG.version;
+  });
+  root.querySelectorAll("[data-app-update]").forEach((element) => {
+    element.textContent = APP_CONFIG.update;
+  });
+}
+
 const TAB_IDENTITY_PREFIX = "ascendra:tab-identity:";
 const TAB_IDENTITY_FIELDS = Object.freeze([
   "loggedInUser",
@@ -2036,6 +2044,7 @@ function renderRoute(route, { focusRoute = true } = {}) {
   page.appendChild(template.content.cloneNode(true));
   if (!page.querySelector("main")) page.setAttribute("role", "main");
   app.appendChild(page);
+  renderAppMetadata(page);
   app.dataset.route = route;
   document.title =
     "Ascendra - " +
