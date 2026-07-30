@@ -1,4 +1,5 @@
 "use strict";
+import { STORAGE_KEYS, STORAGE_KEY_BUILDERS } from "./storageKeys.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -4305,12 +4306,13 @@ const ROUTE_INITIALIZERS = {
       setUserItem("ascendraSettings", JSON.stringify(settings));
       applySavedSettings();
     }
-    
-  const parentalLink = document.getElementById("parental-link");
 
-  if (USER_CONFIG.parentalMode) {
-      parentalLink.innerHTML = 'Parental Controls are set up. <a href="#/settings">Turn them off</a>';
-  }
+    const parentalLink = document.getElementById("parental-link");
+
+    if (USER_CONFIG.parentalMode) {
+      parentalLink.innerHTML =
+        'Parental Controls are set up. <a href="#/settings">Turn them off</a>';
+    }
 
     if (modeToggle) {
       modeToggle.checked = getSavedSettings().lightMode === false;
