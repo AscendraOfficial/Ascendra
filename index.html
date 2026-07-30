@@ -61,7 +61,7 @@
          • 
         <a href="#/signup">Create an Account</a>
       </p>
-      <h2 id="version">Version <em>1.0</em> — Genesis</h2>
+      <h2 id="version">Version <em id="app-version">1.0</em> — <span id="app-update"></span></h2>
       <a class="credits-link" href="#/credits">ⓘ Credits</a>
       <br />
       <footer>
@@ -1687,7 +1687,7 @@
     <template id="page-credits">
       <div class="credit-card">
         <h1>🦊 Ascendra</h1>
-        <p>Version 1.0</p>
+        <p>Version <span id="app-version"></span></p>
         <hr />
         <h2>Created By</h2>
         <p><strong>Declan Chong</strong></p>
@@ -2023,7 +2023,8 @@
       </header>
     </template>
 
-    <script async src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script defer src="src/js/config.js"></script>
     <script defer src="src/js/script.js"></script>
     <div
       aria-label="Search Ascendra"

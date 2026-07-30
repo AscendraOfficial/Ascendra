@@ -1,4 +1,5 @@
-console.log("Ascendra loaded!");
+document.getElementById("app-version").textContent = APP_CONFIG.version;
+document.getElementById("app-update").textContent = APP_CONFIG.update;
 ("use strict");
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
@@ -29,7 +30,7 @@ const LEGACY_USER_KEYS = Object.freeze([
   "ascendra-achievements",
   "ascendraProgression",
 ]);
-const LEGACY_JOURNAL_PREFIX = 'journal-';
+const LEGACY_JOURNAL_PREFIX = "journal-";
 const XP_REWARDS = Object.freeze({
   task: 10,
   habit: 5,
