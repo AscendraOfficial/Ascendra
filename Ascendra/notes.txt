@@ -102,6 +102,9 @@ Declan:
 
 Declan:
 "you ARE going to keep coding Ascendra"
+
+Reply too: "For extras.html, how do you get....":
+"go here: https://fontawesome.com/search?ic=free-collection"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
