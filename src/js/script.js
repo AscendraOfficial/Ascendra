@@ -8,8 +8,44 @@ const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 const PROGRESSION_STORAGE_KEY = "ascendraProgression";
 const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
+const DEFAULT_APP_NAME = "Ascendra";
+const APP_NAME_ATTRIBUTES = Object.freeze([
+  "alt",
+  "aria-label",
+  "content",
+  "placeholder",
+  "title",
+]);
+
+function configuredAppText(value) {
+  const configuredName = String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
+  return String(value).split(DEFAULT_APP_NAME).join(configuredName);
+}
 
 function renderAppMetadata(root = document) {
+  const elements = [];
+  if (root.nodeType === Node.ELEMENT_NODE) elements.push(root);
+  if (typeof root.querySelectorAll === "function") {
+    elements.push(...root.querySelectorAll("*"));
+  }
+
+  elements.forEach((element) => {
+    element.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE && node.nodeValue) {
+        node.nodeValue = configuredAppText(node.nodeValue);
+      }
+    });
+
+    APP_NAME_ATTRIBUTES.forEach((attribute) => {
+      if (element.hasAttribute(attribute)) {
+        element.setAttribute(
+          attribute,
+          configuredAppText(element.getAttribute(attribute)),
+        );
+      }
+    });
+  });
+
   root.querySelectorAll("[data-app-version]").forEach((element) => {
     element.textContent = APP_CONFIG.version;
   });
@@ -17,6 +53,9 @@ function renderAppMetadata(root = document) {
     element.textContent = APP_CONFIG.update;
   });
 }
+
+renderAppMetadata(document.head);
+renderAppMetadata(document.body);
 
 const TAB_IDENTITY_PREFIX = "ascendra:tab-identity:";
 const TAB_IDENTITY_FIELDS = Object.freeze([
@@ -163,22 +202,27 @@ const badges = [
   {
     id: "genesis",
     name: "GENESIS",
-    description: "Awarded to the first person in the world to use Ascendra.",
+    description: configuredAppText(
+      "Awarded to the first person in the world to use Ascendra.",
+    ),
     icon: "\u{1F30C}",
     obtained: false,
   },
   {
     id: "coFounder",
     name: "Co-Founder",
-    description:
+    description: configuredAppText(
       "Awarded to someone who helped create and shape Ascendra from the beginning.",
+    ),
     icon: "\u{1F91D}",
     obtained: false,
   },
   {
     id: "founder",
     name: "Founder",
-    description: "Awarded to the creator and lead developer of Ascendra.",
+    description: configuredAppText(
+      "Awarded to the creator and lead developer of Ascendra.",
+    ),
     icon: "\u{1F451}",
     obtained: false,
   },
@@ -448,7 +492,9 @@ function ensureStoredAccountId(accountRecord) {
   try {
     localStorage.setItem(accountRecord.key, serializedAccount);
     if (localStorage.getItem(accountRecord.key) !== serializedAccount) {
-      throw new Error("Ascendra could not verify this account.");
+      throw new Error(
+        configuredAppText("Ascendra could not verify this account."),
+      );
     }
   } catch (error) {
     if (previousValue === null) {
@@ -478,7 +524,12 @@ function readTabIdentityItem(field) {
       return sessionStorage.getItem(key);
     }
   } catch (error) {
-    console.warn("Ascendra could not read this tab's session identity.", error);
+    console.warn(
+      configuredAppText(
+        "Ascendra could not read this tab's session identity.",
+      ),
+      error,
+    );
   }
   return tabIdentityFallback.has(key) ? tabIdentityFallback.get(key) : null;
 }
@@ -498,7 +549,12 @@ function writeTabIdentityItem(field, value) {
       return;
     }
   } catch (error) {
-    console.warn("Ascendra could not save this tab's session identity.", error);
+    console.warn(
+      configuredAppText(
+        "Ascendra could not save this tab's session identity.",
+      ),
+      error,
+    );
   }
 
   if (normalizedValue === null) {
@@ -540,7 +596,10 @@ function initializeTabIdentity() {
       throw new Error("The published account no longer exists.");
     }
   } catch (error) {
-    console.warn("Ascendra signed out an unverifiable account.", error);
+    console.warn(
+      configuredAppText("Ascendra signed out an unverifiable account."),
+      error,
+    );
     TAB_IDENTITY_FIELDS.forEach((field) => localStorage.removeItem(field));
     publishedUsername = "";
     accountRecord = null;
@@ -609,7 +668,10 @@ function setActiveIdentity(
       }
     });
   } catch (error) {
-    console.warn("Ascendra could not publish this tab's identity.", error);
+    console.warn(
+      configuredAppText("Ascendra could not publish this tab's identity."),
+      error,
+    );
   }
 }
 
@@ -635,7 +697,10 @@ function clearActiveIdentity() {
     try {
       TAB_IDENTITY_FIELDS.forEach((field) => localStorage.removeItem(field));
     } catch (error) {
-      console.warn("Ascendra could not clear the published identity.", error);
+      console.warn(
+        configuredAppText("Ascendra could not clear the published identity."),
+        error,
+      );
     }
   }
 }
@@ -822,7 +887,10 @@ function saveProgressionState(state) {
     );
     return true;
   } catch (error) {
-    console.warn("Ascendra could not save progression.", error);
+    console.warn(
+      configuredAppText("Ascendra could not save progression."),
+      error,
+    );
     return false;
   }
 }
@@ -897,7 +965,12 @@ function ensureStableActivityIds(
         delete item.id;
       }
     });
-    console.warn(`Ascendra could not migrate legacy ${storageKey}.`, error);
+    console.warn(
+      configuredAppText(
+        `Ascendra could not migrate legacy ${storageKey}.`,
+      ),
+      error,
+    );
     return false;
   }
 }
@@ -1595,7 +1668,9 @@ function ensureActiveAccountAccess(username) {
 function assertActiveAccountForWrite(username) {
   if (!ensureActiveAccountAccess(username)) {
     throw new Error(
-      "Ascendra stopped a save because this account changed in another tab.",
+      configuredAppText(
+        "Ascendra stopped a save because this account changed in another tab.",
+      ),
     );
   }
 }
@@ -1621,7 +1696,9 @@ function copyStorageEntries(entries, getTargetKey, collisionMessage) {
         writtenEntries.push(entry);
       }
       if (localStorage.getItem(entry.targetKey) !== entry.value) {
-        throw new Error("Ascendra could not verify copied data.");
+        throw new Error(
+          configuredAppText("Ascendra could not verify copied data."),
+        );
       }
     });
   } catch (error) {
@@ -1665,7 +1742,9 @@ function renameStoredAccountAndData(
     try {
       localStorage.setItem(oldAccountKey, serializedAccount);
       if (localStorage.getItem(oldAccountKey) !== serializedAccount) {
-        throw new Error("Ascendra could not verify the updated account.");
+        throw new Error(
+          configuredAppText("Ascendra could not verify the updated account."),
+        );
       }
     } catch (error) {
       if (previousValue === null) {
@@ -1701,7 +1780,9 @@ function renameStoredAccountAndData(
     localStorage.setItem(newAccountKey, serializedAccount);
     wroteNewAccount = true;
     if (localStorage.getItem(newAccountKey) !== serializedAccount) {
-      throw new Error("Ascendra could not verify the renamed account.");
+      throw new Error(
+        configuredAppText("Ascendra could not verify the renamed account."),
+      );
     }
   } catch (error) {
     rollbackCopiedStorageEntries(copied.writtenEntries);
@@ -1813,7 +1894,7 @@ function migrateLegacyUserData(username) {
     copied = copyStorageEntries(
       missingEntries,
       (oldKey) => userStorageKey(oldKey, cleanUsername),
-      "Ascendra could not safely migrate legacy data.",
+      configuredAppText("Ascendra could not safely migrate legacy data."),
     );
     localStorage.setItem(ownerKey, cleanUsername);
     if (
@@ -1821,11 +1902,18 @@ function migrateLegacyUserData(username) {
         .trim()
         .toLowerCase() !== cleanUsername
     ) {
-      throw new Error("Ascendra could not verify the legacy data owner.");
+      throw new Error(
+        configuredAppText(
+          "Ascendra could not verify the legacy data owner.",
+        ),
+      );
     }
   } catch (error) {
     rollbackCopiedStorageEntries(copied.writtenEntries);
-    console.warn("Ascendra could not migrate legacy data.", error);
+    console.warn(
+      configuredAppText("Ascendra could not migrate legacy data."),
+      error,
+    );
     return false;
   }
 
@@ -2047,7 +2135,8 @@ function renderRoute(route, { focusRoute = true } = {}) {
   renderAppMetadata(page);
   app.dataset.route = route;
   document.title =
-    "Ascendra - " +
+    APP_CONFIG.name +
+    " - " +
     route.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   backButton.hidden = route === "welcome";
   applySavedSettings();
@@ -2066,7 +2155,10 @@ function renderRoute(route, { focusRoute = true } = {}) {
     const cleanup = (ROUTE_INITIALIZERS[route] || function () {})();
     if (typeof cleanup === "function") initializedCleanups.set(route, cleanup);
   } catch (error) {
-    console.error("Ascendra page error on " + route + ":", error);
+    console.error(
+      configuredAppText("Ascendra page error on ") + route + ":",
+      error,
+    );
     const box = document.createElement("div");
     box.className = "spa-error";
     box.innerHTML =
@@ -4227,7 +4319,9 @@ const ROUTE_INITIALIZERS = {
     }
 
     function resetSettings() {
-      const confirmReset = confirm("Reset Ascendra settings back to default?");
+      const confirmReset = confirm(
+        configuredAppText("Reset Ascendra settings back to default?"),
+      );
 
       if (confirmReset) {
         removeUserItem("ascendraSettings");
@@ -4237,11 +4331,17 @@ const ROUTE_INITIALIZERS = {
     }
 
     function deleteAllData() {
-      const warning = prompt("Type DELETE to delete all local Ascendra data.");
+      const warning = prompt(
+        configuredAppText("Type DELETE to delete all local Ascendra data."),
+      );
 
       if (warning === "DELETE") {
         deleteCurrentAccountData();
-        alert("This account and its Ascendra data have been deleted.");
+        alert(
+          configuredAppText(
+            "This account and its Ascendra data have been deleted.",
+          ),
+        );
         navigate("welcome");
       } else if (warning !== null) {
         alert("Delete cancelled.");
@@ -4914,7 +5014,7 @@ const ROUTE_INITIALIZERS = {
     let profileOwner = getLoggedInUsername();
 
     function loadProfile() {
-      const savedName = getActiveIdentityItem("name") || "Ascendra";
+      const savedName = getActiveIdentityItem("name") || APP_CONFIG.name;
 
       const savedSurname = getActiveIdentityItem("surname") || "User";
 
