@@ -73,7 +73,7 @@ Jayden:
 "Global css doesn't actually control ALL of the css, but it does control all the main functions, I want to add the xp bar to every necessary file."
 
 Jayden:
-"how do you connect things sto the real branch?"
+"how do you connect things to the real branch?"
 
 Reply:
 "you have to transfer the js in script.js, add the route. for css idk how to so ask chatgpt, for html you make a template and you put the code in there."
@@ -90,6 +90,9 @@ Jayden:
 
 Jayden:
 "For extras.html, how do you get the icons that link to the other things, I never really saw any code for that."
+
+Jayden:
+"Can I suggest some badges for achievements"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
