@@ -2027,16 +2027,51 @@
         </section>
       </main>
     </template>
+
     <template id="page-studyspace">
       <header>
         <h1>Study Space</h1>
         <p><strong>Your cozy Study Space</strong></p>
       </header>
+      <main>
+        <div id="pomodoro">
+          <div id="pomodoro-display">
+            <p><strong id="timeLeft"></strong></p>
+          </div>
+
+          <div id="pomodoro-control">
+            <button id="stop-pomodoro">Stop Pomodoro Timer</button>
+            <button id="restart-pomodoro">Restart Pomodoro Timer</button>
+          </div>
+
+          <div id="pomodoro-starting">
+            <input type="number" id="pomodoro-minutes" value="5" />
+            <strong>Minutes</strong>
+            <button id="pomodoro-start">Start Pomodoro</button>
+          </div>
+        </div>
+
+        <div id="music">
+          <div id="music-picker">
+            <button id="fluidscape">
+              FluidScape by Kevin MacLeod <br />
+              30:21 minutes
+            </button>
+          </div>
+
+          <div id="music-player">
+            <div id="song"></div>
+            <button id="back-20"><i class="fa-solid fa-backward"></i></button>
+            <button id="play"><i class="fa-solid fa-play"></i></button>
+            <button id="forward-20"><i class="fa-solid fa-forward"></i></button>
+          </div>
+        </div>
+      </main>
     </template>
 
     <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script defer src="src/js/config/config.js"></script>
-    <script defer src="src/js/config/userconfig.js"></script>
+    <script defer src="src/js/backend/config/config.js"></script>
+    <script defer src="src/js/backend/config/userconfig.js"></script>
     <script type="module" src="src/js/script.js"></script>
     <div
       aria-label="Search Ascendra"
