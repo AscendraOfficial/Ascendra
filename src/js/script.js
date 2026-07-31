@@ -1,5 +1,5 @@
 "use strict";
-import { STORAGE_KEYS, STORAGE_KEY_BUILDERS } from "./storageKeys.js";
+import { STORAGE_KEYS, STORAGE_KEY_BUILDERS } from "./data/storageKeys.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
