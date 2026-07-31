@@ -4307,13 +4307,6 @@ const ROUTE_INITIALIZERS = {
       applySavedSettings();
     }
 
-    const parentalLink = document.getElementById("parental-link");
-
-    if (USER_CONFIG.parentalMode) {
-      parentalLink.innerHTML =
-        'Parental Controls are set up. <a href="#/settings">Turn them off</a>';
-    }
-
     if (modeToggle) {
       modeToggle.checked = getSavedSettings().lightMode === false;
       modeToggle.addEventListener("change", handleModeChange);
