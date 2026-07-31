@@ -1288,8 +1288,9 @@
           class="options"
           id="studyspace"
           onclick="navigate('studyspace')"
+          type="button"
         >
-          Studyspace<br /><i class="fa-solid fa-music"></i>
+          Study Space<br /><i class="fa-solid fa-music"></i>
         </button>
         <button class="options" id="unwind" onclick="navigate('unwind')">
           Unwind<br /><i class="fa-solid fa-cloud-moon"></i>
@@ -1601,7 +1602,7 @@
             </article>
             <article class="feature-card">
               <i class="fa-solid fa-music"></i>
-              <h3>Use Studyspace</h3>
+              <h3>Use Study Space</h3>
               <p>
                 Listen to calming sounds while studying, working, or relaxing.
               </p>
@@ -1801,7 +1802,7 @@
             <p>
               Update Horizon is Ascendra’s second major update, introducing new
               ways to reflect, focus, and recharge. The Time Capsule lets users
-              save messages and memories to unlock in the future, Studyspace
+              save messages and memories to unlock in the future, Study Space
               provides calming background audio for studying or relaxing, and
               Unwind helps users slow down with peaceful activities after a busy
               day. Together, these features expand Ascendra beyond productivity
@@ -2029,43 +2030,182 @@
     </template>
 
     <template id="page-studyspace">
-      <header>
-        <h1>Study Space</h1>
-        <p><strong>Your cozy Study Space</strong></p>
-      </header>
-      <main>
-        <div id="pomodoro">
-          <div id="pomodoro-display">
-            <p><strong id="timeLeft"></strong></p>
-          </div>
+      <main class="studyspace-page">
+        <header class="studyspace-heading">
+          <span class="studyspace-eyebrow">
+            <i class="fa-solid fa-book-open-reader" aria-hidden="true"></i>
+            Focus gently
+          </span>
+          <h1>Study Space</h1>
+          <p>A cozy corner for focused sessions and calm background music.</p>
+        </header>
 
-          <div id="pomodoro-control">
-            <button id="stop-pomodoro">Stop Pomodoro Timer</button>
-            <button id="restart-pomodoro">Restart Pomodoro Timer</button>
-          </div>
+        <div class="studyspace-grid">
+          <section
+            class="studyspace-card studyspace-pomodoro"
+            id="pomodoro"
+            aria-labelledby="pomodoro-title"
+          >
+            <div class="studyspace-card-heading">
+              <span class="studyspace-card-icon" aria-hidden="true">
+                <i class="fa-solid fa-clock"></i>
+              </span>
+              <div>
+                <h2 id="pomodoro-title">Focus Timer</h2>
+                <p>Choose a session length and work without rushing.</p>
+              </div>
+            </div>
 
-          <div id="pomodoro-starting">
-            <input type="number" id="pomodoro-minutes" value="5" />
-            <strong>Minutes</strong>
-            <button id="pomodoro-start">Start Pomodoro</button>
-          </div>
-        </div>
+            <div
+              aria-label="5 minutes remaining"
+              class="pomodoro-display"
+              id="pomodoro-display"
+              role="timer"
+            >
+              <span>Time remaining</span>
+              <strong id="timeLeft">05:00</strong>
+            </div>
 
-        <div id="music">
-          <div id="music-picker">
-            <button id="fluidscape">
-              FluidScape by Kevin MacLeod <br />
-              30:21 minutes
+            <div class="pomodoro-starting" id="pomodoro-starting">
+              <label for="pomodoro-minutes">Session length</label>
+              <div class="studyspace-duration">
+                <input
+                  aria-describedby="pomodoro-hint"
+                  id="pomodoro-minutes"
+                  inputmode="numeric"
+                  max="180"
+                  min="1"
+                  step="1"
+                  type="number"
+                  value="5"
+                />
+                <span>minutes</span>
+              </div>
+              <p class="studyspace-hint" id="pomodoro-hint">
+                Choose from 1 to 180 minutes.
+              </p>
+            </div>
+
+            <div class="pomodoro-controls" id="pomodoro-control">
+              <button id="pomodoro-start" type="button">
+                <i class="fa-solid fa-play" aria-hidden="true"></i>
+                Start
+              </button>
+              <button disabled id="stop-pomodoro" type="button">
+                <i class="fa-solid fa-pause" aria-hidden="true"></i>
+                Pause
+              </button>
+              <button class="secondary" id="restart-pomodoro" type="button">
+                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                Reset
+              </button>
+            </div>
+            <p
+              aria-live="polite"
+              class="studyspace-status"
+              id="pomodoro-status"
+            >
+              Ready when you are.
+            </p>
+          </section>
+
+          <section
+            class="studyspace-card studyspace-music"
+            id="music"
+            aria-labelledby="music-title"
+          >
+            <div class="studyspace-card-heading">
+              <span class="studyspace-card-icon" aria-hidden="true">
+                <i class="fa-solid fa-headphones"></i>
+              </span>
+              <div>
+                <h2 id="music-title">Ambient Music</h2>
+                <p>Settle in with a calm instrumental soundscape.</p>
+              </div>
+            </div>
+
+            <button
+              aria-pressed="true"
+              class="studyspace-track is-selected"
+              id="fluidscape"
+              type="button"
+            >
+              <span class="studyspace-album-art" aria-hidden="true">
+                <i class="fa-solid fa-water"></i>
+              </span>
+              <span>
+                <strong>Fluidscape</strong>
+                <small>Kevin MacLeod · 30:21</small>
+              </span>
+              <i class="fa-solid fa-check" aria-hidden="true"></i>
             </button>
-          </div>
 
-          <div id="music-player">
-            <div id="song"></div>
-            <button id="back-20"><i class="fa-solid fa-backward"></i></button>
-            <button id="play"><i class="fa-solid fa-play"></i></button>
-            <button id="forward-20"><i class="fa-solid fa-forward"></i></button>
-          </div>
+            <div class="studyspace-player" id="music-player">
+              <audio
+                id="studyspace-audio"
+                preload="metadata"
+                src="assets/music/Fluidscape.mp3"
+              ></audio>
+              <div class="studyspace-now-playing">
+                <span>Now playing</span>
+                <strong id="song">Fluidscape · Kevin MacLeod</strong>
+              </div>
+
+              <label class="visually-hidden" for="studyspace-progress">
+                Song position
+              </label>
+              <input
+                aria-valuetext="0 minutes 0 seconds"
+                id="studyspace-progress"
+                max="100"
+                min="0"
+                step="0.1"
+                type="range"
+                value="0"
+              />
+              <div class="studyspace-time" aria-hidden="true">
+                <span id="music-elapsed">0:00</span>
+                <span id="music-duration">30:21</span>
+              </div>
+
+              <div class="music-controls">
+                <button
+                  aria-label="Go back 20 seconds"
+                  id="back-20"
+                  type="button"
+                >
+                  <i class="fa-solid fa-backward" aria-hidden="true"></i>
+                  <span>20</span>
+                </button>
+                <button aria-label="Play Fluidscape" id="play" type="button">
+                  <i class="fa-solid fa-play" aria-hidden="true"></i>
+                </button>
+                <button
+                  aria-label="Go forward 20 seconds"
+                  id="forward-20"
+                  type="button"
+                >
+                  <i class="fa-solid fa-forward" aria-hidden="true"></i>
+                  <span>20</span>
+                </button>
+              </div>
+              <p aria-live="polite" class="studyspace-status" id="music-status">
+                Select play when you are ready.
+              </p>
+            </div>
+          </section>
         </div>
+
+        <nav aria-label="Study Space links" class="studyspace-links">
+          <a href="#/extras">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            Back to Extras
+          </a>
+          <a href="#/unwind">
+            Try Unwind
+            <i class="fa-solid fa-cloud-moon" aria-hidden="true"></i>
+          </a>
+        </nav>
       </main>
     </template>
 

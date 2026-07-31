@@ -1,5 +1,5 @@
 "use strict";
-import { STORAGE_KEYS } from "./backend/data/storageKeys";
+import { STORAGE_KEYS } from "./backend/data/storageKeys.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -2007,6 +2007,7 @@ function normalizeRoute(value) {
     .replace(/\.html$/, "");
   if (route === "index" || route === "") route = "welcome";
   if (route === "alert") route = "alerts";
+  if (route === "study-space" || route === "soundscape") route = "studyspace";
   return document.getElementById("page-" + route) ? route : "welcome";
 }
 function getRoute() {
@@ -5280,6 +5281,253 @@ const ROUTE_INITIALIZERS = {
     };
   },
   extras: function init_extras() {},
+  studyspace: function init_studyspace() {
+    const minutesInput = document.getElementById("pomodoro-minutes");
+    const startButton = document.getElementById("pomodoro-start");
+    const pauseButton = document.getElementById("stop-pomodoro");
+    const resetButton = document.getElementById("restart-pomodoro");
+    const timerDisplay = document.getElementById("pomodoro-display");
+    const timeLeft = document.getElementById("timeLeft");
+    const timerStatus = document.getElementById("pomodoro-status");
+    const trackButton = document.getElementById("fluidscape");
+    const audio = document.getElementById("studyspace-audio");
+    const playButton = document.getElementById("play");
+    const backButton = document.getElementById("back-20");
+    const forwardButton = document.getElementById("forward-20");
+    const progress = document.getElementById("studyspace-progress");
+    const elapsed = document.getElementById("music-elapsed");
+    const duration = document.getElementById("music-duration");
+    const musicStatus = document.getElementById("music-status");
+    let timerId = null;
+    let remainingSeconds = 5 * 60;
+    let sessionStarted = false;
+
+    function formatClock(totalSeconds) {
+      const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
+      const minutes = Math.floor(safeSeconds / 60);
+      const seconds = safeSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function formatTrackTime(totalSeconds) {
+      const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
+      return `${Math.floor(safeSeconds / 60)}:${String(safeSeconds % 60).padStart(2, "0")}`;
+    }
+
+    function readTimerDuration() {
+      const minutes = Number(minutesInput.value);
+      if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) {
+        return null;
+      }
+      return minutes * 60;
+    }
+
+    function updateTimerDisplay() {
+      timeLeft.textContent = formatClock(remainingSeconds);
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      timerDisplay.setAttribute(
+        "aria-label",
+        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
+      );
+    }
+
+    function clearTimer() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function setTimerRunning(running) {
+      startButton.disabled = running;
+      pauseButton.disabled = !running;
+      minutesInput.disabled = sessionStarted;
+      timerDisplay.classList.toggle("is-running", running);
+    }
+
+    function finishTimer() {
+      clearTimer();
+      remainingSeconds = 0;
+      sessionStarted = false;
+      setTimerRunning(false);
+      updateTimerDisplay();
+      timerStatus.textContent = "Focus session complete. Nice work!";
+    }
+
+    function tickTimer() {
+      remainingSeconds -= 1;
+      updateTimerDisplay();
+      if (remainingSeconds <= 0) finishTimer();
+    }
+
+    function startTimer() {
+      if (timerId !== null) return;
+      if (!sessionStarted || remainingSeconds <= 0) {
+        const durationInSeconds = readTimerDuration();
+        if (durationInSeconds === null) {
+          timerStatus.textContent =
+            "Enter a whole number from 1 to 180 minutes.";
+          minutesInput.focus();
+          return;
+        }
+        remainingSeconds = durationInSeconds;
+        sessionStarted = true;
+        updateTimerDisplay();
+      }
+
+      timerId = setInterval(tickTimer, 1000);
+      setTimerRunning(true);
+      timerStatus.textContent = "Focus session in progress.";
+    }
+
+    function pauseTimer() {
+      if (timerId === null) return;
+      clearTimer();
+      setTimerRunning(false);
+      timerStatus.textContent = "Paused. Continue whenever you are ready.";
+    }
+
+    function resetTimer() {
+      clearTimer();
+      sessionStarted = false;
+      remainingSeconds = readTimerDuration() || 5 * 60;
+      setTimerRunning(false);
+      updateTimerDisplay();
+      timerStatus.textContent = "Ready when you are.";
+    }
+
+    function handleMinutesInput() {
+      if (sessionStarted) return;
+      const durationInSeconds = readTimerDuration();
+      if (durationInSeconds !== null) {
+        remainingSeconds = durationInSeconds;
+        updateTimerDisplay();
+        timerStatus.textContent = "Ready when you are.";
+      }
+    }
+
+    function updatePlayButton() {
+      const isPlaying = !audio.paused && !audio.ended;
+      playButton.innerHTML = isPlaying
+        ? '<i class="fa-solid fa-pause" aria-hidden="true"></i>'
+        : '<i class="fa-solid fa-play" aria-hidden="true"></i>';
+      playButton.setAttribute(
+        "aria-label",
+        `${isPlaying ? "Pause" : "Play"} Fluidscape`,
+      );
+    }
+
+    function updateMusicProgress() {
+      const trackDuration = Number.isFinite(audio.duration)
+        ? audio.duration
+        : 0;
+      const currentTime = Number.isFinite(audio.currentTime)
+        ? audio.currentTime
+        : 0;
+      progress.value = trackDuration
+        ? String((currentTime / trackDuration) * 100)
+        : "0";
+      elapsed.textContent = formatTrackTime(currentTime);
+      if (trackDuration) duration.textContent = formatTrackTime(trackDuration);
+      progress.setAttribute(
+        "aria-valuetext",
+        `${formatTrackTime(currentTime)} of ${formatTrackTime(trackDuration)}`,
+      );
+    }
+
+    async function toggleMusic() {
+      if (!audio.paused) {
+        audio.pause();
+        musicStatus.textContent = "Music paused.";
+        return;
+      }
+
+      try {
+        await audio.play();
+        musicStatus.textContent = "Playing Fluidscape by Kevin MacLeod.";
+      } catch (error) {
+        console.warn("Study Space could not start the selected track.", error);
+        musicStatus.textContent =
+          "The music could not start. Please try again.";
+      }
+    }
+
+    function seekBy(seconds) {
+      const trackDuration = Number.isFinite(audio.duration)
+        ? audio.duration
+        : Infinity;
+      audio.currentTime = Math.min(
+        trackDuration,
+        Math.max(0, audio.currentTime + seconds),
+      );
+      updateMusicProgress();
+    }
+
+    function seekFromProgress() {
+      if (!Number.isFinite(audio.duration)) return;
+      audio.currentTime = (Number(progress.value) / 100) * audio.duration;
+      updateMusicProgress();
+    }
+
+    function seekBackward() {
+      seekBy(-20);
+    }
+
+    function seekForward() {
+      seekBy(20);
+    }
+
+    function selectFluidscape() {
+      trackButton.setAttribute("aria-pressed", "true");
+      trackButton.classList.add("is-selected");
+      musicStatus.textContent = "Fluidscape selected.";
+      playButton.focus();
+    }
+
+    function handleTrackEnded() {
+      updatePlayButton();
+      musicStatus.textContent = "Fluidscape finished.";
+    }
+
+    startButton.addEventListener("click", startTimer);
+    pauseButton.addEventListener("click", pauseTimer);
+    resetButton.addEventListener("click", resetTimer);
+    minutesInput.addEventListener("input", handleMinutesInput);
+    trackButton.addEventListener("click", selectFluidscape);
+    playButton.addEventListener("click", toggleMusic);
+    backButton.addEventListener("click", seekBackward);
+    forwardButton.addEventListener("click", seekForward);
+    progress.addEventListener("input", seekFromProgress);
+    audio.addEventListener("timeupdate", updateMusicProgress);
+    audio.addEventListener("loadedmetadata", updateMusicProgress);
+    audio.addEventListener("play", updatePlayButton);
+    audio.addEventListener("pause", updatePlayButton);
+    audio.addEventListener("ended", handleTrackEnded);
+    updateTimerDisplay();
+    updateMusicProgress();
+    updatePlayButton();
+
+    return () => {
+      clearTimer();
+      audio.pause();
+      audio.currentTime = 0;
+      startButton.removeEventListener("click", startTimer);
+      pauseButton.removeEventListener("click", pauseTimer);
+      resetButton.removeEventListener("click", resetTimer);
+      minutesInput.removeEventListener("input", handleMinutesInput);
+      trackButton.removeEventListener("click", selectFluidscape);
+      playButton.removeEventListener("click", toggleMusic);
+      backButton.removeEventListener("click", seekBackward);
+      forwardButton.removeEventListener("click", seekForward);
+      progress.removeEventListener("input", seekFromProgress);
+      audio.removeEventListener("timeupdate", updateMusicProgress);
+      audio.removeEventListener("loadedmetadata", updateMusicProgress);
+      audio.removeEventListener("play", updatePlayButton);
+      audio.removeEventListener("pause", updatePlayButton);
+      audio.removeEventListener("ended", handleTrackEnded);
+    };
+  },
   minitools: function init_minitools() {
     const flipButton = document.getElementById("flip");
     const rollButton = document.getElementById("roll");
@@ -5410,6 +5658,7 @@ const searchablePages = [
   { name: "Privacy Policy", route: "privacy" },
   { name: "Terms of Service", route: "terms" },
   { name: "Unwind", route: "unwind" },
+  { name: "Study Space", route: "studyspace" },
 ];
 let searchPreviousFocus = null;
 
