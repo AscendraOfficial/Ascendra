@@ -20,3 +20,12 @@ body {
 .policies {
     color: rgb(5, 10, 35);
 }
+
+#no_center {
+    background-color: rgb(255, 255, 0);
+    text-align: center;
+}
+
+.important_text {
+    background-color: 255, 255, 0;
+}
