@@ -1,5 +1,5 @@
 "use strict";
-import { STORAGE_KEYS } from "./backend/data/storageKeys.js";
+import { STORAGE_KEYS } from "./data/storageKeys.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -5840,3 +5840,18 @@ document.addEventListener("click", function (event) {
 
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
+
+fetch("http://127.0.0.1:5000/health")
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error("Backend responded with an error");
+        }
+
+        return response.json();
+    })
+    .then((data) => {
+        console.log("Backend is online:", data);
+    })
+    .catch(() => {
+        console.log("Backend is offline");
+    });
