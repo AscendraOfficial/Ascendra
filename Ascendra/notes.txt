@@ -16,6 +16,8 @@
 - !! Add parental-controls.html to merged index.html in the real branch
 - !! Connect everything to the real branch
 - !! Detail privacy better (As long as it says what is nessecary)
+- !! Replace existing journal entry if the date already exists instead of adding
+- ! Move journal completely to JSON/Python
 ────────────────────────────────────────
 
 💬 Messages
