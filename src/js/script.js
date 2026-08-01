@@ -5289,8 +5289,9 @@ const ROUTE_INITIALIZERS = {
     const timerDisplay = document.getElementById("pomodoro-display");
     const timeLeft = document.getElementById("timeLeft");
     const timerStatus = document.getElementById("pomodoro-status");
-    const trackButton = document.getElementById("fluidscape");
+    const trackButtons = [...document.querySelectorAll(".studyspace-track")];
     const audio = document.getElementById("studyspace-audio");
+    const song = document.getElementById("song");
     const playButton = document.getElementById("play");
     const backButton = document.getElementById("back-20");
     const forwardButton = document.getElementById("forward-20");
@@ -5298,9 +5299,24 @@ const ROUTE_INITIALIZERS = {
     const elapsed = document.getElementById("music-elapsed");
     const duration = document.getElementById("music-duration");
     const musicStatus = document.getElementById("music-status");
+    const tracks = Object.freeze({
+      fluidscape: {
+        title: "Fluidscape",
+        artist: "Kevin MacLeod",
+        src: "assets/music/Fluidscape.mp3",
+        fallbackDuration: "30:21",
+      },
+      forestal: {
+        title: "Forestal",
+        artist: "Liborio Conti",
+        src: "assets/music/Forestal.mp3",
+        fallbackDuration: "7:25",
+      },
+    });
     let timerId = null;
     let remainingSeconds = 5 * 60;
     let sessionStarted = false;
+    let activeTrackId = "fluidscape";
 
     function formatClock(totalSeconds) {
       const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
@@ -5409,12 +5425,13 @@ const ROUTE_INITIALIZERS = {
 
     function updatePlayButton() {
       const isPlaying = !audio.paused && !audio.ended;
+      const activeTrack = tracks[activeTrackId];
       playButton.innerHTML = isPlaying
         ? '<i class="fa-solid fa-pause" aria-hidden="true"></i>'
         : '<i class="fa-solid fa-play" aria-hidden="true"></i>';
       playButton.setAttribute(
         "aria-label",
-        `${isPlaying ? "Pause" : "Play"} Fluidscape`,
+        `${isPlaying ? "Pause" : "Play"} ${activeTrack.title}`,
       );
     }
 
@@ -5445,7 +5462,8 @@ const ROUTE_INITIALIZERS = {
 
       try {
         await audio.play();
-        musicStatus.textContent = "Playing Fluidscape by Kevin MacLeod.";
+        const activeTrack = tracks[activeTrackId];
+        musicStatus.textContent = `Playing ${activeTrack.title}.`;
       } catch (error) {
         console.warn("Study Space could not start the selected track.", error);
         musicStatus.textContent =
@@ -5478,10 +5496,30 @@ const ROUTE_INITIALIZERS = {
       seekBy(20);
     }
 
-    function selectFluidscape() {
-      trackButton.setAttribute("aria-pressed", "true");
-      trackButton.classList.add("is-selected");
-      musicStatus.textContent = "Fluidscape selected.";
+    function selectTrack(event) {
+      const selectedButton = event.currentTarget;
+      const selectedTrackId = selectedButton.dataset.track;
+      const selectedTrack = tracks[selectedTrackId];
+      if (!selectedTrack || selectedTrackId === activeTrackId) {
+        playButton.focus();
+        return;
+      }
+
+      audio.pause();
+      activeTrackId = selectedTrackId;
+      audio.src = selectedTrack.src;
+      audio.load();
+      song.textContent = `${selectedTrack.title} · ${selectedTrack.artist}`;
+      duration.textContent = selectedTrack.fallbackDuration;
+      progress.value = "0";
+      elapsed.textContent = "0:00";
+      trackButtons.forEach((button) => {
+        const isSelected = button === selectedButton;
+        button.classList.toggle("is-selected", isSelected);
+        button.setAttribute("aria-pressed", String(isSelected));
+      });
+      updatePlayButton();
+      musicStatus.textContent = `${selectedTrack.title} selected.`;
       playButton.focus();
     }
 
@@ -5494,7 +5532,9 @@ const ROUTE_INITIALIZERS = {
     pauseButton.addEventListener("click", pauseTimer);
     resetButton.addEventListener("click", resetTimer);
     minutesInput.addEventListener("input", handleMinutesInput);
-    trackButton.addEventListener("click", selectFluidscape);
+    trackButtons.forEach((button) =>
+      button.addEventListener("click", selectTrack),
+    );
     playButton.addEventListener("click", toggleMusic);
     backButton.addEventListener("click", seekBackward);
     forwardButton.addEventListener("click", seekForward);
@@ -5516,7 +5556,9 @@ const ROUTE_INITIALIZERS = {
       pauseButton.removeEventListener("click", pauseTimer);
       resetButton.removeEventListener("click", resetTimer);
       minutesInput.removeEventListener("input", handleMinutesInput);
-      trackButton.removeEventListener("click", selectFluidscape);
+      trackButtons.forEach((button) =>
+        button.removeEventListener("click", selectTrack),
+      );
       playButton.removeEventListener("click", toggleMusic);
       backButton.removeEventListener("click", seekBackward);
       forwardButton.removeEventListener("click", seekForward);

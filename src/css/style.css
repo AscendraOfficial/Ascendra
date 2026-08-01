@@ -8135,6 +8135,14 @@ body.dark-mode
   cursor: pointer;
 }
 
+.studyspace-track + .studyspace-track {
+  margin-top: 10px;
+}
+
+.studyspace-track:not(.is-selected) > .fa-check {
+  visibility: hidden;
+}
+
 .studyspace-track > span:nth-child(2) {
   display: grid;
   gap: 4px;
@@ -8157,6 +8165,10 @@ body.dark-mode
   background: linear-gradient(145deg, #8b5cf6, #4f46e5);
   color: white;
   font-size: 1.2rem;
+}
+
+.studyspace-album-art.forestal-art {
+  background: linear-gradient(145deg, #34d399, #047857);
 }
 
 .studyspace-player {
