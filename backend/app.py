@@ -18,7 +18,7 @@ def loadJournal():
 
 def saveJournal(journal):
     with open(JOURNAL_FILE, "w") as file:
-        json.dump(journal, file)
+        json.dump(journal, file, indent=4)
 
 # ---------------
 
@@ -30,7 +30,16 @@ def health():
 def postJournal():
     journal = loadJournal()
     newEntry = request.get_json()
-    journal.append(newEntry)
+    entryFound = False
+
+    for entry in journal:
+        if entry.get("date") == newEntry.get("date"):
+            entry.update(newEntry)
+            entryFound = True
+            break
+    if not entryFound:
+        journal.append(journal)
+        
     saveJournal(journal)
 
     return {
