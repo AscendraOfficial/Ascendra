@@ -5841,19 +5841,17 @@ document.addEventListener("click", function (event) {
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
 
-/*
-fetch("http://127.0.0.1:5000/health")
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error("Backend responded with an error");
-        }
+fetch("https://ascendra-oc22.onrender.com/")
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error("Backend responded with an error");
+    }
 
-        return response.json();
-    })
-    .then((data) => {
-        console.log("Backend is online:", data);
-    })
-    .catch(() => {
-        console.log("Backend is offline");
-    });
-*/
+    return response.json();
+  })
+  .then((data) => {
+    console.log("Backend is online:", data);
+  })
+  .catch(() => {
+    console.log("Backend is offline");
+  });
