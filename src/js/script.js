@@ -5841,6 +5841,7 @@ document.addEventListener("click", function (event) {
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
 
+/*
 fetch("http://127.0.0.1:5000/health")
     .then((response) => {
         if (!response.ok) {
@@ -5855,3 +5856,4 @@ fetch("http://127.0.0.1:5000/health")
     .catch(() => {
         console.log("Backend is offline");
     });
+*/
