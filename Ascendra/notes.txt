@@ -111,6 +111,11 @@ Jayden:
 "I was testing Ascendra and I realized if you press study space, you go straight to welcome.html.
 Also, can you make the todos that are finished stand out more? I can't really tell between the done and not done todos.
 ALSO, please make sure you can't press undo to get back in someone's account."
+
+Declan:
+"the study space link was supposed to go to the page, i have that added now under the development branch, it will update in the new 
+Horizon update. The todos will stand out more in the new update, and the last one, I'll fix when I'm doing backend. Since i just made a .py file in 
+a new backend folder. Thanks for finding bugs in Ascendra!"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
