@@ -2231,6 +2231,30 @@
       </main>
     </template>
 
+    <template id="page-capsule">
+      <header>
+        <h1>Time Capsule</h1>
+        <p><strong>Write something for your future self.</strong></p>
+      </header>
+
+      <main>
+        <article class="card">
+          <label for="capsule-title">Title</label>
+          <input id="capsule-title" type="text" />
+
+          <label for="capsule-message">Message</label>
+          <textarea id="capsule-message"></textarea>
+
+          <label for="capsule-date">Unlock date</label>
+          <input id="capsule-date" type="date" />
+
+          <button id="save-capsule">Save capsule</button>
+
+          <p id="capsule-status"></p>
+        </article>
+      </main>
+    </template>
+
     <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script defer src="src/js/config/config.js"></script>
     <script defer src="src/js/config/userconfig.js"></script>

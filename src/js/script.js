@@ -3730,6 +3730,11 @@ const ROUTE_INITIALIZERS = {
       clearWindowRouteFunction("stopBreathing", stopBreathing);
     };
   },
+
+  "time-capsule": function init_time_capsule() {
+    
+  },
+
   calendar: function init_calendar() {
     let today = new Date();
     let currentMonth = today.getMonth();
@@ -5710,6 +5715,7 @@ const searchablePages = [
   { name: "Terms of Service", route: "terms" },
   { name: "Unwind", route: "unwind" },
   { name: "Study Space", route: "studyspace" },
+  { name: "Time Capsule", route: "capsule"}
 ];
 let searchPreviousFocus = null;
 
