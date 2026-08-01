@@ -107,7 +107,8 @@ Reply too: "For extras.html, how do you get....":
 "go here: https://fontawesome.com/search?ic=free-collection"
 
 Jayden:
-"I was testing Ascendra and I realized if you press study space, you go straight to welcome.html"
+"I was testing Ascendra and I realized if you press study space, you go straight to welcome.html.
+Also, can you make the todos that are finished stand out more? I can't really tell between the done and not done todos."
 ────────────────────────────────────────
 
 🚀 Version Roadmap
