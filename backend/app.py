@@ -10,7 +10,7 @@ CORS(app)
 # Constants
 JOURNAL_FILE = "storage/journal.json"
 
-# ---------------
+# Fuctions
 
 def loadJournal():
     with open(JOURNAL_FILE, "r") as file:
