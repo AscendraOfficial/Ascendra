@@ -4126,12 +4126,21 @@ const ROUTE_INITIALIZERS = {
       }
 
       const entry = {
+        date: getEntryKey(selectedDay),
         mood: mood.value,
         day: dayText.value,
         grateful: gratefulText.value,
         learn: learnText.value,
         goal: goalText.value,
       };
+
+      fetch(API_URL + "/journal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(entry),
+      });
 
       setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
 
@@ -5841,7 +5850,8 @@ document.addEventListener("click", function (event) {
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
 
-fetch("https://ascendra-oc22.onrender.com/")
+/*
+fetch(API_URL + "/")
   .then((response) => {
     if (!response.ok) {
       throw new Error("Backend responded with an error");
@@ -5855,3 +5865,4 @@ fetch("https://ascendra-oc22.onrender.com/")
   .catch(() => {
     console.log("Backend is offline");
   });
+*/

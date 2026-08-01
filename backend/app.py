@@ -38,7 +38,7 @@ def postJournal():
             entryFound = True
             break
     if not entryFound:
-        journal.append(journal)
+        journal.append(newEntry)
         
     saveJournal(journal)
 
