@@ -29,8 +29,13 @@ def health():
 @app.post("/journal")
 def postJournal():
     journal = loadJournal()
+    newEntry = request.get_json()
+    journal.append(newEntry)
+    saveJournal(journal)
 
-
+    return {
+        "status": "success"
+    }
 
 if __name__ == "__main__":
     app.run(debug=True)
