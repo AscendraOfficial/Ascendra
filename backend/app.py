@@ -10,7 +10,7 @@ CORS(app)
 # Constants
 JOURNAL_FILE = "storage/journal.json"
 
-# Fuctions
+# Functions
 
 def loadJournal():
     with open(JOURNAL_FILE, "r") as file:
@@ -33,13 +33,17 @@ def postJournal():
     entryFound = False
 
     for entry in journal:
-        if entry.get("date") == newEntry.get("date"):
+        if (
+            entry.get("userId") == newEntry.get("userId")
+            and entry.get("date") == newEntry.get("date")
+        ):
             entry.update(newEntry)
             entryFound = True
             break
+
     if not entryFound:
         journal.append(newEntry)
-        
+
     saveJournal(journal)
 
     return {

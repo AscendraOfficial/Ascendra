@@ -1,10 +1,20 @@
 [
-  {
-    "date": "journal-2026-8-1",
-    "mood": "Happy",
-    "day": "yippeegit add .",
-    "grateful": "",
-    "learn": "",
-    "goal": ""
-  }
+    {
+        "date": "journal-2026-8-2",
+        "userId": "57aec779-4c3e-4fe4-9ac9-479b137ea967",
+        "mood": "Happy",
+        "day": "good",
+        "grateful": "yep",
+        "learn": "",
+        "goal": ""
+    },
+    {
+        "date": "journal-2026-8-2",
+        "userId": "4cdf9449-c0fb-4f91-be40-e99af21c7da5",
+        "mood": "Happy",
+        "day": "IT WORKS\n",
+        "grateful": "",
+        "learn": "",
+        "goal": ""
+    }
 ]
