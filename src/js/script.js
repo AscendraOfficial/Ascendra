@@ -4255,16 +4255,12 @@ const ROUTE_INITIALIZERS = {
       return selectedDate > realToday;
     }
 
-    function loadEntry(day) {
+    async function loadEntry(day) {
       selectedDay = day;
-
-      const savedEntry = readUserJson(getEntryKey(day), null);
+      const response = await fetch(API_URL + "/journal");
+      const journal = await response.json();
       const entry =
-        savedEntry &&
-        typeof savedEntry === "object" &&
-        !Array.isArray(savedEntry)
-          ? savedEntry
-          : null;
+        journal.find((entry) => entry.date === getEntryKey(day)) || null;
 
       entryTitle.textContent = `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
