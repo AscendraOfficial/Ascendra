@@ -1,13 +1,3 @@
-console.log(`
-👀 Hey there, curious developer!
-
-Found a bug? Don't worry—it happens. 🐛
-Please report it here:
-
-https://github.com/Jedicuber/Ascendra/issues
-
-Thanks for helping improve Ascendra! 🚀
-`);
 "use strict";
 import { STORAGE_KEYS } from "./data/storageKeys.js";
 const app = document.getElementById("app");
@@ -81,7 +71,6 @@ const LEGACY_USER_KEYS = Object.freeze([
   "todos",
   "habits",
   "events",
-  "timeCapsules",
   "ascendraSettings",
   "ascendra-profile-bio",
   "ascendra-profile-picture",
@@ -2018,8 +2007,6 @@ function normalizeRoute(value) {
     .replace(/\.html$/, "");
   if (route === "index" || route === "") route = "welcome";
   if (route === "alert") route = "alerts";
-  if (route === "study-space" || route === "soundscape") route = "studyspace";
-  if (route === "time-capsule" || route === "timecapsule") route = "capsule";
   return document.getElementById("page-" + route) ? route : "welcome";
 }
 function getRoute() {
@@ -3742,240 +3729,6 @@ const ROUTE_INITIALIZERS = {
       clearWindowRouteFunction("stopBreathing", stopBreathing);
     };
   },
-
-  capsule: function init_capsule() {
-    const form = document.getElementById("capsule-form");
-    const titleInput = document.getElementById("capsule-title");
-    const messageInput = document.getElementById("capsule-message");
-    const dateInput = document.getElementById("capsule-date");
-    const characterCount = document.getElementById("capsule-character-count");
-    const status = document.getElementById("capsule-status");
-    const summary = document.getElementById("capsule-summary");
-    const list = document.getElementById("capsule-list");
-    let statusTimer = null;
-
-    function toLocalDateString(date) {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
-
-    function getTomorrowString() {
-      const tomorrow = new Date();
-      tomorrow.setHours(0, 0, 0, 0);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      return toLocalDateString(tomorrow);
-    }
-
-    function parseCapsuleDate(value) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
-      const date = new Date(`${value}T00:00:00`);
-      if (Number.isNaN(date.getTime()) || toLocalDateString(date) !== value) {
-        return null;
-      }
-      return date;
-    }
-
-    function isUnlocked(capsule) {
-      const unlockDate = parseCapsuleDate(capsule.unlockDate);
-      if (!unlockDate) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return unlockDate <= today;
-    }
-
-    function formatUnlockDate(value) {
-      const date = parseCapsuleDate(value);
-      if (!date) return "Unknown date";
-      return date.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    }
-
-    function getCapsules() {
-      return getUserArray(STORAGE_KEYS.TIME_CAPSULES).filter((capsule) => {
-        return (
-          typeof capsule.id === "string" &&
-          typeof capsule.title === "string" &&
-          typeof capsule.message === "string" &&
-          parseCapsuleDate(capsule.unlockDate)
-        );
-      });
-    }
-
-    function saveCapsules(capsules) {
-      setUserItem(STORAGE_KEYS.TIME_CAPSULES, JSON.stringify(capsules));
-    }
-
-    function showStatus(message, type = "success") {
-      status.textContent = message;
-      status.className = `capsule-status ${type}`;
-      clearTimeout(statusTimer);
-      statusTimer = setTimeout(() => {
-        status.textContent = "";
-        status.className = "capsule-status";
-      }, 5000);
-    }
-
-    function createCapsuleCard(capsule) {
-      const unlocked = isUnlocked(capsule);
-      const article = document.createElement("article");
-      article.className = `saved-capsule ${unlocked ? "is-unlocked" : "is-locked"}`;
-
-      const icon = document.createElement("span");
-      icon.className = "saved-capsule-icon";
-      icon.setAttribute("aria-hidden", "true");
-      icon.innerHTML = unlocked
-        ? '<i class="fa-solid fa-lock-open"></i>'
-        : '<i class="fa-solid fa-lock"></i>';
-
-      const content = document.createElement("div");
-      content.className = "saved-capsule-content";
-
-      const heading = document.createElement("h3");
-      heading.textContent = capsule.title;
-
-      const date = document.createElement("p");
-      date.className = "saved-capsule-date";
-      date.textContent = unlocked
-        ? `Unlocked ${formatUnlockDate(capsule.unlockDate)}`
-        : `Unlocks ${formatUnlockDate(capsule.unlockDate)}`;
-
-      const message = document.createElement("p");
-      message.className = "saved-capsule-message";
-      message.textContent = unlocked
-        ? capsule.message
-        : "This message is sealed until its unlock date.";
-
-      const deleteButton = document.createElement("button");
-      deleteButton.className = "capsule-delete";
-      deleteButton.type = "button";
-      deleteButton.dataset.capsuleId = capsule.id;
-      deleteButton.setAttribute("aria-label", `Delete ${capsule.title}`);
-      deleteButton.innerHTML =
-        '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
-
-      content.append(heading, date, message);
-      article.append(icon, content, deleteButton);
-      return article;
-    }
-
-    function renderCapsules() {
-      const capsules = getCapsules().sort((first, second) => {
-        return first.unlockDate.localeCompare(second.unlockDate);
-      });
-      list.replaceChildren();
-
-      if (capsules.length === 0) {
-        const emptyState = document.createElement("div");
-        emptyState.className = "capsule-empty";
-        emptyState.innerHTML =
-          '<i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>';
-        const emptyText = document.createElement("p");
-        emptyText.textContent =
-          "Your future messages will appear here after you seal them.";
-        emptyState.appendChild(emptyText);
-        list.appendChild(emptyState);
-        summary.textContent = "No capsules saved yet.";
-        return;
-      }
-
-      const unlockedCount = capsules.filter(isUnlocked).length;
-      const lockedCount = capsules.length - unlockedCount;
-      summary.textContent = `${capsules.length} saved · ${lockedCount} locked · ${unlockedCount} unlocked`;
-      capsules.forEach((capsule) => {
-        list.appendChild(createCapsuleCard(capsule));
-      });
-    }
-
-    function updateCharacterCount() {
-      characterCount.textContent = `${messageInput.value.length} / 2000`;
-    }
-
-    function handleSubmit(event) {
-      event.preventDefault();
-      const title = titleInput.value.trim();
-      const message = messageInput.value.trim();
-      const unlockDate = parseCapsuleDate(dateInput.value);
-      const tomorrow = parseCapsuleDate(getTomorrowString());
-
-      if (!title || !message || !unlockDate) {
-        showStatus(
-          "Complete every field before sealing your capsule.",
-          "error",
-        );
-        return;
-      }
-      if (unlockDate < tomorrow) {
-        showStatus("Choose tomorrow or a later unlock date.", "error");
-        dateInput.focus();
-        return;
-      }
-
-      const capsules = getCapsules();
-      capsules.push({
-        id: createAccountId(),
-        title,
-        message,
-        unlockDate: dateInput.value,
-        createdAt: new Date().toISOString(),
-      });
-
-      try {
-        saveCapsules(capsules);
-        form.reset();
-        dateInput.min = getTomorrowString();
-        updateCharacterCount();
-        renderCapsules();
-        showStatus("Your time capsule has been sealed.");
-        titleInput.focus();
-      } catch (error) {
-        console.warn("Ascendra could not save the time capsule.", error);
-        showStatus(
-          "Your capsule could not be saved. Please try again.",
-          "error",
-        );
-      }
-    }
-
-    function handleListClick(event) {
-      const deleteButton = event.target.closest("[data-capsule-id]");
-      if (!deleteButton) return;
-      const capsules = getCapsules();
-      const capsule = capsules.find(
-        (item) => item.id === deleteButton.dataset.capsuleId,
-      );
-      if (!capsule) return;
-      if (!confirm(`Delete the time capsule “${capsule.title}”?`)) return;
-
-      try {
-        saveCapsules(capsules.filter((item) => item.id !== capsule.id));
-        renderCapsules();
-        showStatus("Time capsule deleted.");
-      } catch (error) {
-        console.warn("Ascendra could not delete the time capsule.", error);
-        showStatus("The capsule could not be deleted.", "error");
-      }
-    }
-
-    dateInput.min = getTomorrowString();
-    form.addEventListener("submit", handleSubmit);
-    messageInput.addEventListener("input", updateCharacterCount);
-    list.addEventListener("click", handleListClick);
-    updateCharacterCount();
-    renderCapsules();
-
-    return () => {
-      clearTimeout(statusTimer);
-      form.removeEventListener("submit", handleSubmit);
-      messageInput.removeEventListener("input", updateCharacterCount);
-      list.removeEventListener("click", handleListClick);
-    };
-  },
-
   calendar: function init_calendar() {
     let today = new Date();
     let currentMonth = today.getMonth();
@@ -4201,6 +3954,9 @@ const ROUTE_INITIALIZERS = {
     let currentYear = todayYear;
     let selectedDay = todayDay;
 
+    // Holds the journal entries downloaded from the backend.
+    let journalEntries = [];
+
     const monthNames = [
       "January",
       "February",
@@ -4232,12 +3988,17 @@ const ROUTE_INITIALIZERS = {
     const saveEntry = document.getElementById("saveEntry");
     const statusMessage = document.getElementById("statusMessage");
 
+    function getCurrentUserId() {
+      return getActiveIdentityItem("accountId");
+    }
+
     function getEntryKey(day) {
       return `journal-${currentYear}-${currentMonth + 1}-${day}`;
     }
 
     function getCurrentDateParts() {
       const currentDate = new Date();
+
       return {
         day: currentDate.getDate(),
         month: currentDate.getMonth(),
@@ -4247,6 +4008,7 @@ const ROUTE_INITIALIZERS = {
 
     function isTodayDate(day) {
       const currentDate = getCurrentDateParts();
+
       return (
         day === currentDate.day &&
         currentMonth === currentDate.month &&
@@ -4257,20 +4019,58 @@ const ROUTE_INITIALIZERS = {
     function isFutureDate(day) {
       const selectedDate = new Date(currentYear, currentMonth, day);
       const currentDate = getCurrentDateParts();
+
       const realToday = new Date(
         currentDate.year,
         currentDate.month,
         currentDate.day,
       );
+
       return selectedDate > realToday;
+    }
+
+    async function loadJournalEntries() {
+      const response = await fetch(API_URL + "/journal");
+
+      if (!response.ok) {
+        throw new Error(`Journal request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      journalEntries = Array.isArray(data) ? data : [];
+
+      return journalEntries;
+    }
+
+    function findEntry(day) {
+      const currentUserId = getCurrentUserId();
+      const dateKey = getEntryKey(day);
+
+      return (
+        journalEntries.find(
+          (entry) => entry.userId === currentUserId && entry.date === dateKey,
+        ) || null
+      );
     }
 
     async function loadEntry(day) {
       selectedDay = day;
-      const response = await fetch(API_URL + "/journal");
-      const journal = await response.json();
-      const entry =
-        journal.find((entry) => entry.date === getEntryKey(day)) || null;
+
+      let entry = null;
+
+      try {
+        await loadJournalEntries();
+        entry = findEntry(day);
+      } catch (error) {
+        console.error("Could not load the journal backend:", error);
+
+        // Temporary backup while the backend is still being tested.
+        entry = readUserJson(getEntryKey(day), null);
+
+        statusMessage.textContent =
+          "Backend unavailable. Loaded the local backup.";
+      }
 
       entryTitle.textContent = `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
@@ -4289,11 +4089,17 @@ const ROUTE_INITIALIZERS = {
       goalText.disabled = !canEdit;
 
       saveEntry.style.display = canEdit ? "block" : "none";
-      statusMessage.textContent = canEdit
-        ? ""
-        : isFutureDate(day)
+
+      if (!canEdit) {
+        statusMessage.textContent = isFutureDate(day)
           ? "Future entries cannot be edited."
           : "Past entries are read-only.";
+      } else if (
+        statusMessage.textContent !==
+        "Backend unavailable. Loaded the local backup."
+      ) {
+        statusMessage.textContent = "";
+      }
     }
 
     function buildDateGrid() {
@@ -4302,12 +4108,21 @@ const ROUTE_INITIALIZERS = {
 
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
+      const currentUserId = getCurrentUserId();
+
       for (let day = 1; day <= daysInMonth; day++) {
         const button = document.createElement("button");
+
         button.textContent = day;
         button.classList.add("date-button");
 
-        if (getUserItem(getEntryKey(day))) {
+        const dateKey = getEntryKey(day);
+
+        const hasBackendEntry = journalEntries.some(
+          (entry) => entry.userId === currentUserId && entry.date === dateKey,
+        );
+
+        if (hasBackendEntry) {
           button.classList.add("has-entry");
         }
 
@@ -4323,8 +4138,8 @@ const ROUTE_INITIALIZERS = {
           button.classList.add("future");
           button.disabled = true;
         } else {
-          button.onclick = () => {
-            loadEntry(day);
+          button.onclick = async () => {
+            await loadEntry(day);
             buildDateGrid();
           };
         }
@@ -4333,7 +4148,7 @@ const ROUTE_INITIALIZERS = {
       }
     }
 
-    prevMonth.onclick = () => {
+    prevMonth.onclick = async () => {
       currentMonth--;
 
       if (currentMonth < 0) {
@@ -4342,11 +4157,12 @@ const ROUTE_INITIALIZERS = {
       }
 
       selectedDay = 1;
+
+      await loadEntry(selectedDay);
       buildDateGrid();
-      loadEntry(selectedDay);
     };
 
-    nextMonth.onclick = () => {
+    nextMonth.onclick = async () => {
       currentMonth++;
 
       if (currentMonth > 11) {
@@ -4355,20 +4171,23 @@ const ROUTE_INITIALIZERS = {
       }
 
       selectedDay = 1;
+
+      await loadEntry(selectedDay);
       buildDateGrid();
-      loadEntry(selectedDay);
     };
 
-    saveEntry.onclick = () => {
+    saveEntry.onclick = async () => {
       if (!isTodayDate(selectedDay)) {
         statusMessage.textContent = isFutureDate(selectedDay)
           ? "Future entries cannot be edited."
           : "Past entries are read-only.";
+
         return;
       }
 
       const entry = {
         date: getEntryKey(selectedDay),
+        userId: getCurrentUserId(),
         mood: mood.value,
         day: dayText.value,
         grateful: gratefulText.value,
@@ -4376,52 +4195,103 @@ const ROUTE_INITIALIZERS = {
         goal: goalText.value,
       };
 
-      fetch(API_URL + "/journal", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(entry),
-      });
+      if (!entry.userId) {
+        statusMessage.textContent = "Could not identify the logged-in account.";
 
-      setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
+        return;
+      }
 
-      statusMessage.textContent = "Entry saved!";
-      buildDateGrid();
+      saveEntry.disabled = true;
+      statusMessage.textContent = "Saving...";
+
+      try {
+        const response = await fetch(API_URL + "/journal", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(entry),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Journal save failed: ${response.status}`);
+        }
+
+        const existingIndex = journalEntries.findIndex(
+          (savedEntry) =>
+            savedEntry.userId === entry.userId &&
+            savedEntry.date === entry.date,
+        );
+
+        if (existingIndex === -1) {
+          journalEntries.push(entry);
+        } else {
+          journalEntries[existingIndex] = entry;
+        }
+
+        // Keep this temporarily as a backup.
+        setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
+
+        statusMessage.textContent = "Entry saved!";
+        buildDateGrid();
+      } catch (error) {
+        console.error("Could not save the journal entry:", error);
+
+        // Save locally if the backend fails.
+        setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
+
+        statusMessage.textContent =
+          "Saved locally, but the backend could not be reached.";
+      } finally {
+        saveEntry.disabled = false;
+      }
     };
 
-    function refreshJournalDateRules() {
+    async function refreshJournalDateRules() {
       const currentDateKey = formatLocalDate();
+
       if (currentDateKey === journalDateKey) return;
+
       journalDateKey = currentDateKey;
+
+      await loadEntry(selectedDay);
       buildDateGrid();
-      loadEntry(selectedDay);
     }
 
     function handleJournalVisibilityChange() {
-      if (!document.hidden) refreshJournalDateRules();
+      if (!document.hidden) {
+        refreshJournalDateRules();
+      }
     }
 
     window.addEventListener("focus", refreshJournalDateRules);
+
     document.addEventListener(
       "visibilitychange",
       handleJournalVisibilityChange,
     );
 
-    buildDateGrid();
-    loadEntry(selectedDay);
+    async function initializeJournal() {
+      await loadEntry(selectedDay);
+      buildDateGrid();
+    }
+
+    initializeJournal();
 
     window.buildDateGrid = buildDateGrid;
     window.getEntryKey = getEntryKey;
     window.isFutureDate = isFutureDate;
     window.isTodayDate = isTodayDate;
     window.loadEntry = loadEntry;
+
     return () => {
       window.removeEventListener("focus", refreshJournalDateRules);
+
       document.removeEventListener(
         "visibilitychange",
         handleJournalVisibilityChange,
       );
+
       clearWindowRouteFunction("buildDateGrid", buildDateGrid);
       clearWindowRouteFunction("getEntryKey", getEntryKey);
       clearWindowRouteFunction("isFutureDate", isFutureDate);
@@ -5525,295 +5395,6 @@ const ROUTE_INITIALIZERS = {
     };
   },
   extras: function init_extras() {},
-  studyspace: function init_studyspace() {
-    const minutesInput = document.getElementById("pomodoro-minutes");
-    const startButton = document.getElementById("pomodoro-start");
-    const pauseButton = document.getElementById("stop-pomodoro");
-    const resetButton = document.getElementById("restart-pomodoro");
-    const timerDisplay = document.getElementById("pomodoro-display");
-    const timeLeft = document.getElementById("timeLeft");
-    const timerStatus = document.getElementById("pomodoro-status");
-    const trackButtons = [...document.querySelectorAll(".studyspace-track")];
-    const audio = document.getElementById("studyspace-audio");
-    const song = document.getElementById("song");
-    const playButton = document.getElementById("play");
-    const backButton = document.getElementById("back-20");
-    const forwardButton = document.getElementById("forward-20");
-    const progress = document.getElementById("studyspace-progress");
-    const elapsed = document.getElementById("music-elapsed");
-    const duration = document.getElementById("music-duration");
-    const musicStatus = document.getElementById("music-status");
-    const tracks = Object.freeze({
-      fluidscape: {
-        title: "Fluidscape",
-        artist: "Kevin MacLeod",
-        src: "assets/music/Fluidscape.mp3",
-        fallbackDuration: "30:21",
-      },
-      forestal: {
-        title: "Forestal",
-        artist: "Liborio Conti",
-        src: "assets/music/Forestal.mp3",
-        fallbackDuration: "7:25",
-      },
-    });
-    let timerId = null;
-    let remainingSeconds = 5 * 60;
-    let sessionStarted = false;
-    let activeTrackId = "fluidscape";
-
-    function formatClock(totalSeconds) {
-      const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
-      const minutes = Math.floor(safeSeconds / 60);
-      const seconds = safeSeconds % 60;
-      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    }
-
-    function formatTrackTime(totalSeconds) {
-      const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
-      return `${Math.floor(safeSeconds / 60)}:${String(safeSeconds % 60).padStart(2, "0")}`;
-    }
-
-    function readTimerDuration() {
-      const minutes = Number(minutesInput.value);
-      if (!Number.isInteger(minutes) || minutes < 1 || minutes > 180) {
-        return null;
-      }
-      return minutes * 60;
-    }
-
-    function updateTimerDisplay() {
-      timeLeft.textContent = formatClock(remainingSeconds);
-      const minutes = Math.floor(remainingSeconds / 60);
-      const seconds = remainingSeconds % 60;
-      timerDisplay.setAttribute(
-        "aria-label",
-        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
-      );
-    }
-
-    function clearTimer() {
-      if (timerId !== null) {
-        clearInterval(timerId);
-        timerId = null;
-      }
-    }
-
-    function setTimerRunning(running) {
-      startButton.disabled = running;
-      pauseButton.disabled = !running;
-      minutesInput.disabled = sessionStarted;
-      timerDisplay.classList.toggle("is-running", running);
-    }
-
-    function finishTimer() {
-      clearTimer();
-      remainingSeconds = 0;
-      sessionStarted = false;
-      setTimerRunning(false);
-      updateTimerDisplay();
-      timerStatus.textContent = "Focus session complete. Nice work!";
-    }
-
-    function tickTimer() {
-      remainingSeconds -= 1;
-      updateTimerDisplay();
-      if (remainingSeconds <= 0) finishTimer();
-    }
-
-    function startTimer() {
-      if (timerId !== null) return;
-      if (!sessionStarted || remainingSeconds <= 0) {
-        const durationInSeconds = readTimerDuration();
-        if (durationInSeconds === null) {
-          timerStatus.textContent =
-            "Enter a whole number from 1 to 180 minutes.";
-          minutesInput.focus();
-          return;
-        }
-        remainingSeconds = durationInSeconds;
-        sessionStarted = true;
-        updateTimerDisplay();
-      }
-
-      timerId = setInterval(tickTimer, 1000);
-      setTimerRunning(true);
-      timerStatus.textContent = "Focus session in progress.";
-    }
-
-    function pauseTimer() {
-      if (timerId === null) return;
-      clearTimer();
-      setTimerRunning(false);
-      timerStatus.textContent = "Paused. Continue whenever you are ready.";
-    }
-
-    function resetTimer() {
-      clearTimer();
-      sessionStarted = false;
-      remainingSeconds = readTimerDuration() || 5 * 60;
-      setTimerRunning(false);
-      updateTimerDisplay();
-      timerStatus.textContent = "Ready when you are.";
-    }
-
-    function handleMinutesInput() {
-      if (sessionStarted) return;
-      const durationInSeconds = readTimerDuration();
-      if (durationInSeconds !== null) {
-        remainingSeconds = durationInSeconds;
-        updateTimerDisplay();
-        timerStatus.textContent = "Ready when you are.";
-      }
-    }
-
-    function updatePlayButton() {
-      const isPlaying = !audio.paused && !audio.ended;
-      const activeTrack = tracks[activeTrackId];
-      playButton.innerHTML = isPlaying
-        ? '<i class="fa-solid fa-pause" aria-hidden="true"></i>'
-        : '<i class="fa-solid fa-play" aria-hidden="true"></i>';
-      playButton.setAttribute(
-        "aria-label",
-        `${isPlaying ? "Pause" : "Play"} ${activeTrack.title}`,
-      );
-    }
-
-    function updateMusicProgress() {
-      const trackDuration = Number.isFinite(audio.duration)
-        ? audio.duration
-        : 0;
-      const currentTime = Number.isFinite(audio.currentTime)
-        ? audio.currentTime
-        : 0;
-      progress.value = trackDuration
-        ? String((currentTime / trackDuration) * 100)
-        : "0";
-      elapsed.textContent = formatTrackTime(currentTime);
-      if (trackDuration) duration.textContent = formatTrackTime(trackDuration);
-      progress.setAttribute(
-        "aria-valuetext",
-        `${formatTrackTime(currentTime)} of ${formatTrackTime(trackDuration)}`,
-      );
-    }
-
-    async function toggleMusic() {
-      if (!audio.paused) {
-        audio.pause();
-        musicStatus.textContent = "Music paused.";
-        return;
-      }
-
-      try {
-        await audio.play();
-        const activeTrack = tracks[activeTrackId];
-        musicStatus.textContent = `Playing ${activeTrack.title}.`;
-      } catch (error) {
-        console.warn("Study Space could not start the selected track.", error);
-        musicStatus.textContent =
-          "The music could not start. Please try again.";
-      }
-    }
-
-    function seekBy(seconds) {
-      const trackDuration = Number.isFinite(audio.duration)
-        ? audio.duration
-        : Infinity;
-      audio.currentTime = Math.min(
-        trackDuration,
-        Math.max(0, audio.currentTime + seconds),
-      );
-      updateMusicProgress();
-    }
-
-    function seekFromProgress() {
-      if (!Number.isFinite(audio.duration)) return;
-      audio.currentTime = (Number(progress.value) / 100) * audio.duration;
-      updateMusicProgress();
-    }
-
-    function seekBackward() {
-      seekBy(-20);
-    }
-
-    function seekForward() {
-      seekBy(20);
-    }
-
-    function selectTrack(event) {
-      const selectedButton = event.currentTarget;
-      const selectedTrackId = selectedButton.dataset.track;
-      const selectedTrack = tracks[selectedTrackId];
-      if (!selectedTrack || selectedTrackId === activeTrackId) {
-        playButton.focus();
-        return;
-      }
-
-      audio.pause();
-      activeTrackId = selectedTrackId;
-      audio.src = selectedTrack.src;
-      audio.load();
-      song.textContent = `${selectedTrack.title} · ${selectedTrack.artist}`;
-      duration.textContent = selectedTrack.fallbackDuration;
-      progress.value = "0";
-      elapsed.textContent = "0:00";
-      trackButtons.forEach((button) => {
-        const isSelected = button === selectedButton;
-        button.classList.toggle("is-selected", isSelected);
-        button.setAttribute("aria-pressed", String(isSelected));
-      });
-      updatePlayButton();
-      musicStatus.textContent = `${selectedTrack.title} selected.`;
-      playButton.focus();
-    }
-
-    function handleTrackEnded() {
-      updatePlayButton();
-      musicStatus.textContent = "Fluidscape finished.";
-    }
-
-    startButton.addEventListener("click", startTimer);
-    pauseButton.addEventListener("click", pauseTimer);
-    resetButton.addEventListener("click", resetTimer);
-    minutesInput.addEventListener("input", handleMinutesInput);
-    trackButtons.forEach((button) =>
-      button.addEventListener("click", selectTrack),
-    );
-    playButton.addEventListener("click", toggleMusic);
-    backButton.addEventListener("click", seekBackward);
-    forwardButton.addEventListener("click", seekForward);
-    progress.addEventListener("input", seekFromProgress);
-    audio.addEventListener("timeupdate", updateMusicProgress);
-    audio.addEventListener("loadedmetadata", updateMusicProgress);
-    audio.addEventListener("play", updatePlayButton);
-    audio.addEventListener("pause", updatePlayButton);
-    audio.addEventListener("ended", handleTrackEnded);
-    updateTimerDisplay();
-    updateMusicProgress();
-    updatePlayButton();
-
-    return () => {
-      clearTimer();
-      audio.pause();
-      audio.currentTime = 0;
-      startButton.removeEventListener("click", startTimer);
-      pauseButton.removeEventListener("click", pauseTimer);
-      resetButton.removeEventListener("click", resetTimer);
-      minutesInput.removeEventListener("input", handleMinutesInput);
-      trackButtons.forEach((button) =>
-        button.removeEventListener("click", selectTrack),
-      );
-      playButton.removeEventListener("click", toggleMusic);
-      backButton.removeEventListener("click", seekBackward);
-      forwardButton.removeEventListener("click", seekForward);
-      progress.removeEventListener("input", seekFromProgress);
-      audio.removeEventListener("timeupdate", updateMusicProgress);
-      audio.removeEventListener("loadedmetadata", updateMusicProgress);
-      audio.removeEventListener("play", updatePlayButton);
-      audio.removeEventListener("pause", updatePlayButton);
-      audio.removeEventListener("ended", handleTrackEnded);
-    };
-  },
   minitools: function init_minitools() {
     const flipButton = document.getElementById("flip");
     const rollButton = document.getElementById("roll");
@@ -5944,8 +5525,6 @@ const searchablePages = [
   { name: "Privacy Policy", route: "privacy" },
   { name: "Terms of Service", route: "terms" },
   { name: "Unwind", route: "unwind" },
-  { name: "Study Space", route: "studyspace" },
-  { name: "Time Capsule", route: "capsule" },
 ];
 let searchPreviousFocus = null;
 
@@ -6085,20 +5664,3 @@ document.addEventListener("click", function (event) {
 
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
-
-/*
-fetch(API_URL + "/")
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("Backend responded with an error");
-    }
-
-    return response.json();
-  })
-  .then((data) => {
-    console.log("Backend is online:", data);
-  })
-  .catch(() => {
-    console.log("Backend is offline");
-  });
-*/
