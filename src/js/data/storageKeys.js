@@ -3,6 +3,7 @@ export const STORAGE_KEYS = Object.freeze({
     TODOS: "todos",
     HABITS: "habits",
     EVENTS: "events",
+    TIME_CAPSULES: "timeCapsules",
     SETTINGS: "ascendraSettings",
     PROFILE_BIO: "ascendra-profile-bio",
     PROFILE_PICTURE: "ascendra-profile-picture",

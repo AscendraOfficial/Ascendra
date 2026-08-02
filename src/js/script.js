@@ -71,6 +71,7 @@ const LEGACY_USER_KEYS = Object.freeze([
   "todos",
   "habits",
   "events",
+  "timeCapsules",
   "ascendraSettings",
   "ascendra-profile-bio",
   "ascendra-profile-picture",
@@ -2008,6 +2009,7 @@ function normalizeRoute(value) {
   if (route === "index" || route === "") route = "welcome";
   if (route === "alert") route = "alerts";
   if (route === "study-space" || route === "soundscape") route = "studyspace";
+  if (route === "time-capsule" || route === "timecapsule") route = "capsule";
   return document.getElementById("page-" + route) ? route : "welcome";
 }
 function getRoute() {
@@ -3731,8 +3733,237 @@ const ROUTE_INITIALIZERS = {
     };
   },
 
-  "time-capsule": function init_time_capsule() {
-    
+  capsule: function init_capsule() {
+    const form = document.getElementById("capsule-form");
+    const titleInput = document.getElementById("capsule-title");
+    const messageInput = document.getElementById("capsule-message");
+    const dateInput = document.getElementById("capsule-date");
+    const characterCount = document.getElementById("capsule-character-count");
+    const status = document.getElementById("capsule-status");
+    const summary = document.getElementById("capsule-summary");
+    const list = document.getElementById("capsule-list");
+    let statusTimer = null;
+
+    function toLocalDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getTomorrowString() {
+      const tomorrow = new Date();
+      tomorrow.setHours(0, 0, 0, 0);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return toLocalDateString(tomorrow);
+    }
+
+    function parseCapsuleDate(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+      const date = new Date(`${value}T00:00:00`);
+      if (Number.isNaN(date.getTime()) || toLocalDateString(date) !== value) {
+        return null;
+      }
+      return date;
+    }
+
+    function isUnlocked(capsule) {
+      const unlockDate = parseCapsuleDate(capsule.unlockDate);
+      if (!unlockDate) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return unlockDate <= today;
+    }
+
+    function formatUnlockDate(value) {
+      const date = parseCapsuleDate(value);
+      if (!date) return "Unknown date";
+      return date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    }
+
+    function getCapsules() {
+      return getUserArray(STORAGE_KEYS.TIME_CAPSULES).filter((capsule) => {
+        return (
+          typeof capsule.id === "string" &&
+          typeof capsule.title === "string" &&
+          typeof capsule.message === "string" &&
+          parseCapsuleDate(capsule.unlockDate)
+        );
+      });
+    }
+
+    function saveCapsules(capsules) {
+      setUserItem(STORAGE_KEYS.TIME_CAPSULES, JSON.stringify(capsules));
+    }
+
+    function showStatus(message, type = "success") {
+      status.textContent = message;
+      status.className = `capsule-status ${type}`;
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => {
+        status.textContent = "";
+        status.className = "capsule-status";
+      }, 5000);
+    }
+
+    function createCapsuleCard(capsule) {
+      const unlocked = isUnlocked(capsule);
+      const article = document.createElement("article");
+      article.className = `saved-capsule ${unlocked ? "is-unlocked" : "is-locked"}`;
+
+      const icon = document.createElement("span");
+      icon.className = "saved-capsule-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.innerHTML = unlocked
+        ? '<i class="fa-solid fa-lock-open"></i>'
+        : '<i class="fa-solid fa-lock"></i>';
+
+      const content = document.createElement("div");
+      content.className = "saved-capsule-content";
+
+      const heading = document.createElement("h3");
+      heading.textContent = capsule.title;
+
+      const date = document.createElement("p");
+      date.className = "saved-capsule-date";
+      date.textContent = unlocked
+        ? `Unlocked ${formatUnlockDate(capsule.unlockDate)}`
+        : `Unlocks ${formatUnlockDate(capsule.unlockDate)}`;
+
+      const message = document.createElement("p");
+      message.className = "saved-capsule-message";
+      message.textContent = unlocked
+        ? capsule.message
+        : "This message is sealed until its unlock date.";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "capsule-delete";
+      deleteButton.type = "button";
+      deleteButton.dataset.capsuleId = capsule.id;
+      deleteButton.setAttribute("aria-label", `Delete ${capsule.title}`);
+      deleteButton.innerHTML =
+        '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+
+      content.append(heading, date, message);
+      article.append(icon, content, deleteButton);
+      return article;
+    }
+
+    function renderCapsules() {
+      const capsules = getCapsules().sort((first, second) => {
+        return first.unlockDate.localeCompare(second.unlockDate);
+      });
+      list.replaceChildren();
+
+      if (capsules.length === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "capsule-empty";
+        emptyState.innerHTML =
+          '<i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>';
+        const emptyText = document.createElement("p");
+        emptyText.textContent =
+          "Your future messages will appear here after you seal them.";
+        emptyState.appendChild(emptyText);
+        list.appendChild(emptyState);
+        summary.textContent = "No capsules saved yet.";
+        return;
+      }
+
+      const unlockedCount = capsules.filter(isUnlocked).length;
+      const lockedCount = capsules.length - unlockedCount;
+      summary.textContent = `${capsules.length} saved · ${lockedCount} locked · ${unlockedCount} unlocked`;
+      capsules.forEach((capsule) => {
+        list.appendChild(createCapsuleCard(capsule));
+      });
+    }
+
+    function updateCharacterCount() {
+      characterCount.textContent = `${messageInput.value.length} / 2000`;
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      const title = titleInput.value.trim();
+      const message = messageInput.value.trim();
+      const unlockDate = parseCapsuleDate(dateInput.value);
+      const tomorrow = parseCapsuleDate(getTomorrowString());
+
+      if (!title || !message || !unlockDate) {
+        showStatus(
+          "Complete every field before sealing your capsule.",
+          "error",
+        );
+        return;
+      }
+      if (unlockDate < tomorrow) {
+        showStatus("Choose tomorrow or a later unlock date.", "error");
+        dateInput.focus();
+        return;
+      }
+
+      const capsules = getCapsules();
+      capsules.push({
+        id: createAccountId(),
+        title,
+        message,
+        unlockDate: dateInput.value,
+        createdAt: new Date().toISOString(),
+      });
+
+      try {
+        saveCapsules(capsules);
+        form.reset();
+        dateInput.min = getTomorrowString();
+        updateCharacterCount();
+        renderCapsules();
+        showStatus("Your time capsule has been sealed.");
+        titleInput.focus();
+      } catch (error) {
+        console.warn("Ascendra could not save the time capsule.", error);
+        showStatus(
+          "Your capsule could not be saved. Please try again.",
+          "error",
+        );
+      }
+    }
+
+    function handleListClick(event) {
+      const deleteButton = event.target.closest("[data-capsule-id]");
+      if (!deleteButton) return;
+      const capsules = getCapsules();
+      const capsule = capsules.find(
+        (item) => item.id === deleteButton.dataset.capsuleId,
+      );
+      if (!capsule) return;
+      if (!confirm(`Delete the time capsule “${capsule.title}”?`)) return;
+
+      try {
+        saveCapsules(capsules.filter((item) => item.id !== capsule.id));
+        renderCapsules();
+        showStatus("Time capsule deleted.");
+      } catch (error) {
+        console.warn("Ascendra could not delete the time capsule.", error);
+        showStatus("The capsule could not be deleted.", "error");
+      }
+    }
+
+    dateInput.min = getTomorrowString();
+    form.addEventListener("submit", handleSubmit);
+    messageInput.addEventListener("input", updateCharacterCount);
+    list.addEventListener("click", handleListClick);
+    updateCharacterCount();
+    renderCapsules();
+
+    return () => {
+      clearTimeout(statusTimer);
+      form.removeEventListener("submit", handleSubmit);
+      messageInput.removeEventListener("input", updateCharacterCount);
+      list.removeEventListener("click", handleListClick);
+    };
   },
 
   calendar: function init_calendar() {
@@ -5715,7 +5946,7 @@ const searchablePages = [
   { name: "Terms of Service", route: "terms" },
   { name: "Unwind", route: "unwind" },
   { name: "Study Space", route: "studyspace" },
-  { name: "Time Capsule", route: "capsule"}
+  { name: "Time Capsule", route: "capsule" },
 ];
 let searchPreviousFocus = null;
 

@@ -1280,7 +1280,8 @@
         <button
           class="options"
           id="time-capsule"
-          onclick="navigate('comingsoon')"
+          onclick="navigate('capsule')"
+          type="button"
         >
           Time Capsule<br /><i class="fa-solid fa-hourglass-half"></i>
         </button>
@@ -2232,26 +2233,95 @@
     </template>
 
     <template id="page-capsule">
-      <header>
-        <h1>Time Capsule</h1>
-        <p><strong>Write something for your future self.</strong></p>
-      </header>
+      <main class="capsule-page">
+        <header class="capsule-heading">
+          <span class="capsule-eyebrow">
+            <i class="fa-solid fa-hourglass-half" aria-hidden="true"></i>
+            A note through time
+          </span>
+          <h1>Time Capsule</h1>
+          <p>Write something meaningful for your future self to discover.</p>
+        </header>
 
-      <main>
-        <article class="card">
-          <label for="capsule-title">Title</label>
-          <input id="capsule-title" type="text" />
+        <section class="capsule-layout">
+          <form class="capsule-form card" id="capsule-form">
+            <div class="capsule-section-heading">
+              <span class="capsule-icon" aria-hidden="true">
+                <i class="fa-solid fa-envelope-open-text"></i>
+              </span>
+              <div>
+                <h2>Create a capsule</h2>
+                <p>Your message stays hidden until its unlock date.</p>
+              </div>
+            </div>
 
-          <label for="capsule-message">Message</label>
-          <textarea id="capsule-message"></textarea>
+            <label for="capsule-title">Title</label>
+            <input
+              autocomplete="off"
+              id="capsule-title"
+              maxlength="80"
+              placeholder="A message for graduation day"
+              required
+              type="text"
+            />
 
-          <label for="capsule-date">Unlock date</label>
-          <input id="capsule-date" type="date" />
+            <label for="capsule-message">Message</label>
+            <textarea
+              id="capsule-message"
+              maxlength="2000"
+              placeholder="Dear future me..."
+              required
+              rows="7"
+            ></textarea>
+            <p class="capsule-character-count" id="capsule-character-count">
+              0 / 2000
+            </p>
 
-          <button id="save-capsule">Save capsule</button>
+            <label for="capsule-date">Unlock date</label>
+            <input
+              aria-describedby="capsule-date-hint"
+              id="capsule-date"
+              required
+              type="date"
+            />
+            <p class="capsule-hint" id="capsule-date-hint">
+              Choose tomorrow or any later date.
+            </p>
 
-          <p id="capsule-status"></p>
-        </article>
+            <button id="save-capsule" type="submit">
+              <i class="fa-solid fa-lock" aria-hidden="true"></i>
+              Seal capsule
+            </button>
+
+            <p
+              aria-live="polite"
+              class="capsule-status"
+              id="capsule-status"
+              role="status"
+            ></p>
+          </form>
+
+          <section
+            aria-labelledby="saved-capsules-title"
+            class="capsule-collection card"
+          >
+            <div class="capsule-section-heading">
+              <span class="capsule-icon" aria-hidden="true">
+                <i class="fa-solid fa-box-archive"></i>
+              </span>
+              <div>
+                <h2 id="saved-capsules-title">Saved capsules</h2>
+                <p id="capsule-summary">No capsules saved yet.</p>
+              </div>
+            </div>
+            <div class="capsule-list" id="capsule-list"></div>
+          </section>
+        </section>
+
+        <a class="capsule-back-link" href="#/extras">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+          Back to Extras
+        </a>
       </main>
     </template>
 
