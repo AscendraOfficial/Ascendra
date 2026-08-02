@@ -1,5 +1,6 @@
 body {
-    background-color: rgb(240, 248, 255);
+/* The command background color only highlights the text 👍. */
+    background: rgb(240, 248, 255);
     margin: 3px;
     text-align: center;
     font-family: sans-serif;
@@ -17,15 +18,23 @@ body {
     box-shadow: 0 4px 15px rgba(5, 10, 35, 0.15);
 }
 
+/* Makes everything deep blue. */
 .policies {
     color: rgb(5, 10, 35);
 }
 
+/* This makes the list align to the left and highlights it in yellow. */
 #no_center {
     background-color: rgb(255, 255, 0);
     text-align: center;
 }
 
+/* This highlights the important text. */
 .important_text {
     background-color: 255, 255, 0;
+}
+
+/* The class red includes the words reffering to does not. */
+.red {
+    color: rgb(255, 0, 0);
 }
