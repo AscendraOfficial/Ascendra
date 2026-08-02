@@ -17,7 +17,8 @@
 - !! Connect everything to the real branch
 - !! Detail privacy better (As long as it says what is nessecary)
 - !! Replace existing journal entry if the date already exists instead of adding
-- ! Move journal completely to JSON/Python
+- ! Move journal completely to JSON/Python <-- Jayden: "Why?"
+- ! Add notes to everything to make code easier to read
 ────────────────────────────────────────
 
 💬 Messages
