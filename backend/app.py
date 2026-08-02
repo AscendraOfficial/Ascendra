@@ -22,8 +22,8 @@ def saveJournal(journal):
 
 # ---------------
 
-@app.get("/")
-def health():
+@app.get("/journal")
+def getJournal():
     return loadJournal()
 
 @app.post("/journal")
