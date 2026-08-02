@@ -1,3 +1,13 @@
+console.log(`
+👀 Hey there, curious developer!
+
+Found a bug? Don't worry—it happens. 🐛
+Please report it here:
+
+https://github.com/Jedicuber/Ascendra/issues
+
+Thanks for helping improve Ascendra! 🚀
+`);
 "use strict";
 import { STORAGE_KEYS } from "./data/storageKeys.js";
 const app = document.getElementById("app");
