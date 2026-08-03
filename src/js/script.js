@@ -2636,6 +2636,11 @@ const ROUTE_INITIALIZERS = {
           todo.completed = true;
           saveTodos();
           showAlerts();
+          const remainingTodos = todos.filter((savedTodo) => !isTodoCompleted(savedTodo)).length;
+          showAscendraAIResponse(remainingTodos === 0 ? "allTasksComplete" : "taskComplete", {
+            username: getLoggedInUsername(),
+            remainingTodos,
+          });
         };
 
         const viewButton = document.createElement("button");
@@ -2827,9 +2832,18 @@ const ROUTE_INITIALIZERS = {
         deleteBtn.setAttribute("aria-label", `Delete task: ${todo.task}`);
 
         completeBtn.onclick = () => {
-          todo.completed = !isTodoCompleted(todo);
+          const isCompleting = !isTodoCompleted(todo);
+          todo.completed = isCompleting;
           saveTodos();
           showTodos();
+
+          if (isCompleting) {
+            const remainingTodos = todos.filter((savedTodo) => !isTodoCompleted(savedTodo)).length;
+            showAscendraAIResponse(remainingTodos === 0 ? "allTasksComplete" : "taskComplete", {
+              username: getLoggedInUsername(),
+              remainingTodos,
+            });
+          }
         };
 
         deleteBtn.onclick = () => {
@@ -3149,6 +3163,9 @@ const ROUTE_INITIALIZERS = {
         checkButton.onclick = () => {
           saveHabitResult(habit, true);
           showHabits();
+          showAscendraAIResponse("habitComplete", {
+            username: getLoggedInUsername(),
+          });
         };
 
         xButton.onclick = () => {
@@ -5157,7 +5174,7 @@ window.closeSearch = closeSearch;
 
 const todos = readUserJson(STORAGE_KEYS.TODOS, []);
 const totalTodos = todos.length;
-const username = getLoggedInUsername();
+const username = getLoggedInUsername() || "there";
 
 const hour = new Date().getHours();
 
@@ -5166,4 +5183,223 @@ const timeOfDay = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "G
 const greeting = responses.greeting[Math.floor(Math.random() * responses.greeting.length)](username, totalTodos, timeOfDay);
 
 let aiMessage = document.getElementById("ai-message");
-changeText(aiMessage, greeting);
+
+let aiSpeakingTimer = null;
+
+function responseMessage(category, context = {}) {
+  const responseGroup = responses[category];
+  if (!Array.isArray(responseGroup) || responseGroup.length === 0) return "";
+
+  const responseIndex = Math.floor(Math.random() * responseGroup.length);
+  const responseFactory = responseGroup[responseIndex];
+
+  if (category === "taskComplete") {
+    if (responseIndex === 3) return responseFactory(context.username);
+    if (responseIndex === 4) return responseFactory(context.remainingTodos);
+  }
+  if (category === "allTasksComplete" && responseIndex === 1) {
+    return responseFactory(context.username);
+  }
+  if (category === "habitComplete" && responseIndex === 3) {
+    return responseFactory(context.username);
+  }
+  if (category === "reminder" && responseIndex === 0) {
+    return responseFactory(context.totalTodos);
+  }
+
+  return responseFactory();
+}
+
+function showAscendraAIMessage(message) {
+  const companion = document.getElementById("ascendra-ai");
+  const messageElement = document.getElementById("ai-message");
+  const cleanMessage = String(message || "").trim();
+
+  if (!companion || !messageElement || cleanMessage === "") return;
+
+  changeText(messageElement, cleanMessage);
+  companion.classList.remove("is-roaming", "is-napping");
+  companion.classList.add("is-speaking");
+
+  clearTimeout(aiSpeakingTimer);
+  const speakingDuration = Math.min(6000, Math.max(1700, cleanMessage.length * 48));
+  aiSpeakingTimer = window.setTimeout(() => {
+    companion.classList.remove("is-speaking");
+  }, speakingDuration);
+}
+
+function showAscendraAIResponse(category, context = {}) {
+  showAscendraAIMessage(responseMessage(category, context));
+}
+
+showAscendraAIMessage(greeting);
+
+function showIdleAscendraAIResponse() {
+  const route = getRoute();
+
+  if (route === "journal") {
+    showAscendraAIResponse("journalReminder");
+  } else if (route === "todos" || route === "alerts") {
+    const remainingTodos = getUserArray("todos").filter((todo) => !isTodoCompleted(todo)).length;
+    showAscendraAIResponse("reminder", { totalTodos: remainingTodos });
+  } else {
+    showAscendraAIResponse("motivation");
+  }
+}
+
+function initializeAscendraAI() {
+  const companion = document.getElementById("ascendra-ai");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (!companion) return;
+
+  const idleBeforeRoaming = 6500;
+  const roamingInterval = 9000;
+  const landingOverlap = 10;
+  const idleAnimationClasses = [
+    "is-tail-wagging",
+    "is-looking-around",
+    "is-stretching",
+    "is-napping",
+  ];
+  let lastInteraction = Date.now();
+  let lastTarget = null;
+  let movementTimer = null;
+  let homeTimer = null;
+  let idleAnimationTimer = null;
+
+  function clearIdleAnimation() {
+    clearTimeout(idleAnimationTimer);
+    idleAnimationClasses.forEach((className) => companion.classList.remove(className));
+  }
+
+  function scheduleIdleAnimation(delay = 2800 + Math.random() * 3200) {
+    clearTimeout(idleAnimationTimer);
+
+    idleAnimationTimer = window.setTimeout(() => {
+      if (reduceMotion.matches || document.hidden || companion.classList.contains("is-jumping")) {
+        scheduleIdleAnimation();
+        return;
+      }
+
+      clearIdleAnimation();
+      const animationClass = idleAnimationClasses[Math.floor(Math.random() * idleAnimationClasses.length)];
+      companion.classList.add(animationClass);
+
+      const shiftX = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-x")) || 0;
+      const shiftY = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-y")) || 0;
+      if (shiftX === 0 && shiftY === 0 && Math.random() < 0.65) {
+        showIdleAscendraAIResponse();
+      }
+
+      idleAnimationTimer = window.setTimeout(() => {
+        companion.classList.remove(animationClass);
+        scheduleIdleAnimation();
+      }, 1550);
+    }, delay);
+  }
+
+  function homePosition() {
+    companion.style.setProperty("--ai-shift-x", "0px");
+    companion.style.setProperty("--ai-shift-y", "0px");
+  }
+
+  function returnHome() {
+    clearTimeout(homeTimer);
+    companion.classList.add("is-roaming");
+    companion.classList.remove("is-jumping");
+    homePosition();
+
+    homeTimer = window.setTimeout(() => {
+      companion.classList.remove("is-roaming");
+    }, 760);
+  }
+
+  function visibleLandingButtons() {
+    return [...document.querySelectorAll("button:not([disabled])")].filter((button) => {
+      if (button.closest("[hidden], .search-overlay, .popup")) return false;
+
+      const style = getComputedStyle(button);
+      const box = button.getBoundingClientRect();
+
+      return (
+        style.visibility !== "hidden" &&
+        style.display !== "none" &&
+        Number(style.opacity) > 0 &&
+        box.width >= 34 &&
+        box.height >= 28 &&
+        box.top > 70 &&
+        box.bottom < window.innerHeight - 72 &&
+        box.left > 20 &&
+        box.right < window.innerWidth - 20
+      );
+    });
+  }
+
+  function jumpToButton() {
+    if (
+      reduceMotion.matches ||
+      document.hidden ||
+      Date.now() - lastInteraction < idleBeforeRoaming
+    ) {
+      return;
+    }
+
+    const buttons = visibleLandingButtons().filter((button) => button !== lastTarget);
+    if (buttons.length === 0) {
+      returnHome();
+      scheduleIdleAnimation(1600);
+    } else {
+      const target = buttons[Math.floor(Math.random() * buttons.length)];
+      const targetBox = target.getBoundingClientRect();
+      const homeBox = companion.getBoundingClientRect();
+      const currentX = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-x")) || 0;
+      const currentY = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-y")) || 0;
+      const baseLeft = homeBox.left - currentX;
+      const baseTop = homeBox.top - currentY;
+      const avatarWidth = companion.offsetWidth;
+      const avatarHeight = companion.offsetHeight;
+      const desiredLeft = targetBox.left + targetBox.width / 2 - avatarWidth / 2;
+      const desiredTop = targetBox.top - avatarHeight + landingOverlap;
+      const safeLeft = Math.min(window.innerWidth - avatarWidth - 10, Math.max(10, desiredLeft));
+      const safeTop = Math.min(window.innerHeight - avatarHeight - 82, Math.max(12, desiredTop));
+
+      clearTimeout(homeTimer);
+      clearIdleAnimation();
+      companion.classList.add("is-roaming", "is-jumping");
+      companion.style.setProperty("--ai-shift-x", `${safeLeft - baseLeft}px`);
+      companion.style.setProperty("--ai-shift-y", `${safeTop - baseTop}px`);
+      lastTarget = target;
+
+      window.setTimeout(() => {
+        companion.classList.remove("is-jumping");
+        scheduleIdleAnimation(1400);
+      }, 760);
+    }
+  }
+
+  function noteInteraction() {
+    lastInteraction = Date.now();
+    lastTarget = null;
+    returnHome();
+  }
+
+  ["pointerdown", "keydown", "focusin", "wheel", "touchstart"].forEach((eventName) => {
+    document.addEventListener(eventName, noteInteraction, { passive: true });
+  });
+  window.addEventListener("scroll", noteInteraction, { passive: true });
+  window.addEventListener("resize", noteInteraction, { passive: true });
+  reduceMotion.addEventListener("change", noteInteraction);
+
+  movementTimer = window.setInterval(jumpToButton, roamingInterval);
+  scheduleIdleAnimation();
+
+  window.addEventListener("pagehide", () => {
+    clearInterval(movementTimer);
+    clearTimeout(homeTimer);
+    clearTimeout(idleAnimationTimer);
+    clearTimeout(aiSpeakingTimer);
+  }, { once: true });
+}
+
+initializeAscendraAI();
