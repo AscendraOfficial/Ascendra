@@ -1,5 +1,6 @@
 "use strict";
 import { STORAGE_KEYS } from "./data/storageKeys.js";
+import { responses } from "./ascendraAI/responses.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -11,6 +12,10 @@ const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
 const DEFAULT_APP_NAME = "Ascendra";
 const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "placeholder", "title"]);
+
+function changeText(element, newText) {
+  element.textContent = newText;
+}
 
 function configuredAppText(value) {
   const configuredName = String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
@@ -5150,4 +5155,15 @@ document.addEventListener("click", function (event) {
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
 
+const todos = readUserJson(STORAGE_KEYS.TODOS, []);
+const totalTodos = todos.length;
+const username = getLoggedInUsername();
 
+const hour = new Date().getHours();
+
+const timeOfDay = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+
+const greeting = responses.greeting[Math.floor(Math.random() * responses.greeting.length)](username, totalTodos, timeOfDay);
+
+let aiMessage = document.getElementById("ai-message");
+changeText(aiMessage, greeting);

@@ -1,145 +1,73 @@
-const todos = readUserJson(STORAGE_KEYS.TODOS, []);
-const totalTodos = todos.length;
-const username = getLoggedInUsername();
-const hour = new Date().getHours();
+export const responses = {
+  greeting: [
+    (username, totalTodos, timeOfDay) =>
+      `Welcome back, ${username}! You have ${totalTodos} to-do${totalTodos === 1 ? "" : "s"} left today.`,
 
-const timeOfDay = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+    (username, totalTodos, timeOfDay) =>
+      `${timeOfDay}, ${username}! Ready to get started? You have ${totalTodos} task${totalTodos === 1 ? "" : "s"} waiting.`,
 
-const responses = {
-    greeting: [
-        `Welcome back, ${username}! You have ${totalTodos} to-do${totalTodos === 1 ? "" : "s"} left today.`,
-        `${timeOfDay}, ${username}! Ready to get started?`,
-        `Hey ${username}! Let's make today productive.`,
-        `Good to see you again, ${username}!`,
-        `${timeOfDay}! You're back!`
-    ],
+    (username) => `Good to see you again, ${username}! Make sure you complete your habits today!`,
 
-    goodbye: [
-        `See you later, ${username}!`,
-        `Have an awesome day!`,
-        `Good luck with everything today!`,
-        `Take care, ${username}!`,
-        `I'll be here when you get back.`
-    ],
+    (username) => `Hey ${username}! Let's make today productive!`,
 
-    morning: [
-        `Good morning, ${username}!`,
-        `Rise and shine!`,
-        `Ready for a fresh start today?`
-    ],
+    (username) => `Welcome back, ${username}!`,
+  ],
 
-    afternoon: [
-        `Good afternoon, ${username}!`,
-        `Hope your day's going well!`,
-        `Keep up the great work!`
-    ],
+  goodbye: [
+    (username) => `See you later, ${username}!`,
+    () => `Have an awesome day!`,
+    (username) => `Take care, ${username}!`,
+    () => `I'll be here when you get back.`,
+  ],
 
-    evening: [
-        `Good evening, ${username}!`,
-        `Hope you had a great day!`,
-        `Let's finish today strong!`
-    ],
+  taskComplete: [
+    () => `Nice work!`,
+    () => `Task completed!`,
+    () => `Another one down!`,
+    (username) => `Way to ascend your day, ${username}!`,
+    (remainingTodos) => `One down! ${remainingTodos} to go!`,
+  ],
 
-    taskComplete: [
-        `Nice work!`,
-        `Task completed!`,
-        `Another one down!`,
-        `Way to ascend your day, ${username}!`,
-        `Keep it up!`
-    ],
+  allTasksComplete: [
+    () => `🎉 You finished every task today!`,
+    (username) => `Amazing work, ${username}! You're all caught up.`,
+    () => `Mission accomplished!`,
+  ],
 
-    allTasksComplete: [
-        `🎉 You finished every task today!`,
-        `Amazing work, ${username}! You're all caught up.`,
-        `No more tasks left. Great job!`,
-        `Mission accomplished!`
-    ],
+  habitComplete: [
+    () => `Habit completed!`,
+    () => `Consistency is key!`,
+    () => `Another habit done!`,
+    (username) => `Great work, ${username}!`,
+  ],
 
-    habitComplete: [
-        `Habit completed!`,
-        `Consistency is key!`,
-        `Another habit done!`,
-        `Great work, ${username}!`
-    ],
+  allHabitsComplete: [() => `You've completed every habit today!`, () => `Awesome consistency!`, () => `Perfect! Every habit is finished.`],
 
-    allHabitsComplete: [
-        `You've completed every habit today!`,
-        `Awesome consistency!`,
-        `Perfect! Every habit is finished.`
-    ],
+  motivation: [
+    () => `Small steps lead to big results.`,
+    () => `Progress beats perfection.`,
+    () => `Keep going—you've got this!`,
+    () => `One task at a time.`,
+    () => `Every little bit counts.`,
+  ],
 
-    streak: [
-        `🔥 Your streak is now ${streak} day${streak === 1 ? "" : "s"}!`,
-        `Keep the streak alive!`,
-        `Don't break the chain!`
-    ],
+  reminder: [
+    (totalTodos) => `You have ${totalTodos} task${totalTodos === 1 ? "" : "s"} left.`,
+    () => `Don't forget to check your habits today.`,
+    () => `Need help planning your day?`,
+  ],
 
-    achievement: [
-        `🏆 Achievement unlocked!`,
-        `Congratulations!`,
-        `Another milestone reached!`,
-        `You're making great progress!`
-    ],
+  journalReminder: [
+    () => `How was your day today?`,
+    () => `Don't forget to write in your journal.`,
+    () => `A few sentences can go a long way.`,
+  ],
 
-    motivation: [
-        `Small steps lead to big results.`,
-        `Progress beats perfection.`,
-        `Keep going—you've got this!`,
-        `One task at a time.`,
-        `Every little bit counts.`
-    ],
+  breakReminder: [() => `You've earned a short break.`, () => `Stretch your legs for a minute!`, () => `Remember to stay hydrated. 💧`],
 
-    reminder: [
-        `You have ${totalTodos} to-do${totalTodos === 1 ? "" : "s"} left.`,
-        `Don't forget to check your habits today.`,
-        `Need help planning your day?`
-    ],
+  error: [() => `Oops... something went wrong.`, () => `That didn't quite work. Let's try again.`, () => `I ran into a little problem.`],
 
-    eventReminder: [
-        `You have ${totalEvents} event${totalEvents === 1 ? "" : "s"} today.`,
-        `Don't forget ${eventName}!`,
-        `Your next event is coming up soon.`
-    ],
+  loading: [() => `Loading...`, () => `Getting everything ready...`, () => `Just a second...`],
 
-    birthday: [
-        `🎉 Happy Birthday, ${username}!`,
-        `Don't forget ${birthdayName}'s birthday today!`,
-        `Hope you have an amazing birthday!`
-    ],
-
-    journalReminder: [
-        `How was your day today?`,
-        `Don't forget to write in your journal.`,
-        `A few sentences can go a long way.`
-    ],
-
-    studySession: [
-        `Time to focus!`,
-        `Let's get some work done.`,
-        `Good luck with your study session!`
-    ],
-
-    breakReminder: [
-        `You've earned a short break.`,
-        `Stretch your legs for a minute!`,
-        `Remember to stay hydrated. 💧`
-    ],
-
-    error: [
-        `Oops... something went wrong.`,
-        `That didn't quite work. Let's try again.`,
-        `I ran into a little problem.`
-    ],
-
-    loading: [
-        `Loading...`,
-        `Getting everything ready...`,
-        `Just a second...`
-    ],
-
-    thinking: [
-        `Thinking...`,
-        `Looking that up...`,
-        `One moment...`
-    ]
+  thinking: [() => `Thinking...`, () => `Looking that up...`, () => `One moment...`],
 };
