@@ -8524,7 +8524,7 @@ body.dark-mode .flatpickr-months :is(.flatpickr-prev-month, .flatpickr-next-mont
   pointer-events: none;
   animation: ascendra-ai-arrive 420ms ease-out both;
   transform: translate3d(var(--ai-shift-x, 0), var(--ai-shift-y, 0), 0);
-  transition: transform 720ms cubic-bezier(0.22, 0.8, 0.3, 1);
+  transition: transform var(--ai-travel-duration, 720ms) cubic-bezier(0.22, 0.8, 0.3, 1);
   will-change: transform;
 }
 
@@ -8544,6 +8544,8 @@ body.dark-mode .flatpickr-months :is(.flatpickr-prev-month, .flatpickr-next-mont
 
 #ai-avatar::before {
   content: "\1F98A";
+  position: relative;
+  z-index: 2;
 }
 
 .ai-mouth {
@@ -8556,6 +8558,27 @@ body.dark-mode .flatpickr-months :is(.flatpickr-prev-month, .flatpickr-next-mont
   background: #3b1f17;
   opacity: 0;
   transform: translateX(-50%);
+  transform-origin: center top;
+  z-index: 3;
+}
+
+.ai-legs {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: -8px;
+  display: flex;
+  gap: 9px;
+  transform: translateX(-50%);
+}
+
+.ai-leg {
+  width: 7px;
+  height: 16px;
+  border: 1px solid rgba(126, 52, 20, 0.4);
+  border-radius: 3px 3px 6px 6px;
+  background: linear-gradient(to bottom, #f97316 0 68%, #4a2416 68% 100%);
+  box-shadow: 0 2px 3px rgba(76, 29, 10, 0.2);
   transform-origin: center top;
 }
 
@@ -8605,7 +8628,15 @@ body.dark-mode .flatpickr-months :is(.flatpickr-prev-month, .flatpickr-next-mont
 }
 
 #ascendra-ai.is-jumping #ai-avatar {
-  animation: ascendra-ai-hop 720ms ease-in-out;
+  animation: ascendra-ai-walk-bob 280ms ease-in-out infinite alternate;
+}
+
+#ascendra-ai.is-jumping .ai-leg:first-child {
+  animation: ascendra-ai-left-step 280ms ease-in-out infinite alternate;
+}
+
+#ascendra-ai.is-jumping .ai-leg:last-child {
+  animation: ascendra-ai-right-step 280ms ease-in-out infinite alternate;
 }
 
 #ascendra-ai.is-tail-wagging #ai-avatar {
@@ -8684,14 +8715,33 @@ body.dark-mode #ai-avatar {
   }
 }
 
-@keyframes ascendra-ai-hop {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
+@keyframes ascendra-ai-walk-bob {
+  from {
+    transform: translateY(0) rotate(-1deg);
   }
 
-  45% {
-    transform: translateY(-24px) rotate(-7deg);
+  to {
+    transform: translateY(-5px) rotate(1deg);
+  }
+}
+
+@keyframes ascendra-ai-left-step {
+  from {
+    transform: rotate(20deg) translateY(0);
+  }
+
+  to {
+    transform: rotate(-24deg) translateY(2px);
+  }
+}
+
+@keyframes ascendra-ai-right-step {
+  from {
+    transform: rotate(-24deg) translateY(2px);
+  }
+
+  to {
+    transform: rotate(20deg) translateY(0);
   }
 }
 
@@ -8794,6 +8844,16 @@ body.dark-mode #ai-avatar {
     font-size: 1.5rem;
   }
 
+  .ai-legs {
+    bottom: -6px;
+    gap: 7px;
+  }
+
+  .ai-leg {
+    width: 6px;
+    height: 13px;
+  }
+
   #speech-bubble {
     right: 58px;
     max-width: calc(100vw - 82px);
@@ -8814,6 +8874,10 @@ body.dark-mode #ai-avatar {
   }
 
   #ascendra-ai.is-jumping #ai-avatar {
+    animation: none;
+  }
+
+  #ascendra-ai.is-jumping .ai-leg {
     animation: none;
   }
 

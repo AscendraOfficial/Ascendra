@@ -5363,10 +5363,13 @@ function initializeAscendraAI() {
       const desiredTop = targetBox.top - avatarHeight + landingOverlap;
       const safeLeft = Math.min(window.innerWidth - avatarWidth - 10, Math.max(10, desiredLeft));
       const safeTop = Math.min(window.innerHeight - avatarHeight - 82, Math.max(12, desiredTop));
+      const travelDistance = Math.hypot(safeLeft - homeBox.left, safeTop - homeBox.top);
+      const travelDuration = Math.min(1800, Math.max(720, Math.round(travelDistance * 1.8)));
 
       clearTimeout(homeTimer);
       clearIdleAnimation();
       companion.classList.add("is-roaming", "is-jumping");
+      companion.style.setProperty("--ai-travel-duration", `${travelDuration}ms`);
       companion.style.setProperty("--ai-shift-x", `${safeLeft - baseLeft}px`);
       companion.style.setProperty("--ai-shift-y", `${safeTop - baseTop}px`);
       lastTarget = target;
@@ -5374,7 +5377,7 @@ function initializeAscendraAI() {
       window.setTimeout(() => {
         companion.classList.remove("is-jumping");
         scheduleIdleAnimation(1400);
-      }, 760);
+      }, travelDuration + 40);
     }
   }
 
