@@ -10,17 +10,10 @@ const PROGRESSION_STORAGE_KEY = "ascendraProgression";
 const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
 const DEFAULT_APP_NAME = "Ascendra";
-const APP_NAME_ATTRIBUTES = Object.freeze([
-  "alt",
-  "aria-label",
-  "content",
-  "placeholder",
-  "title",
-]);
+const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "placeholder", "title"]);
 
 function configuredAppText(value) {
-  const configuredName =
-    String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
+  const configuredName = String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
   return String(value).split(DEFAULT_APP_NAME).join(configuredName);
 }
 
@@ -40,10 +33,7 @@ function renderAppMetadata(root = document) {
 
     APP_NAME_ATTRIBUTES.forEach((attribute) => {
       if (element.hasAttribute(attribute)) {
-        element.setAttribute(
-          attribute,
-          configuredAppText(element.getAttribute(attribute)),
-        );
+        element.setAttribute(attribute, configuredAppText(element.getAttribute(attribute)));
       }
     });
   });
@@ -60,13 +50,7 @@ renderAppMetadata(document.head);
 renderAppMetadata(document.body);
 
 const TAB_IDENTITY_PREFIX = "ascendra:tab-identity:";
-const TAB_IDENTITY_FIELDS = Object.freeze([
-  "loggedInUser",
-  "name",
-  "surname",
-  "username",
-  "accountId",
-]);
+const TAB_IDENTITY_FIELDS = Object.freeze(["loggedInUser", "name", "surname", "username", "accountId"]);
 const LEGACY_USER_KEYS = Object.freeze([
   "todos",
   "habits",
@@ -204,27 +188,21 @@ const badges = [
   {
     id: "genesis",
     name: "GENESIS",
-    description: configuredAppText(
-      "Awarded to the first person in the world to use Ascendra.",
-    ),
+    description: configuredAppText("Awarded to the first person in the world to use Ascendra."),
     icon: "\u{1F30C}",
     obtained: false,
   },
   {
     id: "coFounder",
     name: "Co-Founder",
-    description: configuredAppText(
-      "Awarded to someone who helped create and shape Ascendra from the beginning.",
-    ),
+    description: configuredAppText("Awarded to someone who helped create and shape Ascendra from the beginning."),
     icon: "\u{1F91D}",
     obtained: false,
   },
   {
     id: "founder",
     name: "Founder",
-    description: configuredAppText(
-      "Awarded to the creator and lead developer of Ascendra.",
-    ),
+    description: configuredAppText("Awarded to the creator and lead developer of Ascendra."),
     icon: "\u{1F451}",
     obtained: false,
   },
@@ -249,9 +227,7 @@ function parseLocalDateTime(value, fallbackTime = "") {
     .match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2})(?::\d{2})?)?$/);
   if (!match) return null;
 
-  const fallbackMatch = String(fallbackTime || "").match(
-    /^(\d{1,2}):(\d{2})(?::\d{2})?$/,
-  );
+  const fallbackMatch = String(fallbackTime || "").match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
   const year = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
@@ -275,10 +251,7 @@ function parseLocalDateTime(value, fallbackTime = "") {
 function dateKeyDayNumber(value) {
   const parsed = value instanceof Date ? value : parseLocalDateTime(value);
   if (!parsed) return Number.NaN;
-  return (
-    Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()) /
-    DAY_IN_MILLISECONDS
-  );
+  return Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()) / DAY_IN_MILLISECONDS;
 }
 
 function eventDateTime(event) {
@@ -313,19 +286,9 @@ async function derivePasswordDigest(password, salt, iterations) {
     throw new Error("Secure password storage requires HTTPS or localhost.");
   }
 
-  const keyMaterial = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"],
-  );
+  const keyMaterial = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
 
-  const bits = await crypto.subtle.deriveBits(
-    { name: "PBKDF2", hash: "SHA-256", salt, iterations },
-    keyMaterial,
-    256,
-  );
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, keyMaterial, 256);
   return new Uint8Array(bits);
 }
 
@@ -334,11 +297,7 @@ async function createPasswordCredentials(password) {
     throw new Error("Secure password storage requires HTTPS or localhost.");
   }
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const digest = await derivePasswordDigest(
-    password,
-    salt,
-    PASSWORD_ITERATIONS,
-  );
+  const digest = await derivePasswordDigest(password, salt, PASSWORD_ITERATIONS);
   return {
     version: 1,
     kdf: "PBKDF2",
@@ -370,11 +329,7 @@ async function verifyPasswordCredentials(password, credentials) {
     return false;
   }
 
-  const actual = await derivePasswordDigest(
-    password,
-    salt,
-    credentials.iterations,
-  );
+  const actual = await derivePasswordDigest(password, salt, credentials.iterations);
   if (actual.length !== expected.length) return false;
 
   let difference = 0;
@@ -403,18 +358,12 @@ function normalizeUsername(username) {
   return String(username || "").trim();
 }
 
-function getUsernameValidationMessage(
-  username,
-  { allowLegacyUsername = "" } = {},
-) {
+function getUsernameValidationMessage(username, { allowLegacyUsername = "" } = {}) {
   const normalized = normalizeUsername(username);
   const allowedLegacy = normalizeUsername(allowLegacyUsername);
 
   if (!normalized) return "Please enter a username.";
-  if (
-    allowedLegacy &&
-    normalized.toLowerCase() === allowedLegacy.toLowerCase()
-  ) {
+  if (allowedLegacy && normalized.toLowerCase() === allowedLegacy.toLowerCase()) {
     return "";
   }
   if (normalized.length > 20) {
@@ -448,22 +397,14 @@ function findStoredAccount(username) {
 
   for (let index = 0; index < localStorage.length; index++) {
     const candidateKey = localStorage.key(index);
-    if (
-      candidateKey &&
-      candidateKey.toLowerCase() === requestedUsernameLower &&
-      !legacyKeys.includes(candidateKey)
-    ) {
+    if (candidateKey && candidateKey.toLowerCase() === requestedUsernameLower && !legacyKeys.includes(candidateKey)) {
       legacyKeys.push(candidateKey);
     }
   }
 
   for (const legacyKey of legacyKeys) {
     const legacyAccount = readStoredJson(legacyKey);
-    if (
-      legacyAccount &&
-      !Array.isArray(legacyAccount) &&
-      (legacyAccount.credentials || typeof legacyAccount.password === "string")
-    ) {
+    if (legacyAccount && !Array.isArray(legacyAccount) && (legacyAccount.credentials || typeof legacyAccount.password === "string")) {
       return { account: legacyAccount, key: legacyKey, legacy: true };
     }
   }
@@ -472,10 +413,7 @@ function findStoredAccount(username) {
 }
 
 function saveStoredAccount(account) {
-  localStorage.setItem(
-    accountStorageKey(account.username),
-    JSON.stringify(account),
-  );
+  localStorage.setItem(accountStorageKey(account.username), JSON.stringify(account));
 }
 
 function ensureStoredAccountId(accountRecord) {
@@ -494,9 +432,7 @@ function ensureStoredAccountId(accountRecord) {
   try {
     localStorage.setItem(accountRecord.key, serializedAccount);
     if (localStorage.getItem(accountRecord.key) !== serializedAccount) {
-      throw new Error(
-        configuredAppText("Ascendra could not verify this account."),
-      );
+      throw new Error(configuredAppText("Ascendra could not verify this account."));
     }
   } catch (error) {
     if (previousValue === null) {
@@ -526,18 +462,14 @@ function readTabIdentityItem(field) {
       return sessionStorage.getItem(key);
     }
   } catch (error) {
-    console.warn(
-      configuredAppText("Ascendra could not read this tab's session identity."),
-      error,
-    );
+    console.warn(configuredAppText("Ascendra could not read this tab's session identity."), error);
   }
   return tabIdentityFallback.has(key) ? tabIdentityFallback.get(key) : null;
 }
 
 function writeTabIdentityItem(field, value) {
   const key = tabIdentityStorageKey(field);
-  const normalizedValue =
-    value === null || value === undefined ? null : String(value);
+  const normalizedValue = value === null || value === undefined ? null : String(value);
 
   try {
     if (typeof sessionStorage !== "undefined") {
@@ -549,10 +481,7 @@ function writeTabIdentityItem(field, value) {
       return;
     }
   } catch (error) {
-    console.warn(
-      configuredAppText("Ascendra could not save this tab's session identity."),
-      error,
-    );
+    console.warn(configuredAppText("Ascendra could not save this tab's session identity."), error);
   }
 
   if (normalizedValue === null) {
@@ -564,28 +493,19 @@ function writeTabIdentityItem(field, value) {
 
 function initializeTabIdentity() {
   if (readTabIdentityItem("initialized") === "true") {
-    const tabUsername = String(
-      readTabIdentityItem("loggedInUser") || "",
-    ).trim();
+    const tabUsername = String(readTabIdentityItem("loggedInUser") || "").trim();
     const tabAccountId = String(readTabIdentityItem("accountId") || "");
     const accountRecord = tabUsername ? findStoredAccount(tabUsername) : null;
 
-    if (
-      tabUsername &&
-      (!tabAccountId || accountRecord?.account?.accountId !== tabAccountId)
-    ) {
+    if (tabUsername && (!tabAccountId || accountRecord?.account?.accountId !== tabAccountId)) {
       clearActiveIdentity();
       history.replaceState({ route: "login" }, "", "#/login");
     }
     return;
   }
 
-  let publishedUsername = String(
-    localStorage.getItem("loggedInUser") || "",
-  ).trim();
-  let accountRecord = publishedUsername
-    ? findStoredAccount(publishedUsername)
-    : null;
+  let publishedUsername = String(localStorage.getItem("loggedInUser") || "").trim();
+  let accountRecord = publishedUsername ? findStoredAccount(publishedUsername) : null;
 
   try {
     if (accountRecord) {
@@ -594,10 +514,7 @@ function initializeTabIdentity() {
       throw new Error("The published account no longer exists.");
     }
   } catch (error) {
-    console.warn(
-      configuredAppText("Ascendra signed out an unverifiable account."),
-      error,
-    );
+    console.warn(configuredAppText("Ascendra signed out an unverifiable account."), error);
     TAB_IDENTITY_FIELDS.forEach((field) => localStorage.removeItem(field));
     publishedUsername = "";
     accountRecord = null;
@@ -623,15 +540,9 @@ function getActiveIdentityItem(field) {
   return readTabIdentityItem(field) || "";
 }
 
-function setActiveIdentity(
-  identity,
-  { publish = true, previousUsername = null } = {},
-) {
+function setActiveIdentity(identity, { publish = true, previousUsername = null } = {}) {
   const username = String(identity?.username || "").trim();
-  const loggedInUser =
-    identity?.loggedInUser === null
-      ? ""
-      : String(identity?.loggedInUser ?? username).trim();
+  const loggedInUser = identity?.loggedInUser === null ? "" : String(identity?.loggedInUser ?? username).trim();
   const values = {
     loggedInUser,
     name: String(identity?.name || ""),
@@ -651,9 +562,7 @@ function setActiveIdentity(
   const previousClean = String(previousUsername || "")
     .trim()
     .toLowerCase();
-  const canPublish =
-    publish ||
-    (previousClean ? sharedUsername === previousClean : sharedUsername === "");
+  const canPublish = publish || (previousClean ? sharedUsername === previousClean : sharedUsername === "");
 
   if (!canPublish) return;
 
@@ -666,10 +575,7 @@ function setActiveIdentity(
       }
     });
   } catch (error) {
-    console.warn(
-      configuredAppText("Ascendra could not publish this tab's identity."),
-      error,
-    );
+    console.warn(configuredAppText("Ascendra could not publish this tab's identity."), error);
   }
 }
 
@@ -687,18 +593,13 @@ function clearActiveIdentity() {
   writeTabIdentityItem("initialized", "true");
 
   if (
-    (tabUsername &&
-      sharedUsername === tabUsername &&
-      (!sharedAccountId || sharedAccountId === tabAccountId)) ||
+    (tabUsername && sharedUsername === tabUsername && (!sharedAccountId || sharedAccountId === tabAccountId)) ||
     (!tabUsername && !sharedUsername)
   ) {
     try {
       TAB_IDENTITY_FIELDS.forEach((field) => localStorage.removeItem(field));
     } catch (error) {
-      console.warn(
-        configuredAppText("Ascendra could not clear the published identity."),
-        error,
-      );
+      console.warn(configuredAppText("Ascendra could not clear the published identity."), error);
     }
   }
 }
@@ -715,9 +616,7 @@ function userStorageKey(key, username = getLoggedInUsername()) {
   const cleanUsername = String(username || "")
     .trim()
     .toLowerCase();
-  return cleanUsername
-    ? `ascendra:data:${cleanUsername}:${key}`
-    : `ascendra:guest:${key}`;
+  return cleanUsername ? `ascendra:data:${cleanUsername}:${key}` : `ascendra:guest:${key}`;
 }
 
 function getUserItem(key, username = getLoggedInUsername()) {
@@ -750,19 +649,10 @@ function readUserJson(key, fallback = null, username = getLoggedInUsername()) {
 
 function getUserArray(key, username = getLoggedInUsername()) {
   const value = readUserJson(key, [], username);
-  const items = Array.isArray(value)
-    ? value.filter(
-        (item) => item && typeof item === "object" && !Array.isArray(item),
-      )
-    : [];
+  const items = Array.isArray(value) ? value.filter((item) => item && typeof item === "object" && !Array.isArray(item)) : [];
 
   if (key === "todos" || key === "habits") {
-    ensureStableActivityIds(
-      items,
-      key === "todos" ? "task" : "habit",
-      key,
-      username,
-    );
+    ensureStableActivityIds(items, key === "todos" ? "task" : "habit", key, username);
   }
 
   return items;
@@ -779,16 +669,12 @@ function getRewardXp(eventId) {
     return XP_REWARDS.task;
   }
 
-  const habitMatch = normalizedEventId.match(
-    /^habit:([^:]{1,240}):(\d{4}-\d{2}-\d{2})$/,
-  );
+  const habitMatch = normalizedEventId.match(/^habit:([^:]{1,240}):(\d{4}-\d{2}-\d{2})$/);
   if (habitMatch && parseLocalDateTime(habitMatch[2])) {
     return XP_REWARDS.habit;
   }
 
-  if (
-    MINI_TOOL_IDS.some((toolId) => normalizedEventId === `minitool:${toolId}`)
-  ) {
+  if (MINI_TOOL_IDS.some((toolId) => normalizedEventId === `minitool:${toolId}`)) {
     return XP_REWARDS.miniTool;
   }
 
@@ -824,9 +710,7 @@ function normalizeProgressionState(value) {
       const xp = getRewardXp(eventId);
       if (!xp) return;
 
-      const awardedAt = normalizeStoredTimestamp(
-        isPlainRecord(storedReward) ? storedReward.awardedAt : storedReward,
-      );
+      const awardedAt = normalizeStoredTimestamp(isPlainRecord(storedReward) ? storedReward.awardedAt : storedReward);
 
       state.rewardedEvents[eventId] = {
         xp,
@@ -835,19 +719,13 @@ function normalizeProgressionState(value) {
     });
   }
 
-  const storedAchievements = isPlainRecord(value.achievements)
-    ? value.achievements
-    : {};
+  const storedAchievements = isPlainRecord(value.achievements) ? value.achievements : {};
 
   achievements.forEach((achievement) => {
-    const stored = isPlainRecord(storedAchievements[achievement.id])
-      ? storedAchievements[achievement.id]
-      : {};
+    const stored = isPlainRecord(storedAchievements[achievement.id]) ? storedAchievements[achievement.id] : {};
 
     const progressValue = Number(stored.progress);
-    const progress = Number.isFinite(progressValue)
-      ? Math.min(achievement.goal, Math.max(0, progressValue))
-      : 0;
+    const progress = Number.isFinite(progressValue) ? Math.min(achievement.goal, Math.max(0, progressValue)) : 0;
     const unlockedAt = normalizeStoredTimestamp(stored.unlockedAt);
 
     state.achievements[achievement.id] = {
@@ -860,9 +738,7 @@ function normalizeProgressionState(value) {
   const storedBadges = isPlainRecord(value.badges) ? value.badges : {};
 
   badges.forEach((badge) => {
-    const stored = isPlainRecord(storedBadges[badge.id])
-      ? storedBadges[badge.id]
-      : {};
+    const stored = isPlainRecord(storedBadges[badge.id]) ? storedBadges[badge.id] : {};
 
     state.badges[badge.id] = {
       obtained: stored.obtained === true,
@@ -879,16 +755,10 @@ function loadProgressionState() {
 
 function saveProgressionState(state) {
   try {
-    setUserItem(
-      PROGRESSION_STORAGE_KEY,
-      JSON.stringify(normalizeProgressionState(state)),
-    );
+    setUserItem(PROGRESSION_STORAGE_KEY, JSON.stringify(normalizeProgressionState(state)));
     return true;
   } catch (error) {
-    console.warn(
-      configuredAppText("Ascendra could not save progression."),
-      error,
-    );
+    console.warn(configuredAppText("Ascendra could not save progression."), error);
     return false;
   }
 }
@@ -905,20 +775,14 @@ function hashProgressIdentifier(value) {
   return (hash >>> 0).toString(36);
 }
 
-function ensureStableActivityIds(
-  items,
-  type,
-  storageKey,
-  username = getLoggedInUsername(),
-) {
+function ensureStableActivityIds(items, type, storageKey, username = getLoggedInUsername()) {
   const usedIds = new Set();
   const changedItems = [];
   const migrationSeed = Date.now().toString(36);
 
   items.forEach((item, index) => {
     const existingId = item?.id ?? item?.createdAt;
-    const normalizedId =
-      existingId === undefined || existingId === null ? "" : String(existingId);
+    const normalizedId = existingId === undefined || existingId === null ? "" : String(existingId);
 
     if (normalizedId && !usedIds.has(normalizedId)) {
       usedIds.add(normalizedId);
@@ -963,10 +827,7 @@ function ensureStableActivityIds(
         delete item.id;
       }
     });
-    console.warn(
-      configuredAppText(`Ascendra could not migrate legacy ${storageKey}.`),
-      error,
-    );
+    console.warn(configuredAppText(`Ascendra could not migrate legacy ${storageKey}.`), error);
     return false;
   }
 }
@@ -1067,28 +928,18 @@ function reconcileAchievementState(state) {
   let unlockOffset = 0;
 
   achievements.forEach((achievement) => {
-    const existing = isPlainRecord(state.achievements?.[achievement.id])
-      ? state.achievements[achievement.id]
-      : {};
+    const existing = isPlainRecord(state.achievements?.[achievement.id]) ? state.achievements[achievement.id] : {};
 
     let progress = 0;
     if (achievement.id !== "noZeroDays") {
       if (achievement.eventId) {
-        progress = Object.prototype.hasOwnProperty.call(
-          state.rewardedEvents,
-          achievement.eventId,
-        )
-          ? 1
-          : 0;
+        progress = Object.prototype.hasOwnProperty.call(state.rewardedEvents, achievement.eventId) ? 1 : 0;
       } else {
         progress = Number(statistics[achievement.stat] || 0);
       }
     }
 
-    progress = Math.min(
-      achievement.goal,
-      Math.max(0, Number.isFinite(progress) ? progress : 0),
-    );
+    progress = Math.min(achievement.goal, Math.max(0, Number.isFinite(progress) ? progress : 0));
 
     if (achievement.id === "noZeroDays") {
       state.achievements[achievement.id] = {
@@ -1132,9 +983,7 @@ function reconcileBadgeState(state) {
     .toLowerCase();
 
   badges.forEach((badge) => {
-    const existing = isPlainRecord(state.badges?.[badge.id])
-      ? state.badges[badge.id]
-      : {};
+    const existing = isPlainRecord(state.badges?.[badge.id]) ? state.badges[badge.id] : {};
 
     let obtained = false;
     if (badge.id === "genesis") {
@@ -1147,10 +996,7 @@ function reconcileBadgeState(state) {
 
     state.badges[badge.id] = {
       obtained,
-      obtainedAt: obtained
-        ? normalizeStoredTimestamp(existing.obtainedAt) ||
-          new Date().toISOString()
-        : null,
+      obtainedAt: obtained ? normalizeStoredTimestamp(existing.obtainedAt) || new Date().toISOString() : null,
     };
   });
 }
@@ -1209,9 +1055,7 @@ function recordMiniToolUse(toolId) {
 
   return {
     state,
-    newlyUnlocked: newlyUnlocked.filter(
-      (achievement) => achievement.category === "miniTools",
-    ),
+    newlyUnlocked: newlyUnlocked.filter((achievement) => achievement.category === "miniTools"),
     xpAwarded: awarded && saved ? getRewardXp(eventId) : 0,
     saved,
   };
@@ -1221,9 +1065,7 @@ function recordZenSession() {
   const state = loadProgressionState();
   addExistingActivityRewards(state);
 
-  const completedSessionIds = Object.keys(state.rewardedEvents || {}).filter(
-    (eventId) => /^unwind:zen:\d{1,9}$/.test(eventId),
-  );
+  const completedSessionIds = Object.keys(state.rewardedEvents || {}).filter((eventId) => /^unwind:zen:\d{1,9}$/.test(eventId));
   let sessionNumber = completedSessionIds.length + 1;
   let eventId = `unwind:zen:${sessionNumber}`;
 
@@ -1248,19 +1090,14 @@ function recordZenSession() {
 
   return {
     state,
-    newlyUnlocked: newlyUnlocked.filter(
-      (achievement) => achievement.category === "wellbeing",
-    ),
+    newlyUnlocked: newlyUnlocked.filter((achievement) => achievement.category === "wellbeing"),
     xpAwarded: awarded ? getRewardXp(eventId) : 0,
     saved,
   };
 }
 
 function getTotalXp(state) {
-  return Object.keys(state.rewardedEvents || {}).reduce(
-    (total, eventId) => total + getRewardXp(eventId),
-    0,
-  );
+  return Object.keys(state.rewardedEvents || {}).reduce((total, eventId) => total + getRewardXp(eventId), 0);
 }
 
 function getLevelProgress(totalXp) {
@@ -1282,9 +1119,7 @@ function getLevelProgress(totalXp) {
 }
 
 function getUnlockedAchievements(state) {
-  return achievements.filter(
-    (achievement) => state.achievements?.[achievement.id]?.unlocked === true,
-  );
+  return achievements.filter((achievement) => state.achievements?.[achievement.id]?.unlocked === true);
 }
 
 function getLatestUnlockedAchievement(state) {
@@ -1292,10 +1127,7 @@ function getLatestUnlockedAchievement(state) {
     getUnlockedAchievements(state)
       .map((achievement) => ({
         definition: achievement,
-        unlockedAt:
-          normalizeStoredTimestamp(
-            state.achievements[achievement.id].unlockedAt,
-          ) || new Date(0).toISOString(),
+        unlockedAt: normalizeStoredTimestamp(state.achievements[achievement.id].unlockedAt) || new Date(0).toISOString(),
       }))
       .sort((first, second) => {
         return Date.parse(second.unlockedAt) - Date.parse(first.unlockedAt);
@@ -1312,27 +1144,17 @@ function setProgressText(selector, value) {
 function renderProgressionSummary(state) {
   const levelProgress = getLevelProgress(getTotalXp(state));
   const unlockedCount = getUnlockedAchievements(state).length;
-  const miniToolAchievements = achievements.filter(
-    (achievement) => achievement.category === "miniTools",
-  );
-  const unlockedMiniTools = miniToolAchievements.filter(
-    (achievement) => state.achievements?.[achievement.id]?.unlocked === true,
-  ).length;
+  const miniToolAchievements = achievements.filter((achievement) => achievement.category === "miniTools");
+  const unlockedMiniTools = miniToolAchievements.filter((achievement) => state.achievements?.[achievement.id]?.unlocked === true).length;
 
   setProgressText("[data-xp-total]", `${levelProgress.totalXp} XP`);
   setProgressText("[data-xp-number]", levelProgress.totalXp);
   setProgressText("[data-xp-level]", levelProgress.level);
   setProgressText("[data-xp-level-start]", `${levelProgress.levelStartXp} XP`);
   setProgressText("[data-xp-level-end]", `${levelProgress.nextLevelXp} XP`);
-  setProgressText(
-    "[data-xp-message]",
-    `${levelProgress.remainingXp} XP to Level ${levelProgress.level + 1}`,
-  );
+  setProgressText("[data-xp-message]", `${levelProgress.remainingXp} XP to Level ${levelProgress.level + 1}`);
   setProgressText("[data-achievement-count]", unlockedCount);
-  setProgressText(
-    "[data-mini-tools-achievement-count]",
-    `${unlockedMiniTools} / ${miniToolAchievements.length}`,
-  );
+  setProgressText("[data-mini-tools-achievement-count]", `${unlockedMiniTools} / ${miniToolAchievements.length}`);
 
   document.querySelectorAll("[data-xp-progress-fill]").forEach((fill) => {
     fill.style.width = `${levelProgress.percent}%`;
@@ -1341,10 +1163,7 @@ function renderProgressionSummary(state) {
   document.querySelectorAll("[data-xp-progress]").forEach((progress) => {
     progress.setAttribute("aria-valuemin", "0");
     progress.setAttribute("aria-valuemax", String(XP_PER_LEVEL));
-    progress.setAttribute(
-      "aria-valuenow",
-      String(levelProgress.currentLevelXp),
-    );
+    progress.setAttribute("aria-valuenow", String(levelProgress.currentLevelXp));
     progress.setAttribute(
       "aria-valuetext",
       `${levelProgress.currentLevelXp} of ${XP_PER_LEVEL} XP toward Level ${levelProgress.level + 1}`,
@@ -1364,8 +1183,7 @@ function renderLatestAchievement(state) {
   if (!latest) {
     icon.textContent = "\u{1F331}";
     title.textContent = "Getting Started";
-    description.textContent =
-      "Complete a task, habit, or Mini Tool to unlock your first achievement.";
+    description.textContent = "Complete a task, habit, or Mini Tool to unlock your first achievement.";
     if (date) date.textContent = "No achievements unlocked yet";
     return;
   }
@@ -1375,9 +1193,7 @@ function renderLatestAchievement(state) {
   description.textContent = latest.definition.description;
 
   if (date) {
-    date.textContent = `Unlocked ${new Date(
-      latest.unlockedAt,
-    ).toLocaleDateString()}`;
+    date.textContent = `Unlocked ${new Date(latest.unlockedAt).toLocaleDateString()}`;
   }
 }
 
@@ -1408,17 +1224,12 @@ function createAchievementCard(achievement, state) {
 
   const status = document.createElement("strong");
   status.className = "progress-achievement-status";
-  status.textContent = achievementState.unlocked
-    ? "Unlocked"
-    : `${achievementState.progress} / ${achievement.goal}`;
+  status.textContent = achievementState.unlocked ? "Unlocked" : `${achievementState.progress} / ${achievement.goal}`;
 
   const progress = document.createElement("div");
   progress.className = "achievement-progress-track";
   progress.setAttribute("role", "progressbar");
-  progress.setAttribute(
-    "aria-label",
-    `${achievement.name} achievement progress`,
-  );
+  progress.setAttribute("aria-label", `${achievement.name} achievement progress`);
   progress.setAttribute("aria-valuemin", "0");
   progress.setAttribute("aria-valuemax", String(achievement.goal));
   progress.setAttribute("aria-valuenow", String(achievementState.progress));
@@ -1432,9 +1243,7 @@ function createAchievementCard(achievement, state) {
   if (achievementState.unlockedAt) {
     const unlockedDate = document.createElement("span");
     unlockedDate.className = "progress-achievement-date";
-    unlockedDate.textContent = `Unlocked ${new Date(
-      achievementState.unlockedAt,
-    ).toLocaleDateString()}`;
+    unlockedDate.textContent = `Unlocked ${new Date(achievementState.unlockedAt).toLocaleDateString()}`;
     content.appendChild(unlockedDate);
   }
 
@@ -1502,9 +1311,7 @@ function announceProgressionReward(progression) {
     document.body.appendChild(toast);
   }
 
-  const unlockedNames = progression.newlyUnlocked
-    .map((achievement) => achievement.name)
-    .join(" and ");
+  const unlockedNames = progression.newlyUnlocked.map((achievement) => achievement.name).join(" and ");
   const unlockText = unlockedNames ? ` \u2022 Unlocked: ${unlockedNames}` : "";
 
   toast.textContent = `+${progression.xpAwarded} XP${unlockText}`;
@@ -1522,19 +1329,12 @@ window.getLevelProgress = getLevelProgress;
 window.getTotalXp = getTotalXp;
 
 function isTodoCompleted(todo) {
-  return (
-    todo?.completed === true ||
-    todo?.completed === "true" ||
-    todo?.done === true ||
-    todo?.done === "true"
-  );
+  return todo?.completed === true || todo?.completed === "true" || todo?.done === true || todo?.done === "true";
 }
 
 function getHabitHistory(habit) {
   const history = habit?.history;
-  return history && typeof history === "object" && !Array.isArray(history)
-    ? history
-    : {};
+  return history && typeof history === "object" && !Array.isArray(history) ? history : {};
 }
 
 function isHabitScheduledForDate(habit, date = new Date()) {
@@ -1562,11 +1362,7 @@ function getScheduledHabitHistoryEntries(habit) {
 function getHabitCurrentStreak(habit, fromDate = new Date()) {
   const history = getHabitHistory(habit);
 
-  const date = new Date(
-    fromDate.getFullYear(),
-    fromDate.getMonth(),
-    fromDate.getDate(),
-  );
+  const date = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
 
   let streak = 0;
   let inspectedDays = 0;
@@ -1613,10 +1409,7 @@ function collectUserDataEntries(username) {
   const prefix = `ascendra:data:${cleanUsername}:`;
   return collectStorageEntries(prefix).filter((entry) => {
     const suffix = entry.key.slice(prefix.length);
-    return (
-      LEGACY_USER_KEYS.includes(suffix) ||
-      /^journal-\d{4}-\d{1,2}-\d{1,2}$/.test(suffix)
-    );
+    return LEGACY_USER_KEYS.includes(suffix) || /^journal-\d{4}-\d{1,2}-\d{1,2}$/.test(suffix);
   });
 }
 
@@ -1650,11 +1443,7 @@ function ensureActiveAccountAccess(username) {
     .trim()
     .toLowerCase();
   const activeUsername = getLoggedInUsername();
-  if (
-    cleanUsername &&
-    cleanUsername === activeUsername &&
-    !activeAccountMatchesIdentity(activeUsername)
-  ) {
+  if (cleanUsername && cleanUsername === activeUsername && !activeAccountMatchesIdentity(activeUsername)) {
     invalidateMissingActiveAccount();
     return false;
   }
@@ -1663,11 +1452,7 @@ function ensureActiveAccountAccess(username) {
 
 function assertActiveAccountForWrite(username) {
   if (!ensureActiveAccountAccess(username)) {
-    throw new Error(
-      configuredAppText(
-        "Ascendra stopped a save because this account changed in another tab.",
-      ),
-    );
+    throw new Error(configuredAppText("Ascendra stopped a save because this account changed in another tab."));
   }
 }
 
@@ -1692,9 +1477,7 @@ function copyStorageEntries(entries, getTargetKey, collisionMessage) {
         writtenEntries.push(entry);
       }
       if (localStorage.getItem(entry.targetKey) !== entry.value) {
-        throw new Error(
-          configuredAppText("Ascendra could not verify copied data."),
-        );
+        throw new Error(configuredAppText("Ascendra could not verify copied data."));
       }
     });
   } catch (error) {
@@ -1717,12 +1500,7 @@ function rollbackCopiedStorageEntries(writtenEntries) {
   });
 }
 
-function renameStoredAccountAndData(
-  accountRecord,
-  updatedAccount,
-  oldUsername,
-  newUsername,
-) {
+function renameStoredAccountAndData(accountRecord, updatedAccount, oldUsername, newUsername) {
   const oldClean = String(oldUsername || "")
     .trim()
     .toLowerCase();
@@ -1738,9 +1516,7 @@ function renameStoredAccountAndData(
     try {
       localStorage.setItem(oldAccountKey, serializedAccount);
       if (localStorage.getItem(oldAccountKey) !== serializedAccount) {
-        throw new Error(
-          configuredAppText("Ascendra could not verify the updated account."),
-        );
+        throw new Error(configuredAppText("Ascendra could not verify the updated account."));
       }
     } catch (error) {
       if (previousValue === null) {
@@ -1776,9 +1552,7 @@ function renameStoredAccountAndData(
     localStorage.setItem(newAccountKey, serializedAccount);
     wroteNewAccount = true;
     if (localStorage.getItem(newAccountKey) !== serializedAccount) {
-      throw new Error(
-        configuredAppText("Ascendra could not verify the renamed account."),
-      );
+      throw new Error(configuredAppText("Ascendra could not verify the renamed account."));
     }
   } catch (error) {
     rollbackCopiedStorageEntries(copied.writtenEntries);
@@ -1848,9 +1622,7 @@ function deleteOwnedLegacyData(username) {
 function deleteCurrentAccountData() {
   const username = getLoggedInUsername();
   if (username) assertActiveAccountForWrite(username);
-  const dataEntries = username
-    ? collectUserDataEntries(username)
-    : collectStorageEntries("ascendra:guest:");
+  const dataEntries = username ? collectUserDataEntries(username) : collectStorageEntries("ascendra:guest:");
 
   dataEntries.forEach((entry) => {
     localStorage.removeItem(entry.key);
@@ -1880,9 +1652,7 @@ function migrateLegacyUserData(username) {
 
   const entries = getLegacyStorageEntries();
   const missingEntries = entries.filter((entry) => {
-    return (
-      localStorage.getItem(userStorageKey(entry.key, cleanUsername)) === null
-    );
+    return localStorage.getItem(userStorageKey(entry.key, cleanUsername)) === null;
   });
   let copied = { writtenEntries: [] };
 
@@ -1898,16 +1668,11 @@ function migrateLegacyUserData(username) {
         .trim()
         .toLowerCase() !== cleanUsername
     ) {
-      throw new Error(
-        configuredAppText("Ascendra could not verify the legacy data owner."),
-      );
+      throw new Error(configuredAppText("Ascendra could not verify the legacy data owner."));
     }
   } catch (error) {
     rollbackCopiedStorageEntries(copied.writtenEntries);
-    console.warn(
-      configuredAppText("Ascendra could not migrate legacy data."),
-      error,
-    );
+    console.warn(configuredAppText("Ascendra could not migrate legacy data."), error);
     return false;
   }
 
@@ -1927,9 +1692,7 @@ function createModalController(dialog, initialFocus, options = {}) {
   let previousFocus = null;
 
   function getFocusableElements() {
-    return [...dialog.querySelectorAll(focusableSelector)].filter(
-      (element) => element.getClientRects().length > 0,
-    );
+    return [...dialog.querySelectorAll(focusableSelector)].filter((element) => element.getClientRects().length > 0);
   }
 
   function close({ restoreFocus = true } = {}) {
@@ -1984,8 +1747,7 @@ function createModalController(dialog, initialFocus, options = {}) {
 
     requestAnimationFrame(() => {
       if (dialog.getAttribute("aria-hidden") !== "false") return;
-      const target =
-        typeof initialFocus === "function" ? initialFocus() : initialFocus;
+      const target = typeof initialFocus === "function" ? initialFocus() : initialFocus;
       (target || getFocusableElements()[0] || dialog).focus();
     });
   }
@@ -2026,10 +1788,7 @@ function goBack() {
   if (history.length > 1) {
     history.back();
   } else {
-    navigate(
-      getRoute() === "login" || getRoute() === "signup" ? "welcome" : "home",
-      true,
-    );
+    navigate(getRoute() === "login" || getRoute() === "signup" ? "welcome" : "home", true);
   }
 }
 window.navigate = navigate;
@@ -2043,19 +1802,14 @@ window.addEventListener("storage", function handleAccountStorageChange() {
 window.addEventListener("focus", function handleAccountWindowFocus() {
   invalidateMissingActiveAccount();
 });
-document.addEventListener(
-  "visibilitychange",
-  function handleAccountVisibility() {
-    if (!document.hidden) invalidateMissingActiveAccount();
-  },
-);
+document.addEventListener("visibilitychange", function handleAccountVisibility() {
+  if (!document.hidden) invalidateMissingActiveAccount();
+});
 
 function getSavedSettings() {
   const defaults = { accentColor: "purple", lightMode: true };
   const saved = readUserJson("ascendraSettings", null);
-  return saved && typeof saved === "object" && !Array.isArray(saved)
-    ? { ...defaults, ...saved }
-    : defaults;
+  return saved && typeof saved === "object" && !Array.isArray(saved) ? { ...defaults, ...saved } : defaults;
 }
 
 function applySavedSettings() {
@@ -2067,26 +1821,11 @@ function applySavedSettings() {
   };
   const settings = getSavedSettings();
   const darkModeEnabled = settings.lightMode === false;
-  document.documentElement.style.setProperty(
-    "--accent",
-    colors[settings.accentColor] || colors.purple,
-  );
-  document.documentElement.style.setProperty(
-    "--bg",
-    darkModeEnabled ? "#17131f" : "#f6f3ff",
-  );
-  document.documentElement.style.setProperty(
-    "--card",
-    darkModeEnabled ? "#241d30" : "white",
-  );
-  document.documentElement.style.setProperty(
-    "--text",
-    darkModeEnabled ? "#f5f5f5" : "#222",
-  );
-  document.documentElement.style.setProperty(
-    "--muted",
-    darkModeEnabled ? "#cbd5e1" : "#666",
-  );
+  document.documentElement.style.setProperty("--accent", colors[settings.accentColor] || colors.purple);
+  document.documentElement.style.setProperty("--bg", darkModeEnabled ? "#17131f" : "#f6f3ff");
+  document.documentElement.style.setProperty("--card", darkModeEnabled ? "#241d30" : "white");
+  document.documentElement.style.setProperty("--text", darkModeEnabled ? "#f5f5f5" : "#222");
+  document.documentElement.style.setProperty("--muted", darkModeEnabled ? "#cbd5e1" : "#666");
   document.body.classList.toggle("dark-mode", darkModeEnabled);
 
   const modeToggle = document.getElementById("mode");
@@ -2104,8 +1843,7 @@ function renderRoute(route, { focusRoute = true } = {}) {
   if (route !== "login" && invalidateMissingActiveAccount()) return;
   const template = document.getElementById("page-" + route);
   if (!template) {
-    app.innerHTML =
-      '<div class="spa-error" role="main"><h1>Page not found</h1></div>';
+    app.innerHTML = '<div class="spa-error" role="main"><h1>Page not found</h1></div>';
     return;
   }
   // stop route-owned intervals/animations when possible by replacing the DOM and calling cleanup
@@ -2128,10 +1866,7 @@ function renderRoute(route, { focusRoute = true } = {}) {
   app.appendChild(page);
   renderAppMetadata(page);
   app.dataset.route = route;
-  document.title =
-    APP_CONFIG.name +
-    " - " +
-    route.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  document.title = APP_CONFIG.name + " - " + route.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   backButton.hidden = route === "welcome";
   applySavedSettings();
   page.querySelectorAll(".navbar").forEach((navbar) => {
@@ -2149,14 +1884,10 @@ function renderRoute(route, { focusRoute = true } = {}) {
     const cleanup = (ROUTE_INITIALIZERS[route] || function () {})();
     if (typeof cleanup === "function") initializedCleanups.set(route, cleanup);
   } catch (error) {
-    console.error(
-      configuredAppText("Ascendra page error on ") + route + ":",
-      error,
-    );
+    console.error(configuredAppText("Ascendra page error on ") + route + ":", error);
     const box = document.createElement("div");
     box.className = "spa-error";
-    box.innerHTML =
-      "<h2>This page hit an error</h2><p>Open DevTools Console for the exact line.</p>";
+    box.innerHTML = "<h2>This page hit an error</h2><p>Open DevTools Console for the exact line.</p>";
     page.prepend(box);
   }
   if (focusRoute) {
@@ -2175,22 +1906,9 @@ function handleLocationChange() {
 window.addEventListener("popstate", handleLocationChange);
 window.addEventListener("hashchange", handleLocationChange);
 document.addEventListener("click", function (e) {
-  if (
-    e.defaultPrevented ||
-    e.button !== 0 ||
-    e.metaKey ||
-    e.ctrlKey ||
-    e.shiftKey ||
-    e.altKey
-  )
-    return;
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   const a = e.target.closest('a[href^="#/"]');
-  if (
-    !a ||
-    a.hasAttribute("download") ||
-    (a.target && a.target.toLowerCase() !== "_self")
-  )
-    return;
+  if (!a || a.hasAttribute("download") || (a.target && a.target.toLowerCase() !== "_self")) return;
   e.preventDefault();
   navigate(a.getAttribute("href"));
 });
@@ -2200,9 +1918,7 @@ const ROUTE_INITIALIZERS = {
   "loading-screen": function init_loading_screen() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    const reduceLoadingMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduceLoadingMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let backgroundStars = [];
     let viewportWidth = window.innerWidth;
@@ -2269,11 +1985,7 @@ const ROUTE_INITIALIZERS = {
       // Center the shooting star
       ctx.save();
 
-      const sceneScale = Math.min(
-        1,
-        (viewportWidth * 0.9) / 400,
-        (viewportHeight * 0.9) / 400,
-      );
+      const sceneScale = Math.min(1, (viewportWidth * 0.9) / 400, (viewportHeight * 0.9) / 400);
       const offsetX = (viewportWidth - 400 * sceneScale) / 2;
       const offsetY = (viewportHeight - 400 * sceneScale) / 2;
       ctx.translate(offsetX, offsetY);
@@ -2333,9 +2045,7 @@ const ROUTE_INITIALIZERS = {
       const recordSnapshot = record ? localStorage.getItem(record.key) : null;
 
       function accountChangedDuringLogin() {
-        return Boolean(
-          record && localStorage.getItem(record.key) !== recordSnapshot,
-        );
+        return Boolean(record && localStorage.getItem(record.key) !== recordSnapshot);
       }
 
       submitButton.disabled = true;
@@ -2345,19 +2055,14 @@ const ROUTE_INITIALIZERS = {
         let needsMigration = false;
 
         if (savedUser?.credentials) {
-          passwordMatches = await verifyPasswordCredentials(
-            password,
-            savedUser.credentials,
-          );
+          passwordMatches = await verifyPasswordCredentials(password, savedUser.credentials);
           if (!loginActive) return;
           if (accountChangedDuringLogin()) {
             alert("That account changed. Please try logging in again.");
             return;
           }
           needsMigration =
-            passwordMatches &&
-            (savedUser.credentials.iterations < PASSWORD_ITERATIONS ||
-              typeof savedUser.password === "string");
+            passwordMatches && (savedUser.credentials.iterations < PASSWORD_ITERATIONS || typeof savedUser.password === "string");
         } else if (savedUser && typeof savedUser.password === "string") {
           passwordMatches = savedUser.password === password;
           needsMigration = passwordMatches;
@@ -2371,9 +2076,7 @@ const ROUTE_INITIALIZERS = {
         }
 
         if (needsMigration || !savedUser.accountId) {
-          const credentials = needsMigration
-            ? await createPasswordCredentials(password)
-            : savedUser.credentials;
+          const credentials = needsMigration ? await createPasswordCredentials(password) : savedUser.credentials;
           if (!loginActive) return;
           if (accountChangedDuringLogin()) {
             alert("That account changed. Please try logging in again.");
@@ -2430,9 +2133,7 @@ const ROUTE_INITIALIZERS = {
 
       const name = document.getElementById("name").value.trim();
       const surname = document.getElementById("surname").value.trim();
-      const username = normalizeUsername(
-        document.getElementById("username").value,
-      );
+      const username = normalizeUsername(document.getElementById("username").value);
       const password = document.getElementById("password").value;
 
       if (!name || !surname || !username) {
@@ -2569,24 +2270,20 @@ const ROUTE_INITIALIZERS = {
         text1: "Cristiano Ronaldo - 'Talent without working hard is nothing.'",
       },
       {
-        text2:
-          'Audrey Hepburn - "Nothing is impossible. The word itself even says I\'m possible!"',
+        text2: 'Audrey Hepburn - "Nothing is impossible. The word itself even says I\'m possible!"',
       },
       {
-        text3:
-          "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'",
+        text3: "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'",
       },
       {
-        text4:
-          "Thomas Edison - 'Many of life's failures are people who did not realize how close they were to success when they gave up.'",
+        text4: "Thomas Edison - 'Many of life's failures are people who did not realize how close they were to success when they gave up.'",
       },
       {
         text5: "Nelson Mandela - 'It always seems impossible until it's done.'",
       },
       { text6: "Wayne Gretzky - 'You miss 100% of the shots you don't take.'" },
       {
-        text7:
-          "Vincent Van Gogh - 'Great things are done by a series of small things brought together'",
+        text7: "Vincent Van Gogh - 'Great things are done by a series of small things brought together'",
       },
     ];
 
@@ -2645,9 +2342,7 @@ const ROUTE_INITIALIZERS = {
     if (todoList) {
       todoList.innerHTML = "";
 
-      const activeTodos = todayTodos
-        .filter((todo) => !isTodoCompleted(todo))
-        .slice(0, 5);
+      const activeTodos = todayTodos.filter((todo) => !isTodoCompleted(todo)).slice(0, 5);
 
       if (activeTodos.length === 0) {
         todoList.innerHTML = "<li>No to-dos due today 🎉</li>";
@@ -2655,9 +2350,7 @@ const ROUTE_INITIALIZERS = {
         activeTodos.forEach((todo) => {
           const li = document.createElement("li");
 
-          li.textContent = todo.date
-            ? `${todo.task} — ${todo.date}`
-            : `${todo.task} — No due date`;
+          li.textContent = todo.date ? `${todo.task} — ${todo.date}` : `${todo.task} — No due date`;
 
           todoList.appendChild(li);
         });
@@ -2678,10 +2371,7 @@ const ROUTE_INITIALIZERS = {
         .sort((a, b) => {
           const dateA = eventDateTime(a);
           const dateB = eventDateTime(b);
-          return (
-            (dateA?.getTime() ?? Number.POSITIVE_INFINITY) -
-            (dateB?.getTime() ?? Number.POSITIVE_INFINITY)
-          );
+          return (dateA?.getTime() ?? Number.POSITIVE_INFINITY) - (dateB?.getTime() ?? Number.POSITIVE_INFINITY);
         })
         .slice(0, 3);
 
@@ -2735,8 +2425,7 @@ const ROUTE_INITIALIZERS = {
       }
     });
 
-    const progress =
-      totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+    const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
     if (progressFill && progressText) {
       progressFill.style.width = progress + "%";
@@ -2747,10 +2436,7 @@ const ROUTE_INITIALIZERS = {
         progressBar.setAttribute("aria-valuemin", "0");
         progressBar.setAttribute("aria-valuemax", "100");
         progressBar.setAttribute("aria-valuenow", String(progress));
-        progressBar.setAttribute(
-          "aria-valuetext",
-          `${completedItems} of ${totalItems} items complete (${progress}%)`,
-        );
+        progressBar.setAttribute("aria-valuetext", `${completedItems} of ${totalItems} items complete (${progress}%)`);
       }
     }
 
@@ -2759,9 +2445,7 @@ const ROUTE_INITIALIZERS = {
     // ===========================
 
     const starContainer = document.getElementById("shootingStars");
-    const reduceHomeMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const reduceHomeMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function createStar() {
       if (!starContainer) return;
@@ -2832,17 +2516,13 @@ const ROUTE_INITIALIZERS = {
         const overdueDays = Math.abs(daysLeft);
 
         return {
-          text: `🔴 Overdue by ${overdueDays} ${
-            overdueDays === 1 ? "day" : "days"
-          }`,
+          text: `🔴 Overdue by ${overdueDays} ${overdueDays === 1 ? "day" : "days"}`,
           className: "status-overdue",
         };
       }
 
       if (daysLeft === 0) {
-        const dueDateTime = todo.time
-          ? parseLocalDateTime(todo.date, todo.time)
-          : null;
+        const dueDateTime = todo.time ? parseLocalDateTime(todo.date, todo.time) : null;
         if (dueDateTime && dueDateTime.getTime() < now.getTime()) {
           return {
             text: "Overdue",
@@ -2869,8 +2549,7 @@ const ROUTE_INITIALIZERS = {
     }
 
     function sortAlerts(a, b) {
-      const dateDifference =
-        dateKeyDayNumber(a.date) - dateKeyDayNumber(b.date);
+      const dateDifference = dateKeyDayNumber(a.date) - dateKeyDayNumber(b.date);
 
       if (dateDifference !== 0) {
         return dateDifference;
@@ -2883,9 +2562,7 @@ const ROUTE_INITIALIZERS = {
       alertList.innerHTML = "";
 
       // Ignore completed tasks and tasks with no due date.
-      const activeAlerts = todos
-        .filter((todo) => !isTodoCompleted(todo) && todo.date)
-        .sort(sortAlerts);
+      const activeAlerts = todos.filter((todo) => !isTodoCompleted(todo) && todo.date).sort(sortAlerts);
 
       if (activeAlerts.length === 0) {
         const emptyMessage = document.createElement("p");
@@ -2910,9 +2587,7 @@ const ROUTE_INITIALIZERS = {
         const dueDate = document.createElement("p");
         dueDate.classList.add("alert-date");
 
-        dueDate.textContent = todo.time
-          ? `📅 ${todo.date} at ${todo.time}`
-          : `📅 ${todo.date}`;
+        dueDate.textContent = todo.time ? `📅 ${todo.date} at ${todo.time}` : `📅 ${todo.date}`;
 
         const status = getStatus(todo);
 
@@ -2921,10 +2596,7 @@ const ROUTE_INITIALIZERS = {
         statusText.textContent = status.text;
 
         const priorityText = document.createElement("p");
-        priorityText.classList.add(
-          "alert-priority",
-          `priority-${todo.priority || "medium"}`,
-        );
+        priorityText.classList.add("alert-priority", `priority-${todo.priority || "medium"}`);
         priorityText.textContent = `Priority: ${formatPriority(todo.priority)}`;
 
         details.append(title, dueDate, statusText, priorityText);
@@ -2953,10 +2625,7 @@ const ROUTE_INITIALIZERS = {
         completeButton.type = "button";
         completeButton.textContent = "Mark Done";
 
-        completeButton.setAttribute(
-          "aria-label",
-          `Mark task complete: ${todo.task}`,
-        );
+        completeButton.setAttribute("aria-label", `Mark task complete: ${todo.task}`);
 
         completeButton.onclick = () => {
           todo.completed = true;
@@ -3091,8 +2760,7 @@ const ROUTE_INITIALIZERS = {
         const emptyMessage = document.createElement("p");
         emptyMessage.className = "todo-empty";
 
-        emptyMessage.textContent =
-          todos.length === 0 ? "No tasks yet" : `No ${activeFilter} tasks`;
+        emptyMessage.textContent = todos.length === 0 ? "No tasks yet" : `No ${activeFilter} tasks`;
 
         todoList.appendChild(emptyMessage);
         return;
@@ -3144,10 +2812,7 @@ const ROUTE_INITIALIZERS = {
         completeBtn.type = "button";
         completeBtn.textContent = isTodoCompleted(todo) ? "Undo" : "Done";
 
-        completeBtn.setAttribute(
-          "aria-label",
-          `${isTodoCompleted(todo) ? "Mark incomplete" : "Mark complete"}: ${todo.task}`,
-        );
+        completeBtn.setAttribute("aria-label", `${isTodoCompleted(todo) ? "Mark incomplete" : "Mark complete"}: ${todo.task}`);
 
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
@@ -3203,10 +2868,7 @@ const ROUTE_INITIALIZERS = {
         showTodos();
       };
 
-      button.setAttribute(
-        "aria-pressed",
-        String(button.dataset.filter === activeFilter),
-      );
+      button.setAttribute("aria-pressed", String(button.dataset.filter === activeFilter));
     });
 
     todoForm.onsubmit = (event) => {
@@ -3219,8 +2881,7 @@ const ROUTE_INITIALIZERS = {
       const priority = priorityInput.value;
       const notes = notesInput.value.trim();
 
-      const estimatedMinutes =
-        estimatedInput.value === "" ? null : Number(estimatedInput.value);
+      const estimatedMinutes = estimatedInput.value === "" ? null : Number(estimatedInput.value);
 
       if (task === "") {
         alert("Add a task name first!");
@@ -3232,10 +2893,7 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      if (
-        estimatedMinutes !== null &&
-        (!Number.isFinite(estimatedMinutes) || estimatedMinutes < 1)
-      ) {
+      if (estimatedMinutes !== null && (!Number.isFinite(estimatedMinutes) || estimatedMinutes < 1)) {
         alert("Estimated minutes must be at least 1.");
         return;
       }
@@ -3359,9 +3017,7 @@ const ROUTE_INITIALIZERS = {
       }
 
       if (result === false) {
-        return habit.type === "bad"
-          ? "Habit happened today ❌"
-          : "Missed today ❌";
+        return habit.type === "bad" ? "Habit happened today ❌" : "Missed today ❌";
       }
 
       return "Not checked today";
@@ -3411,8 +3067,7 @@ const ROUTE_INITIALIZERS = {
         const habitTypeText = document.createElement("div");
         habitTypeText.classList.add("habit-type");
 
-        habitTypeText.textContent =
-          habit.type === "bad" ? "Bad habit" : "Good habit";
+        habitTypeText.textContent = habit.type === "bad" ? "Bad habit" : "Good habit";
 
         const habitFrequencyText = document.createElement("div");
         habitFrequencyText.classList.add("habit-frequency");
@@ -3428,13 +3083,7 @@ const ROUTE_INITIALIZERS = {
         const streak = getCurrentStreak(habit);
         habitStreak.textContent = `🔥 ${streak} day${streak === 1 ? "" : "s"} streak`;
 
-        leftSide.append(
-          habitTitle,
-          habitTypeText,
-          habitFrequencyText,
-          habitResult,
-          habitStreak,
-        );
+        leftSide.append(habitTitle, habitTypeText, habitFrequencyText, habitResult, habitStreak);
 
         if (habit.goal && habit.unit) {
           const goalText = document.createElement("div");
@@ -3468,10 +3117,7 @@ const ROUTE_INITIALIZERS = {
         checkButton.type = "button";
         checkButton.textContent = "✅";
 
-        checkButton.setAttribute(
-          "aria-label",
-          `Mark ${habit.name} successful today`,
-        );
+        checkButton.setAttribute("aria-label", `Mark ${habit.name} successful today`);
         checkButton.disabled = !isScheduledToday;
 
         const xButton = document.createElement("button");
@@ -3555,10 +3201,7 @@ const ROUTE_INITIALIZERS = {
 
       const goal = habitGoal.value === "" ? null : Number(habitGoal.value);
 
-      const reminder =
-        noReminderInput && habitReminder && !noReminderInput.checked
-          ? habitReminder.value || null
-          : null;
+      const reminder = noReminderInput && habitReminder && !noReminderInput.checked ? habitReminder.value || null : null;
 
       if (name === "") {
         alert("Add a habit name first!");
@@ -3818,11 +3461,7 @@ const ROUTE_INITIALIZERS = {
           } else {
             td.textContent = date;
 
-            if (
-              date === today.getDate() &&
-              currentMonth === today.getMonth() &&
-              currentYear === today.getFullYear()
-            ) {
+            if (date === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
               td.classList.add("today");
             }
 
@@ -4009,22 +3648,14 @@ const ROUTE_INITIALIZERS = {
     function isTodayDate(day) {
       const currentDate = getCurrentDateParts();
 
-      return (
-        day === currentDate.day &&
-        currentMonth === currentDate.month &&
-        currentYear === currentDate.year
-      );
+      return day === currentDate.day && currentMonth === currentDate.month && currentYear === currentDate.year;
     }
 
     function isFutureDate(day) {
       const selectedDate = new Date(currentYear, currentMonth, day);
       const currentDate = getCurrentDateParts();
 
-      const realToday = new Date(
-        currentDate.year,
-        currentDate.month,
-        currentDate.day,
-      );
+      const realToday = new Date(currentDate.year, currentDate.month, currentDate.day);
 
       return selectedDate > realToday;
     }
@@ -4047,11 +3678,7 @@ const ROUTE_INITIALIZERS = {
       const currentUserId = getCurrentUserId();
       const dateKey = getEntryKey(day);
 
-      return (
-        journalEntries.find(
-          (entry) => entry.userId === currentUserId && entry.date === dateKey,
-        ) || null
-      );
+      return journalEntries.find((entry) => entry.userId === currentUserId && entry.date === dateKey) || null;
     }
 
     async function loadEntry(day) {
@@ -4068,8 +3695,7 @@ const ROUTE_INITIALIZERS = {
         // Temporary backup while the backend is still being tested.
         entry = readUserJson(getEntryKey(day), null);
 
-        statusMessage.textContent =
-          "Backend unavailable. Loaded the local backup.";
+        statusMessage.textContent = "Backend unavailable. Loaded the local backup.";
       }
 
       entryTitle.textContent = `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
@@ -4091,13 +3717,8 @@ const ROUTE_INITIALIZERS = {
       saveEntry.style.display = canEdit ? "block" : "none";
 
       if (!canEdit) {
-        statusMessage.textContent = isFutureDate(day)
-          ? "Future entries cannot be edited."
-          : "Past entries are read-only.";
-      } else if (
-        statusMessage.textContent !==
-        "Backend unavailable. Loaded the local backup."
-      ) {
+        statusMessage.textContent = isFutureDate(day) ? "Future entries cannot be edited." : "Past entries are read-only.";
+      } else if (statusMessage.textContent !== "Backend unavailable. Loaded the local backup.") {
         statusMessage.textContent = "";
       }
     }
@@ -4118,9 +3739,7 @@ const ROUTE_INITIALIZERS = {
 
         const dateKey = getEntryKey(day);
 
-        const hasBackendEntry = journalEntries.some(
-          (entry) => entry.userId === currentUserId && entry.date === dateKey,
-        );
+        const hasBackendEntry = journalEntries.some((entry) => entry.userId === currentUserId && entry.date === dateKey);
 
         if (hasBackendEntry) {
           button.classList.add("has-entry");
@@ -4178,9 +3797,7 @@ const ROUTE_INITIALIZERS = {
 
     saveEntry.onclick = async () => {
       if (!isTodayDate(selectedDay)) {
-        statusMessage.textContent = isFutureDate(selectedDay)
-          ? "Future entries cannot be edited."
-          : "Past entries are read-only.";
+        statusMessage.textContent = isFutureDate(selectedDay) ? "Future entries cannot be edited." : "Past entries are read-only.";
 
         return;
       }
@@ -4218,9 +3835,7 @@ const ROUTE_INITIALIZERS = {
         }
 
         const existingIndex = journalEntries.findIndex(
-          (savedEntry) =>
-            savedEntry.userId === entry.userId &&
-            savedEntry.date === entry.date,
+          (savedEntry) => savedEntry.userId === entry.userId && savedEntry.date === entry.date,
         );
 
         if (existingIndex === -1) {
@@ -4240,8 +3855,7 @@ const ROUTE_INITIALIZERS = {
         // Save locally if the backend fails.
         setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
 
-        statusMessage.textContent =
-          "Saved locally, but the backend could not be reached.";
+        statusMessage.textContent = "Saved locally, but the backend could not be reached.";
       } finally {
         saveEntry.disabled = false;
       }
@@ -4266,10 +3880,7 @@ const ROUTE_INITIALIZERS = {
 
     window.addEventListener("focus", refreshJournalDateRules);
 
-    document.addEventListener(
-      "visibilitychange",
-      handleJournalVisibilityChange,
-    );
+    document.addEventListener("visibilitychange", handleJournalVisibilityChange);
 
     async function initializeJournal() {
       await loadEntry(selectedDay);
@@ -4287,10 +3898,7 @@ const ROUTE_INITIALIZERS = {
     return () => {
       window.removeEventListener("focus", refreshJournalDateRules);
 
-      document.removeEventListener(
-        "visibilitychange",
-        handleJournalVisibilityChange,
-      );
+      document.removeEventListener("visibilitychange", handleJournalVisibilityChange);
 
       clearWindowRouteFunction("buildDateGrid", buildDateGrid);
       clearWindowRouteFunction("getEntryKey", getEntryKey);
@@ -4303,12 +3911,8 @@ const ROUTE_INITIALIZERS = {
     const menuNavigation = document.getElementById("nav");
     const buttons = document.querySelectorAll("#nav button");
 
-    const compactMenuQuery = window.matchMedia(
-      "(max-width: 768px), (max-height: 820px)",
-    );
-    const reduceMenuMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const compactMenuQuery = window.matchMedia("(max-width: 768px), (max-height: 820px)");
+    const reduceMenuMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     function clearOrbitPositions() {
       buttons.forEach((button) => {
@@ -4322,9 +3926,7 @@ const ROUTE_INITIALIZERS = {
 
     function updateOrbitRadius() {
       const firstButton = buttons[0];
-      radius = firstButton
-        ? firstButton.getBoundingClientRect().width * 1.65
-        : 0;
+      radius = firstButton ? firstButton.getBoundingClientRect().width * 1.65 : 0;
     }
 
     let angle = 0;
@@ -4435,9 +4037,7 @@ const ROUTE_INITIALIZERS = {
     }
 
     function resetSettings() {
-      const confirmReset = confirm(
-        configuredAppText("Reset Ascendra settings back to default?"),
-      );
+      const confirmReset = confirm(configuredAppText("Reset Ascendra settings back to default?"));
 
       if (confirmReset) {
         removeUserItem("ascendraSettings");
@@ -4447,17 +4047,11 @@ const ROUTE_INITIALIZERS = {
     }
 
     function deleteAllData() {
-      const warning = prompt(
-        configuredAppText("Type DELETE to delete all local Ascendra data."),
-      );
+      const warning = prompt(configuredAppText("Type DELETE to delete all local Ascendra data."));
 
       if (warning === "DELETE") {
         deleteCurrentAccountData();
-        alert(
-          configuredAppText(
-            "This account and its Ascendra data have been deleted.",
-          ),
-        );
+        alert(configuredAppText("This account and its Ascendra data have been deleted."));
         navigate("welcome");
       } else if (warning !== null) {
         alert("Delete cancelled.");
@@ -4468,8 +4062,7 @@ const ROUTE_INITIALIZERS = {
     window.deleteAllData = deleteAllData;
 
     return () => {
-      if (modeToggle)
-        modeToggle.removeEventListener("change", handleModeChange);
+      if (modeToggle) modeToggle.removeEventListener("change", handleModeChange);
       clearWindowRouteFunction("resetSettings", resetSettings);
       clearWindowRouteFunction("deleteAllData", deleteAllData);
     };
@@ -4482,36 +4075,27 @@ const ROUTE_INITIALIZERS = {
 
     const remainingTasksElement = document.getElementById("remaining-tasks");
 
-    const taskCompletionRateElement = document.getElementById(
-      "task-completion-rate",
-    );
+    const taskCompletionRateElement = document.getElementById("task-completion-rate");
 
     const taskProgressLabel = document.getElementById("task-progress-label");
 
     const taskProgressFill = document.getElementById("task-progress-fill");
 
-    const taskProgressMessage = document.getElementById(
-      "task-progress-message",
-    );
+    const taskProgressMessage = document.getElementById("task-progress-message");
 
     const totalHabitsElement = document.getElementById("total-habits");
 
-    const successfulHabitDaysElement = document.getElementById(
-      "successful-habit-days",
-    );
+    const successfulHabitDaysElement = document.getElementById("successful-habit-days");
 
     const missedHabitDaysElement = document.getElementById("missed-habit-days");
 
-    const habitSuccessRateElement =
-      document.getElementById("habit-success-rate");
+    const habitSuccessRateElement = document.getElementById("habit-success-rate");
 
     const habitProgressLabel = document.getElementById("habit-progress-label");
 
     const habitProgressFill = document.getElementById("habit-progress-fill");
 
-    const habitProgressMessage = document.getElementById(
-      "habit-progress-message",
-    );
+    const habitProgressMessage = document.getElementById("habit-progress-message");
 
     const dueTodayElement = document.getElementById("due-today");
 
@@ -4519,25 +4103,17 @@ const ROUTE_INITIALIZERS = {
 
     const futureTasksElement = document.getElementById("future-tasks");
 
-    const habitsSuccessfulTodayElement = document.getElementById(
-      "habits-successful-today",
-    );
+    const habitsSuccessfulTodayElement = document.getElementById("habits-successful-today");
 
-    const habitsMissedTodayElement = document.getElementById(
-      "habits-missed-today",
-    );
+    const habitsMissedTodayElement = document.getElementById("habits-missed-today");
 
-    const habitsUncheckedTodayElement = document.getElementById(
-      "habits-unchecked-today",
-    );
+    const habitsUncheckedTodayElement = document.getElementById("habits-unchecked-today");
 
     const achievementIcon = document.getElementById("achievement-icon");
 
     const achievementTitle = document.getElementById("achievement-title");
 
-    const achievementDescription = document.getElementById(
-      "achievement-description",
-    );
+    const achievementDescription = document.getElementById("achievement-description");
 
     const recentTasksContainer = document.getElementById("recent-tasks");
 
@@ -4602,10 +4178,7 @@ const ROUTE_INITIALIZERS = {
         taskProgressTrack.setAttribute("aria-valuemin", "0");
         taskProgressTrack.setAttribute("aria-valuemax", "100");
         taskProgressTrack.setAttribute("aria-valuenow", String(completionRate));
-        taskProgressTrack.setAttribute(
-          "aria-valuetext",
-          `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`,
-        );
+        taskProgressTrack.setAttribute("aria-valuetext", `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`);
       }
 
       updateTaskProgressMessage(totalTasks, completedTasks, completionRate);
@@ -4613,26 +4186,17 @@ const ROUTE_INITIALIZERS = {
       return completedTasks;
     }
 
-    function updateTaskProgressMessage(
-      totalTasks,
-      completedTasks,
-      completionRate,
-    ) {
+    function updateTaskProgressMessage(totalTasks, completedTasks, completionRate) {
       if (totalTasks === 0) {
-        taskProgressMessage.textContent =
-          "Add your first task to begin tracking progress.";
+        taskProgressMessage.textContent = "Add your first task to begin tracking progress.";
       } else if (completionRate === 100) {
-        taskProgressMessage.textContent =
-          "Every task is complete. Absolute productivity monster.";
+        taskProgressMessage.textContent = "Every task is complete. Absolute productivity monster.";
       } else if (completionRate >= 75) {
-        taskProgressMessage.textContent =
-          "You are nearly there. Finish strong.";
+        taskProgressMessage.textContent = "You are nearly there. Finish strong.";
       } else if (completionRate >= 50) {
-        taskProgressMessage.textContent =
-          "More than halfway complete. Nice work.";
+        taskProgressMessage.textContent = "More than halfway complete. Nice work.";
       } else if (completedTasks > 0) {
-        taskProgressMessage.textContent =
-          "Progress is progress. Keep stacking wins.";
+        taskProgressMessage.textContent = "Progress is progress. Keep stacking wins.";
       } else {
         taskProgressMessage.textContent = "Your tasks are ready when you are.";
       }
@@ -4685,9 +4249,7 @@ const ROUTE_INITIALIZERS = {
       let habitSuccessRate = 0;
 
       if (totalCheckIns > 0) {
-        habitSuccessRate = Math.round(
-          (successfulHabitDays / totalCheckIns) * 100,
-        );
+        habitSuccessRate = Math.round((successfulHabitDays / totalCheckIns) * 100);
       }
 
       totalHabitsElement.textContent = habits.length;
@@ -4701,51 +4263,34 @@ const ROUTE_INITIALIZERS = {
       habitProgressLabel.textContent = habitSuccessRate + "%";
 
       habitProgressFill.style.width = habitSuccessRate + "%";
-      const habitProgressTrack = document.getElementById(
-        "habit-progress-track",
-      );
+      const habitProgressTrack = document.getElementById("habit-progress-track");
       if (habitProgressTrack) {
         habitProgressTrack.setAttribute("role", "progressbar");
         habitProgressTrack.setAttribute("aria-valuemin", "0");
         habitProgressTrack.setAttribute("aria-valuemax", "100");
-        habitProgressTrack.setAttribute(
-          "aria-valuenow",
-          String(habitSuccessRate),
-        );
+        habitProgressTrack.setAttribute("aria-valuenow", String(habitSuccessRate));
         habitProgressTrack.setAttribute(
           "aria-valuetext",
           `${successfulHabitDays} of ${totalCheckIns} scheduled check-ins successful (${habitSuccessRate}%)`,
         );
       }
 
-      updateHabitProgressMessage(
-        habits.length,
-        totalCheckIns,
-        habitSuccessRate,
-      );
+      updateHabitProgressMessage(habits.length, totalCheckIns, habitSuccessRate);
 
       return successfulHabitDays;
     }
 
-    function updateHabitProgressMessage(
-      totalHabits,
-      totalCheckIns,
-      habitSuccessRate,
-    ) {
+    function updateHabitProgressMessage(totalHabits, totalCheckIns, habitSuccessRate) {
       if (totalHabits === 0) {
-        habitProgressMessage.textContent =
-          "Add your first habit to begin tracking progress.";
+        habitProgressMessage.textContent = "Add your first habit to begin tracking progress.";
       } else if (totalCheckIns === 0) {
-        habitProgressMessage.textContent =
-          "Check off a habit to begin tracking it.";
+        habitProgressMessage.textContent = "Check off a habit to begin tracking it.";
       } else if (habitSuccessRate === 100) {
-        habitProgressMessage.textContent =
-          "Perfect habit record so far. Huge win.";
+        habitProgressMessage.textContent = "Perfect habit record so far. Huge win.";
       } else if (habitSuccessRate >= 75) {
         habitProgressMessage.textContent = "Your habits are looking strong.";
       } else if (habitSuccessRate >= 50) {
-        habitProgressMessage.textContent =
-          "You are building consistency. Keep going.";
+        habitProgressMessage.textContent = "You are building consistency. Keep going.";
       } else {
         habitProgressMessage.textContent = "Every new day is another chance.";
       }
@@ -4821,8 +4366,7 @@ const ROUTE_INITIALIZERS = {
 
         emptyMessage.classList.add("empty-message");
 
-        emptyMessage.textContent =
-          "No tasks yet. Your productivity empire awaits.";
+        emptyMessage.textContent = "No tasks yet. Your productivity empire awaits.";
 
         recentTasksContainer.appendChild(emptyMessage);
 
@@ -4992,8 +4536,7 @@ const ROUTE_INITIALIZERS = {
       const seconds = remainingSeconds % 60;
       timerCard.setAttribute(
         "aria-label",
-        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ` +
-          `${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
+        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ` + `${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
       );
     }
 
@@ -5022,14 +4565,11 @@ const ROUTE_INITIALIZERS = {
       announceProgressionReward(reward);
 
       if (!reward.saved) {
-        timerStatus.textContent =
-          "Session complete. Your progress could not be saved.";
+        timerStatus.textContent = "Session complete. Your progress could not be saved.";
         return;
       }
 
-      const unlockedNames = reward.newlyUnlocked
-        .map((achievement) => achievement.name)
-        .join(" and ");
+      const unlockedNames = reward.newlyUnlocked.map((achievement) => achievement.name).join(" and ");
       timerStatus.textContent = unlockedNames
         ? `Session complete! Achievement unlocked: ${unlockedNames}.`
         : `Session complete! You earned ${reward.xpAwarded} XP.`;
@@ -5047,8 +4587,7 @@ const ROUTE_INITIALIZERS = {
       if (!sessionInProgress || remainingSeconds <= 0) {
         const duration = readDuration();
         if (duration === null) {
-          timerStatus.textContent =
-            "Enter a whole number from 1 to 120 minutes.";
+          timerStatus.textContent = "Enter a whole number from 1 to 120 minutes.";
           elapsedInput.focus();
           return;
         }
@@ -5136,14 +4675,9 @@ const ROUTE_INITIALIZERS = {
 
       const savedUsername = getActiveIdentityItem("username") || "ascendrauser";
 
-      const savedBio =
-        getUserItem("ascendra-profile-bio", profileOwner) ||
-        "Becoming better, one day at a time.";
+      const savedBio = getUserItem("ascendra-profile-bio", profileOwner) || "Becoming better, one day at a time.";
 
-      const savedPicture = getUserItem(
-        "ascendra-profile-picture",
-        profileOwner,
-      );
+      const savedPicture = getUserItem("ascendra-profile-picture", profileOwner);
 
       nameInput.value = savedName;
       surnameInput.value = savedSurname;
@@ -5168,9 +4702,7 @@ const ROUTE_INITIALIZERS = {
 
       streakNumber.textContent = String(longestCurrentStreak);
       tasksNumber.textContent = String(completedTasks);
-      achievementsNumber.textContent = String(
-        getUnlockedAchievements(progression.state).length,
-      );
+      achievementsNumber.textContent = String(getUnlockedAchievements(progression.state).length);
       renderProgressionSummary(progression.state);
 
       if (savedPicture) {
@@ -5231,9 +4763,7 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      const accountRecord = profileOwner
-        ? findStoredAccount(oldUsername) || findStoredAccount(profileOwner)
-        : null;
+      const accountRecord = profileOwner ? findStoredAccount(oldUsername) || findStoredAccount(profileOwner) : null;
       const usernameRecord = findStoredAccount(username);
 
       if (usernameRecord && usernameRecord.key !== accountRecord?.key) {
@@ -5241,27 +4771,17 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      if (
-        accountRecord?.legacy &&
-        oldUsername.toLowerCase() !== username.toLowerCase()
-      ) {
-        showMessage(
-          "Log in once before changing this legacy username.",
-          "error",
-        );
+      if (accountRecord?.legacy && oldUsername.toLowerCase() !== username.toLowerCase()) {
+        showMessage("Log in once before changing this legacy username.", "error");
         return;
       }
 
       if (profileOwner && !accountRecord) {
-        showMessage(
-          "Account data was not found. Please log in again.",
-          "error",
-        );
+        showMessage("Account data was not found. Please log in again.", "error");
         return;
       }
 
-      const updatedAccountId =
-        accountRecord?.account?.accountId || getActiveIdentityItem("accountId");
+      const updatedAccountId = accountRecord?.account?.accountId || getActiveIdentityItem("accountId");
 
       try {
         if (accountRecord) {
@@ -5272,12 +4792,7 @@ const ROUTE_INITIALIZERS = {
             username,
           };
 
-          renameStoredAccountAndData(
-            accountRecord,
-            updatedUser,
-            oldUsername,
-            username,
-          );
+          renameStoredAccountAndData(accountRecord, updatedUser, oldUsername, username);
         }
 
         const updatedOwner = accountRecord ? username : "";
@@ -5311,10 +4826,7 @@ const ROUTE_INITIALIZERS = {
         showMessage("Profile saved successfully!", "success");
       } catch (error) {
         console.error("Could not safely save the profile:", error);
-        showMessage(
-          error.message || "Could not safely save your profile.",
-          "error",
-        );
+        showMessage(error.message || "Could not safely save your profile.", "error");
       }
     }
 
@@ -5414,12 +4926,8 @@ const ROUTE_INITIALIZERS = {
 
       if (!reward.xpAwarded) return resultText;
 
-      const unlockedNames = reward.newlyUnlocked
-        .map((achievement) => achievement.name)
-        .join(" and ");
-      const unlockMessage = unlockedNames
-        ? ` Achievement unlocked \u2014 ${unlockedNames}`
-        : " First-use reward earned";
+      const unlockedNames = reward.newlyUnlocked.map((achievement) => achievement.name).join(" and ");
+      const unlockMessage = unlockedNames ? ` Achievement unlocked \u2014 ${unlockedNames}` : " First-use reward earned";
 
       return `${resultText}${unlockMessage} (+${reward.xpAwarded} XP)`;
     }
@@ -5431,10 +4939,7 @@ const ROUTE_INITIALIZERS = {
 
     function rollDie() {
       const result = Math.floor(Math.random() * 6) + 1;
-      diceOutput.textContent = addMiniToolReward(
-        "You rolled a " + result + ".",
-        "dice",
-      );
+      diceOutput.textContent = addMiniToolReward("You rolled a " + result + ".", "dice");
     }
 
     function generateRandomNumber() {
@@ -5451,14 +4956,12 @@ const ROUTE_INITIALIZERS = {
       const range = maximum - minimum + 1;
 
       if (!Number.isSafeInteger(minimum) || !Number.isSafeInteger(maximum)) {
-        numberOutput.textContent =
-          "Use whole numbers within the safe number range.";
+        numberOutput.textContent = "Use whole numbers within the safe number range.";
         return;
       }
 
       if (minimum > maximum) {
-        numberOutput.textContent =
-          "The minimum must be less than or equal to the maximum.";
+        numberOutput.textContent = "The minimum must be less than or equal to the maximum.";
         return;
       }
 
@@ -5469,10 +4972,7 @@ const ROUTE_INITIALIZERS = {
 
       const result = Math.floor(Math.random() * range) + minimum;
 
-      numberOutput.textContent = addMiniToolReward(
-        "Your random number is " + result + ".",
-        "random-number",
-      );
+      numberOutput.textContent = addMiniToolReward("Your random number is " + result + ".", "random-number");
     }
 
     flipButton.addEventListener("click", flipCoin);
@@ -5496,11 +4996,7 @@ const ROUTE_INITIALIZERS = {
 
 const initialRoute = getRoute();
 if (location.hash !== canonicalRouteHash(initialRoute)) {
-  history.replaceState(
-    { route: initialRoute },
-    "",
-    canonicalRouteHash(initialRoute),
-  );
+  history.replaceState({ route: initialRoute }, "", canonicalRouteHash(initialRoute));
 }
 renderRoute(initialRoute, { focusRoute: false });
 
@@ -5543,9 +5039,7 @@ function openSearch() {
     return;
   }
 
-  const activeRouteDialog = app.querySelector(
-    '[role="dialog"][aria-hidden="false"], dialog[open], .modal[aria-hidden="false"]',
-  );
+  const activeRouteDialog = app.querySelector('[role="dialog"][aria-hidden="false"], dialog[open], .modal[aria-hidden="false"]');
   if (activeRouteDialog) {
     console.info("Close the current dialog before opening Search.");
     return;
@@ -5611,11 +5105,7 @@ document.addEventListener("input", function (event) {
 });
 
 document.addEventListener("keydown", function (event) {
-  if (
-    (event.ctrlKey || event.metaKey) &&
-    event.shiftKey &&
-    event.key.toLowerCase() === "k"
-  ) {
+  if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "k") {
     event.preventDefault();
     openSearch();
     return;
@@ -5626,9 +5116,7 @@ document.addEventListener("keydown", function (event) {
 
   if (event.key === "Tab") {
     const focusableElements = [
-      ...overlay.querySelectorAll(
-        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-      ),
+      ...overlay.querySelectorAll('button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'),
     ].filter((element) => !element.hidden);
     const firstElement = focusableElements[0];
     const lastElement = focusableElements.at(-1);
@@ -5654,13 +5142,12 @@ document.addEventListener("keydown", function (event) {
 
 document.addEventListener("click", function (event) {
   const { overlay } = getSearchElements();
-  if (
-    overlay &&
-    (event.target === overlay || event.target.closest("#searchClose"))
-  ) {
+  if (overlay && (event.target === overlay || event.target.closest("#searchClose"))) {
     closeSearch();
   }
 });
 
 window.openSearch = openSearch;
 window.closeSearch = closeSearch;
+
+
