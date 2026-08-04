@@ -5185,14 +5185,12 @@ const greeting = responses.greeting[Math.floor(Math.random() * responses.greetin
 let aiMessage = document.getElementById("ai-message");
 
 let aiSpeakingTimer = null;
+let lastAiSpokenAt = 0;
+const aiRecentMessages = [];
+const AI_MESSAGE_COOLDOWN = 12000;
+const AI_MESSAGE_HISTORY_LIMIT = 4;
 
-function responseMessage(category, context = {}) {
-  const responseGroup = responses[category];
-  if (!Array.isArray(responseGroup) || responseGroup.length === 0) return "";
-
-  const responseIndex = Math.floor(Math.random() * responseGroup.length);
-  const responseFactory = responseGroup[responseIndex];
-
+function buildResponseMessage(category, responseFactory, responseIndex, context) {
   if (category === "taskComplete") {
     if (responseIndex === 3) return responseFactory(context.username);
     if (responseIndex === 4) return responseFactory(context.remainingTodos);
@@ -5210,29 +5208,51 @@ function responseMessage(category, context = {}) {
   return responseFactory();
 }
 
-function showAscendraAIMessage(message) {
+function responseMessage(category, context = {}) {
+  const responseGroup = responses[category];
+  if (!Array.isArray(responseGroup) || responseGroup.length === 0) return "";
+
+  const candidates = responseGroup.map((responseFactory, responseIndex) =>
+    buildResponseMessage(category, responseFactory, responseIndex, context),
+  );
+  const freshCandidates = candidates.filter((message) => !aiRecentMessages.includes(message));
+  const availableCandidates = freshCandidates.length > 0 ? freshCandidates : candidates;
+
+  return availableCandidates[Math.floor(Math.random() * availableCandidates.length)];
+}
+
+function showAscendraAIMessage(message, options = {}) {
   const companion = document.getElementById("ascendra-ai");
   const messageElement = document.getElementById("ai-message");
   const cleanMessage = String(message || "").trim();
+  const now = Date.now();
 
-  if (!companion || !messageElement || cleanMessage === "") return;
+  if (!companion || !messageElement || cleanMessage === "") return false;
+  if (!options.bypassCooldown && now - lastAiSpokenAt < AI_MESSAGE_COOLDOWN) return false;
 
   changeText(messageElement, cleanMessage);
   companion.classList.remove("is-roaming", "is-napping");
   companion.classList.add("is-speaking");
+  lastAiSpokenAt = now;
+
+  aiRecentMessages.push(cleanMessage);
+  if (aiRecentMessages.length > AI_MESSAGE_HISTORY_LIMIT) aiRecentMessages.shift();
 
   clearTimeout(aiSpeakingTimer);
   const speakingDuration = Math.min(6000, Math.max(1700, cleanMessage.length * 48));
   aiSpeakingTimer = window.setTimeout(() => {
     companion.classList.remove("is-speaking");
   }, speakingDuration);
+
+  return true;
 }
 
 function showAscendraAIResponse(category, context = {}) {
-  showAscendraAIMessage(responseMessage(category, context));
+  const isMilestoneResponse = ["taskComplete", "allTasksComplete", "habitComplete"].includes(category);
+  return showAscendraAIMessage(responseMessage(category, context), { bypassCooldown: isMilestoneResponse });
 }
 
-showAscendraAIMessage(greeting);
+showAscendraAIMessage(greeting, { bypassCooldown: true });
 
 function showIdleAscendraAIResponse() {
   const route = getRoute();
@@ -5245,6 +5265,93 @@ function showIdleAscendraAIResponse() {
   } else {
     showAscendraAIResponse("motivation");
   }
+}
+
+function chooseFreshAiChatReply(replies) {
+  const availableReplies = replies.filter((reply) => !aiRecentMessages.includes(reply));
+  const replyPool = availableReplies.length > 0 ? availableReplies : replies;
+  return replyPool[Math.floor(Math.random() * replyPool.length)];
+}
+
+function ascendraAIReply(question) {
+  const normalizedQuestion = question.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim();
+  const navigationIntent = /^(open|go to|show|take me to)\s+/.test(normalizedQuestion);
+
+  if (/\b(what can you do|help|commands|abilities)\b/.test(normalizedQuestion)) {
+    return "I can open Ascendra pages, count your remaining tasks, check how many habits you have, and explain features. Try ‘open journal’ or ‘how many tasks?’";
+  }
+
+  if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(normalizedQuestion)) {
+    return chooseFreshAiChatReply([
+      `Hey ${username}! What are we working on?`,
+      "Hi! Ask what I can do, or tell me which Ascendra page to open.",
+      "Hello! Tiny fox, ready to help.",
+    ]);
+  }
+
+  if (/\b(thanks|thank you|thx)\b/.test(normalizedQuestion)) {
+    return chooseFreshAiChatReply(["You’re welcome!", "Anytime!", "Happy to help!"]);
+  }
+
+  if (/\b(task|tasks|todo|to-do|to-dos)\b/.test(normalizedQuestion) && !navigationIntent) {
+    const remainingTodos = getUserArray("todos").filter((todo) => !isTodoCompleted(todo)).length;
+    return remainingTodos === 0
+      ? "You have no unfinished tasks. Nice work!"
+      : `You have ${remainingTodos} unfinished ${remainingTodos === 1 ? "task" : "tasks"}.`;
+  }
+
+  if (/\b(habit|habits)\b/.test(normalizedQuestion) && !navigationIntent) {
+    const habitCount = getUserArray("habits").length;
+    return habitCount === 0
+      ? "You haven’t added any habits yet. Open Habits when you’re ready to start one."
+      : `You currently have ${habitCount} ${habitCount === 1 ? "habit" : "habits"} set up.`;
+  }
+
+  if (/\b(journal|privacy|private)\b/.test(normalizedQuestion) && !navigationIntent) {
+    return "Your journal entries are saved in this browser’s local storage. They are not an online account backup, so avoid entering sensitive secrets.";
+  }
+
+  if (/\b(achievement|achievements|badge|badges|xp)\b/.test(normalizedQuestion) && !navigationIntent) {
+    return "Open Achievements to see your XP, unlocked achievements, and badges. Statistics shows your broader progress.";
+  }
+
+  if (navigationIntent) {
+    const requestedPage = normalizedQuestion.replace(/^(open|go to|show|take me to)\s+/, "").replace(/\s+page$/, "");
+    const pageAliases = { tasks: "To-Dos", todos: "To-Dos", "to dos": "To-Dos", stats: "Statistics", tools: "Mini Tools" };
+    const requestedName = pageAliases[requestedPage] || requestedPage;
+    const destination = searchablePages.find((page) =>
+      [page.name, page.route].some((value) => value.toLowerCase().replace(/[^a-z0-9]/g, "") === requestedName.toLowerCase().replace(/[^a-z0-9]/g, "")),
+    );
+
+    if (destination) {
+      location.hash = canonicalRouteHash(destination.route);
+      return `Opening ${destination.name}.`;
+    }
+
+    return "I couldn’t find that page. Try ‘open journal,’ ‘open habits,’ or ‘open settings.’";
+  }
+
+  return chooseFreshAiChatReply([
+    "I’m still learning that one. Ask what I can do to see my current tricks.",
+    "I don’t know that yet, but I can help with Ascendra pages, tasks, habits, journaling, achievements, and XP.",
+    "My fox brain is focused on Ascendra for now. Try asking me to open a page or check your tasks.",
+  ]);
+}
+
+function initializeAscendraAIChat() {
+  const form = document.getElementById("ai-chat-form");
+  const input = document.getElementById("ai-chat-input");
+
+  if (!form || !input) return;
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+
+    input.value = "";
+    showAscendraAIMessage(ascendraAIReply(question), { bypassCooldown: true });
+  });
 }
 
 function initializeAscendraAI() {
@@ -5317,7 +5424,7 @@ function initializeAscendraAI() {
 
   function visibleLandingButtons() {
     return [...document.querySelectorAll("button:not([disabled])")].filter((button) => {
-      if (button.closest("[hidden], .search-overlay, .popup")) return false;
+      if (button.closest("#ascendra-ai, [hidden], .search-overlay, .popup")) return false;
 
       const style = getComputedStyle(button);
       const box = button.getBoundingClientRect();
@@ -5381,9 +5488,19 @@ function initializeAscendraAI() {
     }
   }
 
-  function noteInteraction() {
+  function noteInteraction(event) {
     lastInteraction = Date.now();
     lastTarget = null;
+
+    if (event.target instanceof Element && event.target.closest("#ascendra-ai")) {
+      clearTimeout(homeTimer);
+      clearIdleAnimation();
+      companion.classList.remove("is-roaming", "is-jumping");
+      homePosition();
+      scheduleIdleAnimation(4000);
+      return;
+    }
+
     returnHome();
   }
 
@@ -5405,4 +5522,5 @@ function initializeAscendraAI() {
   }, { once: true });
 }
 
+initializeAscendraAIChat();
 initializeAscendraAI();

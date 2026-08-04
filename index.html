@@ -1763,14 +1763,35 @@
 
     <div id="ascendra-ai">
       <div id="speech-bubble">
-        <p id="ai-message"></p>
+        <p aria-live="polite" id="ai-message"></p>
+        <form aria-label="Ask the Ascendra fox" id="ai-chat-form">
+          <label class="sr-only" for="ai-chat-input">Ask the Ascendra fox</label>
+          <input
+            aria-describedby="ai-chat-hint"
+            autocomplete="off"
+            id="ai-chat-input"
+            maxlength="160"
+            placeholder="Ask the fox..."
+            type="text"
+          />
+          <button aria-label="Send message to the fox" type="submit">Send</button>
+        </form>
+        <span class="sr-only" id="ai-chat-hint">Ask what the fox can do or tell it to open an Ascendra page.</span>
       </div>
       <span aria-hidden="true" id="ai-avatar">
-        <span class="ai-mouth"></span>
-        <span class="ai-legs">
-          <span class="ai-leg"></span>
-          <span class="ai-leg"></span>
+        <span class="ai-tail"></span>
+        <span class="ai-body"></span>
+        <span class="ai-leg ai-leg-back-left"></span>
+        <span class="ai-leg ai-leg-back-right"></span>
+        <span class="ai-leg ai-leg-front-left"></span>
+        <span class="ai-leg ai-leg-front-right"></span>
+        <span class="ai-head"></span>
+        <span class="ai-ears">
+          <span class="ai-ear ai-ear-left"></span>
+          <span class="ai-ear ai-ear-right"></span>
         </span>
+        <span class="ai-eyes"></span>
+        <span class="ai-mouth"></span>
       </span>
     </div>
   </body>
