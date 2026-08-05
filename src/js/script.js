@@ -5274,7 +5274,10 @@ function chooseFreshAiChatReply(replies) {
 }
 
 function ascendraAIReply(question) {
-  const normalizedQuestion = question.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim();
+  const normalizedQuestion = question
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim();
   const navigationIntent = /^(open|go to|show|take me to)\s+/.test(normalizedQuestion);
 
   if (/\b(what can you do|help|commands|abilities)\b/.test(normalizedQuestion)) {
@@ -5320,7 +5323,9 @@ function ascendraAIReply(question) {
     const pageAliases = { tasks: "To-Dos", todos: "To-Dos", "to dos": "To-Dos", stats: "Statistics", tools: "Mini Tools" };
     const requestedName = pageAliases[requestedPage] || requestedPage;
     const destination = searchablePages.find((page) =>
-      [page.name, page.route].some((value) => value.toLowerCase().replace(/[^a-z0-9]/g, "") === requestedName.toLowerCase().replace(/[^a-z0-9]/g, "")),
+      [page.name, page.route].some(
+        (value) => value.toLowerCase().replace(/[^a-z0-9]/g, "") === requestedName.toLowerCase().replace(/[^a-z0-9]/g, ""),
+      ),
     );
 
     if (destination) {
@@ -5363,12 +5368,7 @@ function initializeAscendraAI() {
   const idleBeforeRoaming = 6500;
   const roamingInterval = 9000;
   const landingOverlap = 10;
-  const idleAnimationClasses = [
-    "is-tail-wagging",
-    "is-looking-around",
-    "is-stretching",
-    "is-napping",
-  ];
+  const idleAnimationClasses = ["is-tail-wagging", "is-looking-around", "is-stretching", "is-napping"];
   let lastInteraction = Date.now();
   let lastTarget = null;
   let movementTimer = null;
@@ -5444,11 +5444,7 @@ function initializeAscendraAI() {
   }
 
   function jumpToButton() {
-    if (
-      reduceMotion.matches ||
-      document.hidden ||
-      Date.now() - lastInteraction < idleBeforeRoaming
-    ) {
+    if (reduceMotion.matches || document.hidden || Date.now() - lastInteraction < idleBeforeRoaming) {
       return;
     }
 
@@ -5489,6 +5485,11 @@ function initializeAscendraAI() {
   }
 
   function noteInteraction(event) {
+    // Ignore interactions inside the AI chat
+    if (event.target instanceof Element && event.target.closest("#ai-chat-form")) {
+      return;
+    }
+
     lastInteraction = Date.now();
     lastTarget = null;
 
@@ -5503,7 +5504,6 @@ function initializeAscendraAI() {
 
     returnHome();
   }
-
   ["pointerdown", "keydown", "focusin", "wheel", "touchstart"].forEach((eventName) => {
     document.addEventListener(eventName, noteInteraction, { passive: true });
   });
@@ -5514,12 +5514,16 @@ function initializeAscendraAI() {
   movementTimer = window.setInterval(jumpToButton, roamingInterval);
   scheduleIdleAnimation();
 
-  window.addEventListener("pagehide", () => {
-    clearInterval(movementTimer);
-    clearTimeout(homeTimer);
-    clearTimeout(idleAnimationTimer);
-    clearTimeout(aiSpeakingTimer);
-  }, { once: true });
+  window.addEventListener(
+    "pagehide",
+    () => {
+      clearInterval(movementTimer);
+      clearTimeout(homeTimer);
+      clearTimeout(idleAnimationTimer);
+      clearTimeout(aiSpeakingTimer);
+    },
+    { once: true },
+  );
 }
 
 initializeAscendraAIChat();
