@@ -5492,8 +5492,10 @@ function initializeAscendraAI() {
 
     lastInteraction = Date.now();
     lastTarget = null;
+    const interactionIsInsideChat = event.target instanceof Element && event.target.closest("#ascendra-ai");
+    const chatStillHasFocus = companion.contains(document.activeElement);
 
-    if (event.target instanceof Element && event.target.closest("#ascendra-ai")) {
+    if (interactionIsInsideChat || chatStillHasFocus) {
       clearTimeout(homeTimer);
       clearIdleAnimation();
       companion.classList.remove("is-roaming", "is-jumping");
@@ -5509,6 +5511,7 @@ function initializeAscendraAI() {
   });
   window.addEventListener("scroll", noteInteraction, { passive: true });
   window.addEventListener("resize", noteInteraction, { passive: true });
+  window.visualViewport?.addEventListener("resize", noteInteraction, { passive: true });
   reduceMotion.addEventListener("change", noteInteraction);
 
   movementTimer = window.setInterval(jumpToButton, roamingInterval);
