@@ -1,4 +1,4 @@
-WHY CAN'T I ACCESS ASCENDRA WITH THE URL ANYMORE?!!!!!
+WHY CAN'T I ACCESS ASCENDRA WITH THE URL ANYMORE?!!!!! GO TO ascendraofficial.github.io/Ascendra/
 
 
 
@@ -151,6 +151,9 @@ Jayden:
 
 Jayden: 
 "Wait. Genius idea. What if we make the Ascendra fox face "move" with word symbols like '•' / '_' / - . - ?, it will save us js trouble"
+
+Declan:
+“If you want to see the backend just go change the code branch to real or development, then go to backend/storage/journal.json for the storage and backend/app.py for the backend code”
 ────────────────────────────────────────
 
 🚀 Version Roadmap
