@@ -19,6 +19,10 @@
   
 - “Forestal” by Liborio Conti  
   Used in Ascendra’s Study Space under Liborio Conti’s royalty-free music terms.
+
+## Beta Testers
+
+- Daniel Lim
   
 ## Special Thanks
 
