@@ -141,6 +141,12 @@ Declan:
 "the study space link was supposed to go to the page, i have that added now under the development branch, it will update in the new 
 Horizon update. The todos will stand out more in the new update, and the last one, I'll fix when I'm doing backend. Since i just made a .py file in 
 a new backend folder. Thanks for finding bugs in Ascendra!"
+
+Jayden:
+"Your AI fox is great but I think it needs some "minor" adjustments, you also can't chat with the fox yet."
+
+Jayden:
+"can you put anything you have in back end in the code I can see?"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
