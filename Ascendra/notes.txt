@@ -154,6 +154,9 @@ Jayden:
 
 Declan:
 “If you want to see the backend just go change the code branch to real or development, then go to backend/storage/journal.json for the storage and backend/app.py for the backend code”
+
+Declan:
+“Should Ascendra be a web app or a desktop app?”
 ────────────────────────────────────────
 
 🚀 Version Roadmap
