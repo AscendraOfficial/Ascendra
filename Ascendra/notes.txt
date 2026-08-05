@@ -37,6 +37,7 @@ Currently working on:
 •welcome.html
 
 - !!! Fix journal syncing across DEVICES
+- !! Fix account syncing across DEVICES
 ────────────────────────────────────────
 
 💬 Messages
