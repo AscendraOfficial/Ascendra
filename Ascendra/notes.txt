@@ -20,8 +20,22 @@ WHY CAN'T I ACCESS ASCENDRA WITH THE URL ANYMORE?!!!!!
 - !! Connect everything to the real branch
 - !! Detail privacy better (As long as it says what is nessecary)
 - !! Replace existing journal entry if the date already exists instead of adding
-- ! Move journal completely to JSON/Python <-- Jayden: "Why?" <--- Declan: "Long sroty short, i learned backend, becuse its much more safer for storing passwrods and stuff, im starting with journal first tho"
-- ! Add notes to everything to make code easier to read
+- ! Move journal completely to JSON/Python <-- Jayden: "Why?" <--- Declan: "Long story short, i learned back end, because its much more safer for storing passwords and stuff, im starting with journal first tho"
+
+- !! Add notes to everything to make code easier to read. Files done:
+•home.html
+•menu.html
+
+Currently working on:
+•alerts.html
+•breathing.html
+•calendar.html
+•habits.html
+•journal.html
+•login.html
+•todos.html
+•welcome.html
+
 - !!! Fix journal syncing across DEVICES
 ────────────────────────────────────────
 
