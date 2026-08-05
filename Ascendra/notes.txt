@@ -22,7 +22,7 @@ WHY CAN'T I ACCESS ASCENDRA WITH THE URL ANYMORE?!!!!!
 - !! Replace existing journal entry if the date already exists instead of adding
 - ! Move journal completely to JSON/Python <-- Jayden: "Why?" <--- Declan: "Long story short, i learned back end, because its much more safer for storing passwords and stuff, im starting with journal first tho"
 
-- !! Add notes to everything to make code easier to read. Files done:
+- !! Add notes to everything to make code easier to read. Files done: <-- note: you do '•' with option + 8
 •home.html
 •menu.html
 
@@ -147,6 +147,9 @@ Jayden:
 
 Jayden:
 "can you put anything you have in back end in the code I can see?"
+
+Jayden: 
+"Wait. Genius idea. What if we make the Ascendra fox face "move" with word symbols like '•' / '_' / - . - ?, it will save us js trouble"
 ────────────────────────────────────────
 
 🚀 Version Roadmap
