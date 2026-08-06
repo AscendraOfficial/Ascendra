@@ -2,6 +2,8 @@ go to ascendraofficial.github.io/Ascendra/ to get to Ascendra
 
 THERE IS ALSO AN USERNAME LIMIT
 
+ASCENDRA IS ON THE SEARCH ENGINE BUT IT LEADS TO THE WRONG LINK 😤😤😤
+
 📌 Ascendra Development Notes
 
 ! Low priority
@@ -156,7 +158,12 @@ Declan:
 “If you want to see the backend just go change the code branch to real or development, then go to backend/storage/journal.json for the storage and backend/app.py for the backend code”
 
 Declan:
-“Should Ascendra be a web app or a desktop app?”
+“Should Ascendra be a web app or a desktop app?"
+
+Jayden:
+"Can you make it so that the fox caption doesn't pop up and down.
+Also, the fox's message box block some of my view, you should be
+able to move it manually or tell it to go to sleep or something."
 ────────────────────────────────────────
 
 🚀 Version Roadmap
