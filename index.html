@@ -1,19 +1,22 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Ascendra - Tasks, Habits, Goals and Focus</title>
 
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
       name="description"
       content="Ascendra is a productivity app that helps you manage tasks, build habits, track goals, stay focused and grow with XP and progress tools."
     />
+    <meta name="keywords" content="productivity, to-do list, habits, calendar, journal, Ascendra" />
+
+    <!-- Links -->
     <link rel="icon" href="assets/images/favicon.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <link rel="stylesheet" href="src/css/style.css" />
-    <meta name="keywords" content="productivity, to-do list, habits, calendar, journal, Ascendra" />
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet" />
   </head>
   <body>
@@ -27,6 +30,8 @@
       <i class="fa-solid fa-arrow-left"></i>
     </button>
     <div id="app"></div>
+
+    <!-- Welcome -->
     <template id="page-welcome">
       <h1 id="title">🦊 Upgrade Your Life</h1>
       <h5 id="subtitle1">The productivity app of your dreams.</h5>
@@ -52,6 +57,8 @@
     <template id="page-loading-screen">
       <canvas id="canvas"></canvas>
     </template>
+
+    <!-- Login page -->
     <template id="page-login">
       <form id="login">
         <h1>Welcome back to <a id="ascendraLogo">Ascendra!</a></h1>
@@ -73,6 +80,8 @@
         <p>Don't have an account? <a href="#/signup">Sign up</a></p>
       </form>
     </template>
+
+    <!-- Signup page -->
     <template id="page-signup">
       <form id="signupForm">
         <h1>Welcome to <a id="ascendraLogo">Ascendra</a></h1>
@@ -167,6 +176,8 @@
         <button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br />Menu</button>
       </nav>
     </template>
+
+    <!-- Alerts -->
     <template id="page-alerts">
       <h1 id="alert">Alerts</h1>
       <h5 id="subtitle2">For convenience and notifications</h5>
@@ -183,6 +194,8 @@
         <button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br />Menu</button>
       </nav>
     </template>
+
+    <!-- To-Dos -->
     <template id="page-todos">
       <h1 id="todo_list">To-Dos</h1>
       <h5 id="subtitle3">For better task management</h5>
@@ -256,6 +269,8 @@
         <button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br />Menu</button>
       </div>
     </template>
+
+    <!-- Habits -->
     <template id="page-habits">
       <h1>Habit Tracker</h1>
       <h5>Build better routines</h5>
@@ -329,6 +344,8 @@
         <button onclick="navigate('menu')"><i class="fa-solid fa-bars-staggered"></i><br />Menu</button>
       </div>
     </template>
+
+    <!-- Breathing -->
     <template id="page-breathing">
       <main>
         <h1>Breathing Exercises</h1>
@@ -1291,11 +1308,13 @@
         <h2>Developers</h2>
         <p>Lead Developer: Declan Chong</p>
         <p>Backend &amp; Frontend: Jayden Wang</p>
+        <h2>Beta Testers</h2>
+        <p>Daniel Lim</p>
         <h2>Special Thanks</h2>
         <p>FlatPickr — For the Calendar</p>
         <p>Font Awesome — For the icons</p>
         <!-- Add more people here -->
-        <hr />
+        <hr/>
         <h2>Sources</h2>
         <a href="https://github.com/Jedicuber/Ascendra" target="_blank" rel="noopener" class="github-button"
           ><i aria-hidden="true" class="fa-brands fa-github"></i>Source code on GitHub</a

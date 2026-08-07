@@ -3825,13 +3825,13 @@ const ROUTE_INITIALIZERS = {
       }
 
       const entry = {
-        date: getEntryKey(selectedDay),
-        userId: getCurrentUserId(),
-        mood: mood.value,
-        day: dayText.value,
-        grateful: gratefulText.value,
-        learn: learnText.value,
-        goal: goalText.value,
+        user_id: localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID),
+        date: date,
+        mood: mood,
+        day: day,
+        grateful: grateful,
+        learn: learn,
+        goal: goal,
       };
 
       if (!entry.userId) {
