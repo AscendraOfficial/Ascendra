@@ -9291,3 +9291,301 @@ body.dark-mode .search-result:focus-visible {
     transition-delay: 0ms !important;
   }
 }
+
+/* =========================
+   FOX AI AVATAR
+   ========================= */
+
+#ai-avatar {
+    position: relative;
+    display: block;
+    width: 100px;
+    height: 90px;
+    margin: auto;
+    transform-origin: center bottom;
+    animation: foxIdle 3s ease-in-out infinite;
+}
+
+/* ---------- Body ---------- */
+
+.ai-body {
+    position: absolute;
+    width: 58px;
+    height: 35px;
+    left: 25px;
+    top: 40px;
+    background: #d96b2b;
+    border-radius: 45% 55% 45% 50%;
+    box-shadow:
+        inset -5px -4px 0 rgba(0,0,0,0.08),
+        0 3px 5px rgba(0,0,0,0.15);
+}
+
+/* ---------- Tail ---------- */
+
+.ai-tail {
+    position: absolute;
+    width: 55px;
+    height: 27px;
+    left: 0;
+    top: 38px;
+    background: #c95725;
+    border-radius: 80% 20% 60% 40%;
+    transform: rotate(-18deg);
+    transform-origin: right center;
+    box-shadow:
+        inset -4px -3px 0 rgba(0,0,0,0.08),
+        0 3px 4px rgba(0,0,0,0.12);
+}
+
+/* White tail tip */
+
+.ai-tail::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: -2px;
+    top: 4px;
+    background: #fff3e8;
+    border-radius: 50%;
+}
+
+/* ---------- Head ---------- */
+
+.ai-head {
+    position: absolute;
+    width: 48px;
+    height: 45px;
+    left: 42px;
+    top: 10px;
+    background: #df702e;
+    border-radius: 48% 48% 45% 45%;
+    z-index: 5;
+    box-shadow:
+        inset -4px -4px 0 rgba(0,0,0,0.08),
+        0 3px 5px rgba(0,0,0,0.15);
+}
+
+/* Fox cheek / muzzle */
+
+.ai-head::after {
+    content: "";
+    position: absolute;
+    width: 34px;
+    height: 23px;
+    left: 7px;
+    bottom: -3px;
+    background: #fff3e8;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* ---------- Ears ---------- */
+
+.ai-ears {
+    position: absolute;
+    left: 41px;
+    top: 0;
+    width: 50px;
+    height: 35px;
+    z-index: 4;
+}
+
+.ai-ear {
+    position: absolute;
+    width: 22px;
+    height: 31px;
+    background: #d9682b;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+/* Left ear */
+
+.ai-ear-left {
+    left: 0;
+    transform: rotate(-12deg);
+}
+
+/* Right ear */
+
+.ai-ear-right {
+    right: 0;
+    transform: rotate(12deg);
+}
+
+/* Inner ears */
+
+.ai-ear::after {
+    content: "";
+    position: absolute;
+    width: 11px;
+    height: 18px;
+    left: 5px;
+    top: 7px;
+    background: #f5b09a;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+
+/* ---------- Eyes ---------- */
+
+.ai-eyes {
+    position: absolute;
+    width: 6px;
+    height: 7px;
+    left: 55px;
+    top: 25px;
+    background: #18202a;
+    border-radius: 50%;
+    z-index: 10;
+
+    box-shadow:
+        20px 0 0 #18202a;
+}
+
+/* Eye highlights */
+
+.ai-eyes::before {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    left: 1px;
+    top: 1px;
+    background: white;
+    border-radius: 50%;
+    box-shadow:
+        20px 0 0 white;
+}
+
+/* ---------- Nose + mouth ---------- */
+
+.ai-mouth {
+    position: absolute;
+    width: 8px;
+    height: 6px;
+    left: 67px;
+    top: 40px;
+    background: #241a18;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+/* Smile */
+
+.ai-mouth::after {
+    content: "";
+    position: absolute;
+    width: 11px;
+    height: 6px;
+    left: -1px;
+    top: 4px;
+    border-bottom: 2px solid #241a18;
+    border-radius: 50%;
+}
+
+/* ---------- Legs ---------- */
+
+.ai-leg {
+    position: absolute;
+    width: 9px;
+    height: 22px;
+    top: 65px;
+    background: #b94f24;
+    border-radius: 0 0 6px 6px;
+    z-index: 3;
+}
+
+/* Back legs */
+
+.ai-leg-back-left {
+    left: 30px;
+    transform: rotate(4deg);
+}
+
+.ai-leg-back-right {
+    left: 45px;
+    transform: rotate(-3deg);
+}
+
+/* Front legs */
+
+.ai-leg-front-left {
+    left: 68px;
+    transform: rotate(3deg);
+}
+
+.ai-leg-front-right {
+    left: 82px;
+    transform: rotate(-4deg);
+}
+
+/* Paws */
+
+.ai-leg::after {
+    content: "";
+    position: absolute;
+    width: 11px;
+    height: 5px;
+    bottom: -2px;
+    left: -1px;
+    background: #8e3c20;
+    border-radius: 50%;
+}
+
+/* ---------- Subtle shadow ---------- */
+
+#ai-avatar::after {
+    content: "";
+    position: absolute;
+    width: 65px;
+    height: 8px;
+    left: 22px;
+    bottom: -2px;
+    background: rgba(0,0,0,0.12);
+    border-radius: 50%;
+    filter: blur(3px);
+    z-index: -2;
+}
+
+/* ---------- Idle animation ---------- */
+
+@keyframes foxIdle {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-3px) rotate(1deg);
+    }
+}
+
+/* ---------- Ear twitch ---------- */
+
+.ai-ear-left {
+    animation: leftEar 4s ease-in-out infinite;
+}
+
+.ai-ear-right {
+    animation: rightEar 4s ease-in-out infinite;
+}
+
+@keyframes leftEar {
+    0%, 85%, 100% {
+        transform: rotate(-12deg);
+    }
+
+    90% {
+        transform: rotate(-18deg);
+    }
+}
+
+@keyframes rightEar {
+    0%, 88%, 100% {
+        transform: rotate(12deg);
+    }
+
+    93% {
+        transform: rotate(18deg);
+    }
+}
