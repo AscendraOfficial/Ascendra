@@ -12,32 +12,21 @@
 </head>
 
 <body>
-    <div id="globalXP" class="global-xp">
-
-        <div class="xp-info">
-            <span class="xp-level" id="xpLevel">Level 1</span>
-
-            <span class="xp-number" id="xpText">
-                0 / 100 XP
-            </span>
-        </div>
-
-        <div class="xp-bar">
-            <div id="xpProgress" class="xp-progress"></div>
-        </div>
-
-    </div>
-
     <main>
         <h1>Breathing Exercises</h1>
         <p class="subtitle">Choose a breathing exercise</p>
-
+        
+        <!-- Choose your breathing exercise. -->
         <section class="menu" id="exerciseMenu">
+            <!-- box breathing (4-4-4-4) -->
             <button onclick="chooseExercise('box')">Box Breathing<br><span>4-4-4-4</span></button>
+            <!--  calm breathing(5-5) -->
             <button onclick="chooseExercise('calm')">Calm Breathing<br><span>5-5</span></button>
+            <!-- 4-7-8 breathing (4-7-8) -->
             <button onclick="chooseExercise('relax')">4-7-8 Breathing<br><span>4-7-8</span></button>
         </section>
 
+        <!-- Neutral setting (changes according to user decision) -->
         <section class="breathing-box">
             <h2 id="exerciseTitle">Box Breathing</h2>
             <p id="instructions">Breathe in, hold, exhale, and hold again.</p>
