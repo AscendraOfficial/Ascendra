@@ -6,7 +6,9 @@ const APP_CONFIG = {
 
 let API_URL;
 
+// If running from the file system (file://) or served locally, use local backend for development
 if (
+  window.location.protocol === "file:" ||
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
 ) {

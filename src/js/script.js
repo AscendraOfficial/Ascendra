@@ -3693,6 +3693,12 @@ const ROUTE_INITIALIZERS = {
 
       journalEntries = Array.isArray(data) ? data : [];
 
+      // Normalize backend field names so frontend code can rely on `userId`
+      journalEntries = journalEntries.map((e) => {
+        const uid = e.userId || e.user_id || "";
+        return { ...e, userId: uid, user_id: uid };
+      });
+
       return journalEntries;
     }
 
@@ -3700,7 +3706,7 @@ const ROUTE_INITIALIZERS = {
       const currentUserId = getCurrentUserId();
       const dateKey = getEntryKey(day);
 
-      return journalEntries.find((entry) => entry.userId === currentUserId && entry.date === dateKey) || null;
+      return journalEntries.find((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey) || null;
     }
 
     async function loadEntry(day) {
@@ -3761,7 +3767,7 @@ const ROUTE_INITIALIZERS = {
 
         const dateKey = getEntryKey(day);
 
-        const hasBackendEntry = journalEntries.some((entry) => entry.userId === currentUserId && entry.date === dateKey);
+        const hasBackendEntry = journalEntries.some((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey);
 
         if (hasBackendEntry) {
           button.classList.add("has-entry");
@@ -3824,19 +3830,26 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
+      console.log("JOURNAL DEBUG:", {
+        sessionAccountId: sessionStorage.getItem("ascendra:tab-identity:accountId"),
+        localAccountId: localStorage.getItem("accountId"),
+        storageKeyAccountId: localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID),
+      });
+
+      const uid = getCurrentUserId() || localStorage.getItem("accountId") || localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID);
+      console.log("JOURNAL UID:", uid);
       const entry = {
-        user_id: localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID),
-        date: date,
-        mood: mood,
-        day: day,
-        grateful: grateful,
-        learn: learn,
-        goal: goal,
+        user_id: uid,
+        date: getEntryKey(selectedDay),
+        mood: mood.value,
+        day: dayText.value,
+        grateful: gratefulText.value,
+        learn: learnText.value,
+        goal: goalText.value,
       };
 
-      if (!entry.userId) {
+      if (!entry.user_id) {
         statusMessage.textContent = "Could not identify the logged-in account.";
-
         return;
       }
 
@@ -3857,7 +3870,7 @@ const ROUTE_INITIALIZERS = {
         }
 
         const existingIndex = journalEntries.findIndex(
-          (savedEntry) => savedEntry.userId === entry.userId && savedEntry.date === entry.date,
+          (savedEntry) => (savedEntry.userId || savedEntry.user_id) === (entry.userId || entry.user_id) && savedEntry.date === entry.date,
         );
 
         if (existingIndex === -1) {
