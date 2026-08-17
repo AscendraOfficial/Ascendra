@@ -3903,8 +3903,8 @@ const ROUTE_INITIALIZERS = {
 
       journalDateKey = currentDateKey;
 
-      await loadEntry(selectedDay);
       buildDateGrid();
+      await loadEntry(selectedDay);
     }
 
     function handleJournalVisibilityChange() {
