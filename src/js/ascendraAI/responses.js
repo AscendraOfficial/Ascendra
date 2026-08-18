@@ -6,11 +6,14 @@ export const responses = {
     (username, totalTodos, timeOfDay) =>
       `${timeOfDay}, ${username}! Ready to get started? You have ${totalTodos} task${totalTodos === 1 ? "" : "s"} waiting.`,
 
-    (username) => `Good to see you again, ${username}! Make sure you complete your habits today!`,
+    (username) =>
+      `Good to see you again, ${username}! Make sure you complete your habits today!`,
 
-    (username) => `Hey ${username}! Let's make today productive!`,
+    (username) =>
+      `Hey ${username}! Let's make today productive!`,
 
-    (username) => `Welcome back, ${username}!`,
+    (username) =>
+      `Welcome back, ${username}!`,
   ],
 
   goodbye: [
@@ -41,7 +44,11 @@ export const responses = {
     (username) => `Great work, ${username}!`,
   ],
 
-  allHabitsComplete: [() => `You've completed every habit today!`, () => `Awesome consistency!`, () => `Perfect! Every habit is finished.`],
+  allHabitsComplete: [
+    () => `You've completed every habit today!`,
+    () => `Awesome consistency!`,
+    () => `Perfect! Every habit is finished.`,
+  ],
 
   motivation: [
     () => `Small steps lead to big results.`,
@@ -52,7 +59,8 @@ export const responses = {
   ],
 
   reminder: [
-    (totalTodos) => `You have ${totalTodos} task${totalTodos === 1 ? "" : "s"} left.`,
+    (totalTodos) =>
+      `You have ${totalTodos} task${totalTodos === 1 ? "" : "s"} left.`,
     () => `Don't forget to check your habits today.`,
     () => `Need help planning your day?`,
   ],
@@ -63,11 +71,33 @@ export const responses = {
     () => `A few sentences can go a long way.`,
   ],
 
-  breakReminder: [() => `You've earned a short break.`, () => `Stretch your legs for a minute!`, () => `Remember to stay hydrated. 💧`],
+  breakReminder: [
+    () => `You've earned a short break.`,
+    () => `Stretch your legs for a minute!`,
+    () => `Remember to stay hydrated. 💧`,
+  ],
 
-  error: [() => `Oops... something went wrong.`, () => `That didn't quite work. Let's try again.`, () => `I ran into a little problem.`],
+  error: [
+    () => `Oops... something went wrong.`,
+    () => `That didn't quite work. Let's try again.`,
+    () => `I ran into a little problem.`,
+  ],
 
-  loading: [() => `Loading...`, () => `Getting everything ready...`, () => `Just a second...`],
+  loading: [
+    () => `Loading...`,
+    () => `Getting everything ready...`,
+    () => `Just a second...`,
+  ],
 
-  thinking: [() => `Thinking...`, () => `Looking that up...`, () => `One moment...`],
+  thinking: [
+    () => `Thinking...`,
+    () => `Looking that up...`,
+    () => `One moment...`,
+  ],
+};
+
+
+export const manualResponses = {
+  taskHelp:
+    "Make a task named {name}, add a note saying {note}, priority {low, medium, high}",
 };

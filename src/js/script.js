@@ -1,6 +1,7 @@
 "use strict";
 import { STORAGE_KEYS } from "./data/storageKeys.js";
 import { responses } from "./ascendraAI/responses.js";
+import { manualResponses } from "./ascendraAI/responses.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
