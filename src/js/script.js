@@ -5471,51 +5471,7 @@ function checkManualResponse(input) {
   return null;
 }
 
-/* ============================= */
-/* AI CHAT                       */
-/* ============================= */
 
-function initializeAscendraAIChat() {
-  const form = document.getElementById("ai-chat-form");
-  const input = document.getElementById("ai-chat-input");
-
-  if (!form || !input) return;
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    const question = input.value.trim();
-
-    if (!question) return;
-
-    input.value = "";
-
-    // Check manual commands FIRST.
-    // This prevents "help task" from being
-    // caught by the normal "help" response.
-    const manualResponse = checkManualResponse(question);
-
-    if (manualResponse) {
-      // If the command creates a task
-      if (manualResponse.type === "makeTask") {
-        if (typeof window.createTodoFromAI === "function") {
-          window.createTodoFromAI(manualResponse.name, manualResponse.note, manualResponse.priority);
-        }
-      }
-
-      showAscendraAIMessage(manualResponse.response, {
-        bypassCooldown: true,
-      });
-
-      return;
-    }
-
-    // Normal Ascendra AI
-    showAscendraAIMessage(ascendraAIReply(question), {
-      bypassCooldown: true,
-    });
-  });
-}
 /* ============================= */
 /* AI COMPANION                  */
 /* ============================= */
@@ -5683,7 +5639,7 @@ function initializeAscendraAI() {
   }
 
   function noteInteraction(event) {
-    if (event.target instanceof Element && event.target.closest("#ai-chat-form")) {
+    if (event.target instanceof Element && event.target.closest("#ascendra-ai")) {
       return;
     }
 
