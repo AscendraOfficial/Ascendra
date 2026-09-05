@@ -1385,6 +1385,3 @@ document.addEventListener(
     }
 
 })();
-What you need to know
-
-Your HTML and CSS can stay unchanged.
