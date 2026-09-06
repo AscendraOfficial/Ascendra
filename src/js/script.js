@@ -2053,7 +2053,7 @@ function findHabitTrackerScanCorners(imageData) {
           const leftHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
           const rightHeight = Math.hypot(bottomRight.x - topRight.x, bottomRight.y - topRight.y);
 
-          if (Math.min(topWidth, bottomWidth) < averageSide * 12 || Math.min(leftHeight, rightHeight) < averageSide * 2) continue;
+          if (Math.min(topWidth, bottomWidth) < averageSide * 12 || Math.min(leftHeight, rightHeight) < averageSide * 2.5) continue;
           if (Math.max(topWidth, bottomWidth) / Math.min(topWidth, bottomWidth) > 1.8) continue;
           if (Math.max(leftHeight, rightHeight) / Math.min(leftHeight, rightHeight) > 2) continue;
           if (Math.abs(topRight.y - topLeft.y) / topWidth > 0.45 || Math.abs(bottomRight.y - bottomLeft.y) / bottomWidth > 0.45) continue;
@@ -4792,6 +4792,8 @@ const ROUTE_INITIALIZERS = {
 
     const habitTrackerQrStatus = document.getElementById("habit-tracker-qr-status");
 
+    let printRestoreTimer = null;
+
     const achievementIcon = document.getElementById("achievement-icon");
 
     const achievementTitle = document.getElementById("achievement-title");
@@ -5183,8 +5185,8 @@ const ROUTE_INITIALIZERS = {
         const payload = createPrintableHabitPayload(habits, weekStart);
         new window.QRCode(habitTrackerQr, {
           text: createHabitImportUrl(payload),
-          width: 192,
-          height: 192,
+          width: 256,
+          height: 256,
           correctLevel: window.QRCode.CorrectLevel.L,
         });
         habitTrackerQrStatus.textContent = "Scan this code to review and import these blank weekly habits.";
@@ -5195,15 +5197,26 @@ const ROUTE_INITIALIZERS = {
     }
 
     function restoreHabitHistoryAfterPrint() {
+      if (printRestoreTimer !== null) {
+        window.clearTimeout(printRestoreTimer);
+        printRestoreTimer = null;
+      }
       displayHabitHistory(getStoredArray("habits"));
     }
 
-    function printHabitTracker() {
+    function prepareHabitHistoryForPrint() {
       preparePrintableHabitTracker();
+      window.clearTimeout(printRestoreTimer);
+      printRestoreTimer = window.setTimeout(restoreHabitHistoryAfterPrint, 1500);
+    }
+
+    function printHabitTracker() {
+      prepareHabitHistoryForPrint();
       try {
         window.print();
-      } finally {
+      } catch (error) {
         restoreHabitHistoryAfterPrint();
+        throw error;
       }
     }
 
@@ -5323,6 +5336,12 @@ const ROUTE_INITIALIZERS = {
 
       const habits = getStoredArray("habits");
 
+      if (printStatsButton) {
+        printStatsButton.disabled = habits.length === 0;
+        printStatsButton.title =
+          habits.length === 0 ? "Add a habit before printing a weekly tracker." : "Print a blank weekly habit tracker.";
+      }
+
       updateWelcomeMessage();
 
       const completedTasks = updateTaskStatistics(todos);
@@ -5341,7 +5360,7 @@ const ROUTE_INITIALIZERS = {
     }
 
     if (printStatsButton) printStatsButton.addEventListener("click", printHabitTracker);
-    window.addEventListener("beforeprint", preparePrintableHabitTracker);
+    window.addEventListener("beforeprint", prepareHabitHistoryForPrint);
     window.addEventListener("afterprint", restoreHabitHistoryAfterPrint);
 
     loadStats();
@@ -5386,8 +5405,9 @@ const ROUTE_INITIALIZERS = {
         clearWindowRouteFunction(name, routeFunction);
       });
       if (printStatsButton) printStatsButton.removeEventListener("click", printHabitTracker);
-      window.removeEventListener("beforeprint", preparePrintableHabitTracker);
+      window.removeEventListener("beforeprint", prepareHabitHistoryForPrint);
       window.removeEventListener("afterprint", restoreHabitHistoryAfterPrint);
+      window.clearTimeout(printRestoreTimer);
     };
   },
   achievements: function init_achievements() {
