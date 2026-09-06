@@ -1,6 +1,6 @@
 const APP_CONFIG = {
   name: "Ascendra",
-  version: "1.1.1-beta",
+  version: "1.1.3-beta",
   update: "Horizon",
 };
 
