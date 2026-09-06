@@ -9487,3 +9487,34 @@ body.dark-mode .search-result:focus-visible {
     transition-delay: 0ms !important;
   }
 }
+@media print {
+  .ascendra-page[data-route="stats"] .top-bar {
+    display: none;
+  }
+
+  .ascendra-page[data-route="stats"] main > *:not(.habit-history) {
+    display: none;
+  }
+
+  .ascendra-page[data-route="stats"] main {
+    width: 100%;
+    margin: 0;
+  }
+
+  .ascendra-page[data-route="stats"] .habit-history {
+    margin: 0;
+  }
+
+  #print-stats {
+    display: none;
+  }
+
+  .habit-history {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  @page {
+    margin: 0.4in;
+  }
+}

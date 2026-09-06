@@ -12,6 +12,14 @@ const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
 const DEFAULT_APP_NAME = "Ascendra";
 const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "placeholder", "title"]);
+const params = new URLSearchParams(window.location.search);
+const habitImport = params.get("habitImport");
+if (habitImport) {
+  const habitData = JSON.parse(habitImport);
+
+  console.log(habitData);
+  console.log(habitImport);
+}
 console.log(
   "Hello there! If there is an error that you would like to report, we would really appreciate it if you would go to https://github.com/AscendraOfficial/Ascendra/issues, thank you! 😃",
 );
@@ -4290,6 +4298,14 @@ const ROUTE_INITIALIZERS = {
         taskProgressTrack.setAttribute("aria-valuemax", "100");
         taskProgressTrack.setAttribute("aria-valuenow", String(completionRate));
         taskProgressTrack.setAttribute("aria-valuetext", `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`);
+      }
+
+      const printStatsButton = document.getElementById("print-stats");
+
+      if (printStatsButton) {
+        printStatsButton.addEventListener("click", () => {
+          window.print();
+        });
       }
 
       updateTaskProgressMessage(totalTasks, completedTasks, completionRate);
