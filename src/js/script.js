@@ -2083,6 +2083,8 @@ function measureHabitTrackerMark(imageData, corners, horizontal, vertical, horiz
   const { data, width, height } = imageData;
   let darkPixels = 0;
   let sampledPixels = 0;
+  const occupiedRows = new Set();
+  const occupiedColumns = new Set();
 
   for (let yStep = -5; yStep <= 5; yStep++) {
     for (let xStep = -5; xStep <= 5; xStep++) {
@@ -2091,12 +2093,20 @@ function measureHabitTrackerMark(imageData, corners, horizontal, vertical, horiz
       const y = Math.max(0, Math.min(height - 1, Math.round(point.y)));
       const dataIndex = (y * width + x) * 4;
       const luminance = data[dataIndex] * 0.299 + data[dataIndex + 1] * 0.587 + data[dataIndex + 2] * 0.114;
-      if (luminance < 145) darkPixels++;
+      if (luminance < 145) {
+        darkPixels++;
+        occupiedRows.add(yStep);
+        occupiedColumns.add(xStep);
+      }
       sampledPixels++;
     }
   }
 
-  return darkPixels / sampledPixels;
+  return {
+    inkRatio: darkPixels / sampledPixels,
+    rowCoverage: occupiedRows.size / 11,
+    columnCoverage: occupiedColumns.size / 11,
+  };
 }
 
 async function detectHabitTrackerMarks(file, importData) {
@@ -2127,8 +2137,8 @@ async function detectHabitTrackerMarks(file, importData) {
       if (!isHabitScheduledForDate(habit, date) || formatLocalDate(date) > todayKey) return null;
       const horizontal = nameColumnWidth + dayColumnWidth * (dayIndex + 0.5);
       const vertical = rowHeight * (habitIndex + 1.5);
-      const inkRatio = measureHabitTrackerMark(imageData, corners, horizontal, vertical, dayColumnWidth * 0.09, rowHeight * 0.13);
-      const marked = inkRatio >= 0.035;
+      const mark = measureHabitTrackerMark(imageData, corners, horizontal, vertical, dayColumnWidth * 0.09, rowHeight * 0.13);
+      const marked = mark.inkRatio >= 0.035 && mark.rowCoverage >= 0.27 && mark.columnCoverage >= 0.27;
       if (marked) detected++;
       return marked;
     });
@@ -5140,7 +5150,7 @@ const ROUTE_INITIALIZERS = {
           const blank = document.createElement("span");
           const scheduled = isHabitScheduledForDate(habit, date);
           blank.className = `habit-history-status print-blank${scheduled ? "" : " not-scheduled"}`;
-          blank.textContent = scheduled ? "" : "—";
+          blank.textContent = "";
           blank.setAttribute("aria-hidden", "true");
           cell.appendChild(blank);
           row.appendChild(cell);

@@ -10016,8 +10016,8 @@ body.dark-mode .habit-qr-info summary {
   }
 
   .ascendra-page[data-route="stats"] .habit-history-status.print-blank.not-scheduled {
-    color: #777;
     border-color: transparent;
+    background: #ededed !important;
   }
 
   .print-habit-qr {
