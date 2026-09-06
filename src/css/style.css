@@ -9553,6 +9553,106 @@ body.dark-mode .search-result:focus-visible {
   gap: 12px;
 }
 
+.habit-photo-detection {
+  margin-top: 18px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px 16px;
+  background: #f8f6fc;
+  border: 1px solid #e6dff0;
+  border-radius: 16px;
+}
+
+.habit-photo-detection[hidden] {
+  display: none;
+}
+
+.habit-photo-detection h3,
+.habit-photo-detection p {
+  margin: 0;
+}
+
+.habit-photo-detection h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.habit-photo-detection p {
+  margin-top: 5px;
+  color: #675d75;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.habit-photo-button {
+  min-height: 44px;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: var(--accent, #7f00ff);
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.habit-photo-button:focus-within,
+.habit-photo-button:focus-visible {
+  outline: 3px solid rgba(127, 0, 255, 0.3);
+  outline-offset: 2px;
+}
+
+#habit-photo-input {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.habit-photo-status {
+  min-height: 1.2em;
+  grid-column: 1 / -1;
+  color: #51445f !important;
+  font-weight: 700;
+}
+
+.habit-import-results button {
+  min-width: 88px;
+  min-height: 40px;
+  padding: 7px 9px;
+  color: #51445f;
+  background: white;
+  border: 1px solid #ded5ea;
+  border-radius: 9px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.habit-import-results button[data-result="true"] {
+  color: #16663a;
+  background: #e5f7ec;
+  border-color: #a9dfbd;
+}
+
+.habit-import-results button[data-result="false"] {
+  color: #9b293f;
+  background: #fcebef;
+  border-color: #f1bdc8;
+}
+
+.habit-import-results button:focus-visible {
+  outline: 3px solid rgba(127, 0, 255, 0.3);
+  outline-offset: 2px;
+}
+
 .habit-import-item {
   padding: 16px;
   background: #f8f6fc;
@@ -9631,11 +9731,18 @@ body.dark-mode .habit-import-item p {
 
 body.dark-mode .habit-import-item,
 body.dark-mode .habit-import-results li,
+body.dark-mode .habit-import-results button,
+body.dark-mode .habit-photo-detection,
 body.dark-mode .habit-import-close,
 body.dark-mode .habit-import-actions .secondary {
   color: var(--dark-text);
   background: var(--dark-surface-raised);
   border-color: var(--dark-border);
+}
+
+body.dark-mode .habit-photo-detection p,
+body.dark-mode .habit-photo-status {
+  color: var(--dark-muted) !important;
 }
 
 .habit-qr-controls {
@@ -9752,6 +9859,10 @@ body.dark-mode .habit-qr-info summary {
   display: none;
 }
 
+.habit-scan-marker {
+  display: none;
+}
+
 @media (max-width: 520px) {
   .habit-import-card {
     max-height: calc(100dvh - 24px);
@@ -9764,6 +9875,14 @@ body.dark-mode .habit-qr-info summary {
   }
 
   .habit-import-actions button {
+    width: 100%;
+  }
+
+  .habit-photo-detection {
+    grid-template-columns: 1fr;
+  }
+
+  .habit-photo-button {
     width: 100%;
   }
 
@@ -9823,12 +9942,54 @@ body.dark-mode .habit-qr-info summary {
   }
 
   .ascendra-page[data-route="stats"] .habit-history-table {
+    padding: 14px;
+    position: relative;
     overflow: visible;
-    border-color: #888;
+    border-color: transparent;
   }
 
   .ascendra-page[data-route="stats"] .habit-history-table table {
     min-width: 0;
+    table-layout: fixed;
+  }
+
+  .ascendra-page[data-route="stats"] .habit-history-table tr {
+    height: 44px;
+  }
+
+  .ascendra-page[data-route="stats"] .habit-history-table :is(th:first-child, td:first-child) {
+    width: 23%;
+  }
+
+  .habit-scan-marker {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    z-index: 2;
+    display: block;
+    background: #000 !important;
+    box-shadow: 0 0 0 4px #fff;
+    transform: translate(-50%, -50%);
+  }
+
+  .habit-scan-marker.marker-top-left {
+    top: 14px;
+    left: 14px;
+  }
+
+  .habit-scan-marker.marker-top-right {
+    top: 14px;
+    left: calc(100% - 14px);
+  }
+
+  .habit-scan-marker.marker-bottom-left {
+    top: calc(100% - 14px);
+    left: 14px;
+  }
+
+  .habit-scan-marker.marker-bottom-right {
+    top: calc(100% - 14px);
+    left: calc(100% - 14px);
   }
 
   .ascendra-page[data-route="stats"] .habit-history-table :is(th, td) {
@@ -9839,7 +10000,7 @@ body.dark-mode .habit-qr-info summary {
   }
 
   .ascendra-page[data-route="stats"] .habit-history-table :is(th:first-child, td:first-child) {
-    width: 145px;
+    width: 23%;
     position: static;
     box-shadow: none;
   }

@@ -767,6 +767,10 @@
             <h2>Past Habits</h2>
           </div>
           <div class="habit-history-table">
+            <span aria-hidden="true" class="habit-scan-marker marker-top-left"></span>
+            <span aria-hidden="true" class="habit-scan-marker marker-top-right"></span>
+            <span aria-hidden="true" class="habit-scan-marker marker-bottom-left"></span>
+            <span aria-hidden="true" class="habit-scan-marker marker-bottom-right"></span>
             <table aria-describedby="habit-history-summary">
               <caption class="sr-only">
                 Habit check-ins from the last seven days
@@ -804,9 +808,9 @@
           <div aria-hidden="true" class="print-habit-instructions">
             <h2>Using your Ascendra habit tracker</h2>
             <ol>
-              <li>Each day, mark a box when you complete the habit. Leave it blank if you miss it.</li>
-              <li>At the end of the week, scan the QR code on the front with your phone camera.</li>
-              <li>Review the preview in Ascendra, then choose <strong>Import Habits</strong> to save your check-ins.</li>
+              <li>Each day, draw a bold X inside the box when you complete or successfully avoid the habit.</li>
+              <li>At the end of the week, scan the QR code, then photograph the entire table including all four black corner squares.</li>
+              <li>Ascendra detects the marks on your device. Review and correct them before choosing <strong>Import Habits</strong>.</li>
             </ol>
             <p>Your saved history stays safe until you confirm an import. The QR code opens Ascendra's habit review page.</p>
           </div>
@@ -817,8 +821,8 @@
               <details class="habit-qr-info">
                 <summary aria-label="How the printable QR habit tracker works">i</summary>
                 <p>
-                  Print a blank tracker for the new week, then scan its QR code to review the same habits in Ascendra.
-                  Nothing is saved until you confirm the import, and your existing habit history is not changed.
+                  Print a blank tracker and mark completed habits with a bold X. Scan its QR code, photograph the full
+                  table, and review Ascendra's detected results. Nothing is saved until you confirm the import.
                 </p>
               </details>
             </div>
@@ -1902,6 +1906,17 @@
         <p class="habit-import-eyebrow">QR HABIT IMPORT</p>
         <h2 id="habit-import-title">Review habit import</h2>
         <p id="habit-import-description"></p>
+        <section class="habit-photo-detection" hidden id="habit-photo-detection">
+          <div>
+            <h3>Detect paper checkmarks <span class="beta-badge">Beta</span></h3>
+            <p>Use a clear, straight-on photo showing the complete table and all four black corner squares.</p>
+          </div>
+          <label class="habit-photo-button" for="habit-photo-input">
+            Take or upload photo
+            <input accept="image/*" capture="environment" id="habit-photo-input" type="file" />
+          </label>
+          <p aria-live="polite" class="habit-photo-status" id="habit-photo-status" role="status"></p>
+        </section>
         <div class="habit-import-preview" id="habit-import-preview"></div>
         <p aria-live="polite" class="habit-import-status" id="habit-import-status" role="status"></p>
         <div class="habit-import-actions">

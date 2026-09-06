@@ -1940,6 +1940,203 @@ function formatHabitImportWeek(weekStart) {
   return `${dates[0].toLocaleDateString(undefined, format)} – ${dates[6].toLocaleDateString(undefined, format)}`;
 }
 
+function decodeHabitTrackerPhoto(file) {
+  if (!(file instanceof File) || !file.type.startsWith("image/")) {
+    return Promise.reject(new Error("Choose a photo of the printed habit table."));
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    return Promise.reject(new Error("That photo is larger than 20 MB. Choose a smaller image."));
+  }
+
+  if (typeof createImageBitmap === "function") return createImageBitmap(file);
+
+  return new Promise(function (resolve, reject) {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    image.onload = function () {
+      URL.revokeObjectURL(objectUrl);
+      resolve(image);
+    };
+    image.onerror = function () {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Ascendra could not open that photo."));
+    };
+    image.src = objectUrl;
+  });
+}
+
+function findHabitTrackerScanCorners(imageData) {
+  const { data, width, height } = imageData;
+  const pixelCount = width * height;
+  const dark = new Uint8Array(pixelCount);
+
+  for (let pixelIndex = 0; pixelIndex < pixelCount; pixelIndex++) {
+    const dataIndex = pixelIndex * 4;
+    const luminance = data[dataIndex] * 0.299 + data[dataIndex + 1] * 0.587 + data[dataIndex + 2] * 0.114;
+    dark[pixelIndex] = data[dataIndex + 3] > 80 && luminance < 85 ? 1 : 0;
+  }
+
+  const queue = new Int32Array(pixelCount);
+  const candidates = [];
+  for (let start = 0; start < pixelCount; start++) {
+    if (!dark[start]) continue;
+
+    let head = 0;
+    let tail = 0;
+    let count = 0;
+    let minX = width;
+    let maxX = 0;
+    let minY = height;
+    let maxY = 0;
+    queue[tail++] = start;
+    dark[start] = 0;
+
+    while (head < tail) {
+      const current = queue[head++];
+      const x = current % width;
+      const y = Math.floor(current / width);
+      count++;
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+
+      if (x > 0 && dark[current - 1]) {
+        dark[current - 1] = 0;
+        queue[tail++] = current - 1;
+      }
+      if (x + 1 < width && dark[current + 1]) {
+        dark[current + 1] = 0;
+        queue[tail++] = current + 1;
+      }
+      if (y > 0 && dark[current - width]) {
+        dark[current - width] = 0;
+        queue[tail++] = current - width;
+      }
+      if (y + 1 < height && dark[current + width]) {
+        dark[current + width] = 0;
+        queue[tail++] = current + width;
+      }
+    }
+
+    const boxWidth = maxX - minX + 1;
+    const boxHeight = maxY - minY + 1;
+    const density = count / (boxWidth * boxHeight);
+    const aspect = boxWidth / boxHeight;
+    if (boxWidth >= 5 && boxHeight >= 5 && boxWidth <= 90 && boxHeight <= 90 && aspect >= 0.72 && aspect <= 1.38 && density >= 0.72) {
+      candidates.push({
+        x: (minX + maxX) / 2,
+        y: (minY + maxY) / 2,
+        side: (boxWidth + boxHeight) / 2,
+      });
+    }
+  }
+
+  const largest = candidates.sort((a, b) => b.side - a.side).slice(0, 16);
+  let best = null;
+
+  for (let a = 0; a < largest.length - 3; a++) {
+    for (let b = a + 1; b < largest.length - 2; b++) {
+      for (let c = b + 1; c < largest.length - 1; c++) {
+        for (let d = c + 1; d < largest.length; d++) {
+          const points = [largest[a], largest[b], largest[c], largest[d]];
+          const averageSide = points.reduce((sum, point) => sum + point.side, 0) / 4;
+          if (points.some((point) => Math.abs(point.side - averageSide) / averageSide > 0.28)) continue;
+
+          const orderedByY = [...points].sort((left, right) => left.y - right.y);
+          const top = orderedByY.slice(0, 2).sort((left, right) => left.x - right.x);
+          const bottom = orderedByY.slice(2).sort((left, right) => left.x - right.x);
+          const [topLeft, topRight] = top;
+          const [bottomLeft, bottomRight] = bottom;
+          const topWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
+          const bottomWidth = Math.hypot(bottomRight.x - bottomLeft.x, bottomRight.y - bottomLeft.y);
+          const leftHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
+          const rightHeight = Math.hypot(bottomRight.x - topRight.x, bottomRight.y - topRight.y);
+
+          if (Math.min(topWidth, bottomWidth) < averageSide * 12 || Math.min(leftHeight, rightHeight) < averageSide * 3.5) continue;
+          if (Math.max(topWidth, bottomWidth) / Math.min(topWidth, bottomWidth) > 1.55) continue;
+          if (Math.max(leftHeight, rightHeight) / Math.min(leftHeight, rightHeight) > 1.8) continue;
+          if (Math.abs(topRight.y - topLeft.y) / topWidth > 0.3 || Math.abs(bottomRight.y - bottomLeft.y) / bottomWidth > 0.3) continue;
+          if (Math.abs(bottomLeft.x - topLeft.x) / leftHeight > 0.3 || Math.abs(bottomRight.x - topRight.x) / rightHeight > 0.3) continue;
+
+          const area = ((topWidth + bottomWidth) / 2) * ((leftHeight + rightHeight) / 2);
+          const score = area * averageSide;
+          if (!best || score > best.score) best = { topLeft, topRight, bottomLeft, bottomRight, score };
+        }
+      }
+    }
+  }
+
+  if (!best) throw new Error("Ascendra could not find all four table corner squares. Retake the photo straight-on with the whole table visible.");
+  return best;
+}
+
+function mapHabitTrackerPoint(corners, horizontal, vertical) {
+  const topX = corners.topLeft.x + (corners.topRight.x - corners.topLeft.x) * horizontal;
+  const topY = corners.topLeft.y + (corners.topRight.y - corners.topLeft.y) * horizontal;
+  const bottomX = corners.bottomLeft.x + (corners.bottomRight.x - corners.bottomLeft.x) * horizontal;
+  const bottomY = corners.bottomLeft.y + (corners.bottomRight.y - corners.bottomLeft.y) * horizontal;
+  return { x: topX + (bottomX - topX) * vertical, y: topY + (bottomY - topY) * vertical };
+}
+
+function measureHabitTrackerMark(imageData, corners, horizontal, vertical, horizontalRadius, verticalRadius) {
+  const { data, width, height } = imageData;
+  let darkPixels = 0;
+  let sampledPixels = 0;
+
+  for (let yStep = -5; yStep <= 5; yStep++) {
+    for (let xStep = -5; xStep <= 5; xStep++) {
+      const point = mapHabitTrackerPoint(corners, horizontal + horizontalRadius * (xStep / 5), vertical + verticalRadius * (yStep / 5));
+      const x = Math.max(0, Math.min(width - 1, Math.round(point.x)));
+      const y = Math.max(0, Math.min(height - 1, Math.round(point.y)));
+      const dataIndex = (y * width + x) * 4;
+      const luminance = data[dataIndex] * 0.299 + data[dataIndex + 1] * 0.587 + data[dataIndex + 2] * 0.114;
+      if (luminance < 145) darkPixels++;
+      sampledPixels++;
+    }
+  }
+
+  return darkPixels / sampledPixels;
+}
+
+async function detectHabitTrackerMarks(file, importData) {
+  const image = await decodeHabitTrackerPhoto(file);
+  const maximumDimension = 1600;
+  const scale = Math.min(1, maximumDimension / Math.max(image.width, image.height));
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) throw new Error("This browser cannot analyze the photo.");
+  context.drawImage(image, 0, 0, width, height);
+  if (typeof image.close === "function") image.close();
+
+  const imageData = context.getImageData(0, 0, width, height);
+  const corners = findHabitTrackerScanCorners(imageData);
+  const dates = getHabitImportWeekDates(importData.weekStart);
+  const todayKey = formatLocalDate();
+  const nameColumnWidth = 0.23;
+  const dayColumnWidth = (1 - nameColumnWidth) / 7;
+  const rowHeight = 1 / (importData.habits.length + 1);
+  let detected = 0;
+
+  importData.habits.forEach(function (habit, habitIndex) {
+    habit.results = dates.map(function (date, dayIndex) {
+      if (!isHabitScheduledForDate(habit, date) || formatLocalDate(date) > todayKey) return null;
+      const horizontal = nameColumnWidth + dayColumnWidth * (dayIndex + 0.5);
+      const vertical = rowHeight * (habitIndex + 1.5);
+      const inkRatio = measureHabitTrackerMark(imageData, corners, horizontal, vertical, dayColumnWidth * 0.09, rowHeight * 0.13);
+      const marked = inkRatio >= 0.035;
+      if (marked) detected++;
+      return marked;
+    });
+  });
+
+  return detected;
+}
+
 function initializeHabitImportPreview() {
   if (!pendingHabitImport) return;
 
@@ -1948,11 +2145,14 @@ function initializeHabitImportPreview() {
   const description = document.getElementById("habit-import-description");
   const preview = document.getElementById("habit-import-preview");
   const status = document.getElementById("habit-import-status");
+  const photoSection = document.getElementById("habit-photo-detection");
+  const photoInput = document.getElementById("habit-photo-input");
+  const photoStatus = document.getElementById("habit-photo-status");
   const confirmButton = document.getElementById("confirm-habit-import");
   const cancelButton = document.getElementById("cancel-habit-import");
   const closeButton = document.getElementById("close-habit-import");
 
-  if (!dialog || !title || !description || !preview || !status || !confirmButton || !cancelButton || !closeButton) return;
+  if (!dialog || !title || !description || !preview || !status || !photoSection || !photoInput || !photoStatus || !confirmButton || !cancelButton || !closeButton) return;
 
   const modal = createModalController(dialog, pendingHabitImport.error ? closeButton : confirmButton, { display: "flex" });
 
@@ -1963,6 +2163,7 @@ function initializeHabitImportPreview() {
 
   function renderImportPreview(data) {
     const dates = getHabitImportWeekDates(data.weekStart);
+    const todayKey = formatLocalDate();
     preview.innerHTML = "";
 
     data.habits.forEach(function (habit) {
@@ -1978,27 +2179,59 @@ function initializeHabitImportPreview() {
 
       const results = document.createElement("ul");
       results.className = "habit-import-results";
-      const reviewedResults = habit.results
-        .map(function (result, index) {
-          if (result === null) return null;
-          const item = document.createElement("li");
-          const day = dates[index].toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
-          item.textContent = `${result ? "✅" : "❌"} ${day}: ${result ? "Successful" : "Missed"}`;
-          return item;
-        })
-        .filter(Boolean);
+      habit.results.forEach(function (result, index) {
+        const resultItem = document.createElement("li");
+        const resultButton = document.createElement("button");
+        const dateKey = formatLocalDate(dates[index]);
+        const scheduled = isHabitScheduledForDate(habit, dates[index]);
+        const future = dateKey > todayKey;
+        const day = dates[index].toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
 
-      if (reviewedResults.length === 0) {
-        const blankWeek = document.createElement("li");
-        blankWeek.textContent = "Blank week — no check-ins will be changed.";
-        results.appendChild(blankWeek);
-      } else {
-        results.append(...reviewedResults);
-      }
+        function updateResultButton() {
+          const current = habit.results[index];
+          resultButton.dataset.result = current === null ? "pending" : String(current);
+          resultButton.textContent = !scheduled ? `— ${day}` : future ? `• ${day} · Future` : current === true ? `✅ ${day}` : current === false ? `❌ ${day}` : `• ${day} · Review`;
+          resultButton.setAttribute(
+            "aria-label",
+            !scheduled ? `${day}, not scheduled` : future ? `${day}, future date` : `${day}, ${current === true ? "successful" : current === false ? "missed" : "not reviewed"}. Activate to change.`,
+          );
+        }
+
+        resultButton.type = "button";
+        resultButton.disabled = !scheduled || future;
+        resultButton.addEventListener("click", function () {
+          const current = habit.results[index];
+          habit.results[index] = current === null ? true : current === true ? false : null;
+          updateResultButton();
+        });
+        updateResultButton();
+        resultItem.appendChild(resultButton);
+        results.appendChild(resultItem);
+      });
 
       item.append(heading, details, results);
       preview.appendChild(item);
     });
+  }
+
+  async function analyzeHabitPhoto() {
+    const file = photoInput.files?.[0];
+    const data = pendingHabitImport?.data;
+    if (!file || !data) return;
+
+    photoInput.disabled = true;
+    photoStatus.textContent = "Analyzing the table on this device…";
+    try {
+      const detected = await detectHabitTrackerMarks(file, data);
+      renderImportPreview(data);
+      photoStatus.textContent = `Detected ${detected} checkmark${detected === 1 ? "" : "s"}. Review every result below before importing.`;
+    } catch (error) {
+      console.warn("Ascendra could not detect the paper habit checkmarks.", error);
+      photoStatus.textContent = error instanceof Error ? error.message : "Ascendra could not analyze that photo.";
+    } finally {
+      photoInput.disabled = false;
+      photoInput.value = "";
+    }
   }
 
   function importReviewedHabits() {
@@ -2066,6 +2299,7 @@ function initializeHabitImportPreview() {
   closeButton.addEventListener("click", closeImportPreview);
   cancelButton.addEventListener("click", closeImportPreview);
   confirmButton.addEventListener("click", importReviewedHabits);
+  photoInput.addEventListener("change", analyzeHabitPhoto);
   dialog.addEventListener("click", function (event) {
     if (event.target === dialog) closeImportPreview();
   });
@@ -2074,12 +2308,15 @@ function initializeHabitImportPreview() {
     title.textContent = "Habit import could not be opened";
     description.textContent = pendingHabitImport.error;
     preview.hidden = true;
+    photoSection.hidden = true;
     confirmButton.hidden = true;
     cancelButton.textContent = "Dismiss";
   } else {
     const data = pendingHabitImport.data;
     title.textContent = "Review habit import";
     description.textContent = `${data.habits.length} habit${data.habits.length === 1 ? "" : "s"} · ${formatHabitImportWeek(data.weekStart)}`;
+    photoSection.hidden = false;
+    confirmButton.textContent = "Import Reviewed Habits";
     renderImportPreview(data);
   }
 
@@ -4902,7 +5139,7 @@ const ROUTE_INITIALIZERS = {
           const blank = document.createElement("span");
           const scheduled = isHabitScheduledForDate(habit, date);
           blank.className = `habit-history-status print-blank${scheduled ? "" : " not-scheduled"}`;
-          blank.textContent = scheduled ? "□" : "—";
+          blank.textContent = scheduled ? "" : "—";
           blank.setAttribute("aria-hidden", "true");
           cell.appendChild(blank);
           row.appendChild(cell);
