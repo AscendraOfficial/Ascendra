@@ -60,6 +60,7 @@ const LEGACY_USER_KEYS = Object.freeze([
   "todos",
   "habits",
   "events",
+  "timeCapsules",
   "ascendraSettings",
   "ascendra-profile-bio",
   "ascendra-profile-picture",
@@ -3701,7 +3702,15 @@ const ROUTE_INITIALIZERS = {
     }
 
     async function loadJournalEntries() {
-      const response = await fetch(API_URL + "/journal");
+      const currentUserId = getCurrentUserId();
+
+      if (!currentUserId) {
+        journalEntries = [];
+        return journalEntries;
+      }
+
+      const query = new URLSearchParams({ user_id: currentUserId });
+      const response = await fetch(`${API_URL}/journal?${query}`);
 
       if (!response.ok) {
         throw new Error(`Journal request failed: ${response.status}`);
@@ -3734,7 +3743,11 @@ const ROUTE_INITIALIZERS = {
 
       try {
         await loadJournalEntries();
-        entry = findEntry(day);
+        entry = findEntry(day) || readUserJson(getEntryKey(day), null);
+
+        if (statusMessage.textContent === "Backend unavailable. Loaded the local backup.") {
+          statusMessage.textContent = "";
+        }
       } catch (error) {
         console.error("Could not load the journal backend:", error);
 
@@ -3786,8 +3799,9 @@ const ROUTE_INITIALIZERS = {
         const dateKey = getEntryKey(day);
 
         const hasBackendEntry = journalEntries.some((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey);
+        const hasLocalEntry = Boolean(readUserJson(dateKey, null));
 
-        if (hasBackendEntry) {
+        if (hasBackendEntry || hasLocalEntry) {
           button.classList.add("has-entry");
         }
 
@@ -3848,14 +3862,7 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      console.log("JOURNAL DEBUG:", {
-        sessionAccountId: sessionStorage.getItem("ascendra:tab-identity:accountId"),
-        localAccountId: localStorage.getItem("accountId"),
-        storageKeyAccountId: localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID),
-      });
-
       const uid = getCurrentUserId() || localStorage.getItem("accountId") || localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID);
-      console.log("JOURNAL UID:", uid);
       const entry = {
         user_id: uid,
         date: getEntryKey(selectedDay),
@@ -4960,6 +4967,467 @@ const ROUTE_INITIALIZERS = {
     };
   },
   extras: function init_extras() {},
+  studyspace: function init_studyspace() {
+    const minutesInput = document.getElementById("pomodoro-minutes");
+    const startButton = document.getElementById("pomodoro-start");
+    const pauseButton = document.getElementById("stop-pomodoro");
+    const resetButton = document.getElementById("restart-pomodoro");
+    const timerDisplay = document.getElementById("pomodoro-display");
+    const timeLeft = document.getElementById("timeLeft");
+    const timerStatus = document.getElementById("pomodoro-status");
+    const trackButtons = [...document.querySelectorAll(".studyspace-track")];
+    const audio = document.getElementById("studyspace-audio");
+    const song = document.getElementById("song");
+    const playButton = document.getElementById("play");
+    const backButton = document.getElementById("back-20");
+    const forwardButton = document.getElementById("forward-20");
+    const progress = document.getElementById("studyspace-progress");
+    const elapsed = document.getElementById("music-elapsed");
+    const duration = document.getElementById("music-duration");
+    const musicStatus = document.getElementById("music-status");
+    const tracks = Object.freeze({
+      fluidscape: {
+        title: "Fluidscape",
+        artist: "Kevin MacLeod",
+        src: "assets/music/Fluidscape.mp3",
+        fallbackDuration: "30:21",
+      },
+      forestal: {
+        title: "Forestal",
+        artist: "Liborio Conti",
+        src: "assets/music/Forestal.mp3",
+        fallbackDuration: "7:25",
+      },
+    });
+    let timerId = null;
+    let remainingSeconds = 5 * 60;
+    let sessionStarted = false;
+    let activeTrackId = "fluidscape";
+
+    function formatClock(totalSeconds) {
+      const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
+      const minutes = Math.floor(safeSeconds / 60);
+      const seconds = safeSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function formatTrackTime(totalSeconds) {
+      const safeSeconds = Math.max(0, Math.floor(totalSeconds || 0));
+      return `${Math.floor(safeSeconds / 60)}:${String(safeSeconds % 60).padStart(2, "0")}`;
+    }
+
+    function readTimerDuration() {
+      const minutes = Number(minutesInput.value);
+      return Number.isInteger(minutes) && minutes >= 1 && minutes <= 180 ? minutes * 60 : null;
+    }
+
+    function updateTimerDisplay() {
+      timeLeft.textContent = formatClock(remainingSeconds);
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      timerDisplay.setAttribute(
+        "aria-label",
+        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
+      );
+    }
+
+    function clearTimer() {
+      if (timerId === null) return;
+      clearInterval(timerId);
+      timerId = null;
+    }
+
+    function setTimerRunning(running) {
+      startButton.disabled = running;
+      pauseButton.disabled = !running;
+      minutesInput.disabled = sessionStarted;
+      timerDisplay.classList.toggle("is-running", running);
+    }
+
+    function finishTimer() {
+      clearTimer();
+      remainingSeconds = 0;
+      sessionStarted = false;
+      setTimerRunning(false);
+      updateTimerDisplay();
+      timerStatus.textContent = "Focus session complete. Nice work!";
+    }
+
+    function tickTimer() {
+      remainingSeconds -= 1;
+      updateTimerDisplay();
+      if (remainingSeconds <= 0) finishTimer();
+    }
+
+    function startTimer() {
+      if (timerId !== null) return;
+
+      if (!sessionStarted || remainingSeconds <= 0) {
+        const durationInSeconds = readTimerDuration();
+        if (durationInSeconds === null) {
+          timerStatus.textContent = "Enter a whole number from 1 to 180 minutes.";
+          minutesInput.focus();
+          return;
+        }
+        remainingSeconds = durationInSeconds;
+        sessionStarted = true;
+        updateTimerDisplay();
+      }
+
+      timerId = setInterval(tickTimer, 1000);
+      setTimerRunning(true);
+      timerStatus.textContent = "Focus session in progress.";
+    }
+
+    function pauseTimer() {
+      if (timerId === null) return;
+      clearTimer();
+      setTimerRunning(false);
+      timerStatus.textContent = "Paused. Continue whenever you are ready.";
+    }
+
+    function resetTimer() {
+      clearTimer();
+      sessionStarted = false;
+      remainingSeconds = readTimerDuration() || 5 * 60;
+      setTimerRunning(false);
+      updateTimerDisplay();
+      timerStatus.textContent = "Ready when you are.";
+    }
+
+    function handleMinutesInput() {
+      if (sessionStarted) return;
+      const durationInSeconds = readTimerDuration();
+      if (durationInSeconds === null) return;
+      remainingSeconds = durationInSeconds;
+      updateTimerDisplay();
+      timerStatus.textContent = "Ready when you are.";
+    }
+
+    function updatePlayButton() {
+      const isPlaying = !audio.paused && !audio.ended;
+      const activeTrack = tracks[activeTrackId];
+      playButton.innerHTML = isPlaying
+        ? '<i class="fa-solid fa-pause" aria-hidden="true"></i>'
+        : '<i class="fa-solid fa-play" aria-hidden="true"></i>';
+      playButton.setAttribute("aria-label", `${isPlaying ? "Pause" : "Play"} ${activeTrack.title}`);
+    }
+
+    function updateMusicProgress() {
+      const trackDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
+      const currentTime = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      progress.value = trackDuration ? String((currentTime / trackDuration) * 100) : "0";
+      elapsed.textContent = formatTrackTime(currentTime);
+      if (trackDuration) duration.textContent = formatTrackTime(trackDuration);
+      progress.setAttribute("aria-valuetext", `${formatTrackTime(currentTime)} of ${formatTrackTime(trackDuration)}`);
+    }
+
+    async function toggleMusic() {
+      if (!audio.paused) {
+        audio.pause();
+        musicStatus.textContent = "Music paused.";
+        return;
+      }
+
+      try {
+        await audio.play();
+        musicStatus.textContent = `Playing ${tracks[activeTrackId].title}.`;
+      } catch (error) {
+        console.warn("Study Space could not start the selected track.", error);
+        musicStatus.textContent = "The music could not start. Please try again.";
+      }
+    }
+
+    function seekBy(seconds) {
+      const trackDuration = Number.isFinite(audio.duration) ? audio.duration : Infinity;
+      audio.currentTime = Math.min(trackDuration, Math.max(0, audio.currentTime + seconds));
+      updateMusicProgress();
+    }
+
+    function seekFromProgress() {
+      if (!Number.isFinite(audio.duration)) return;
+      audio.currentTime = (Number(progress.value) / 100) * audio.duration;
+      updateMusicProgress();
+    }
+
+    function selectTrack(event) {
+      const selectedButton = event.currentTarget;
+      const selectedTrackId = selectedButton.dataset.track;
+      const selectedTrack = tracks[selectedTrackId];
+
+      if (!selectedTrack || selectedTrackId === activeTrackId) {
+        playButton.focus();
+        return;
+      }
+
+      audio.pause();
+      activeTrackId = selectedTrackId;
+      audio.src = selectedTrack.src;
+      audio.load();
+      song.textContent = `${selectedTrack.title} · ${selectedTrack.artist}`;
+      duration.textContent = selectedTrack.fallbackDuration;
+      progress.value = "0";
+      elapsed.textContent = "0:00";
+      trackButtons.forEach((button) => {
+        const isSelected = button === selectedButton;
+        button.classList.toggle("is-selected", isSelected);
+        button.setAttribute("aria-pressed", String(isSelected));
+      });
+      updatePlayButton();
+      musicStatus.textContent = `${selectedTrack.title} selected.`;
+      playButton.focus();
+    }
+
+    function handleTrackEnded() {
+      updatePlayButton();
+      musicStatus.textContent = `${tracks[activeTrackId].title} finished.`;
+    }
+
+    function handleAudioError() {
+      musicStatus.textContent = `${tracks[activeTrackId].title} could not be loaded.`;
+    }
+
+    const seekBackward = () => seekBy(-20);
+    const seekForward = () => seekBy(20);
+
+    startButton.addEventListener("click", startTimer);
+    pauseButton.addEventListener("click", pauseTimer);
+    resetButton.addEventListener("click", resetTimer);
+    minutesInput.addEventListener("input", handleMinutesInput);
+    trackButtons.forEach((button) => button.addEventListener("click", selectTrack));
+    playButton.addEventListener("click", toggleMusic);
+    backButton.addEventListener("click", seekBackward);
+    forwardButton.addEventListener("click", seekForward);
+    progress.addEventListener("input", seekFromProgress);
+    audio.addEventListener("timeupdate", updateMusicProgress);
+    audio.addEventListener("loadedmetadata", updateMusicProgress);
+    audio.addEventListener("play", updatePlayButton);
+    audio.addEventListener("pause", updatePlayButton);
+    audio.addEventListener("ended", handleTrackEnded);
+    audio.addEventListener("error", handleAudioError);
+    updateTimerDisplay();
+    updateMusicProgress();
+    updatePlayButton();
+
+    return () => {
+      clearTimer();
+      audio.pause();
+      startButton.removeEventListener("click", startTimer);
+      pauseButton.removeEventListener("click", pauseTimer);
+      resetButton.removeEventListener("click", resetTimer);
+      minutesInput.removeEventListener("input", handleMinutesInput);
+      trackButtons.forEach((button) => button.removeEventListener("click", selectTrack));
+      playButton.removeEventListener("click", toggleMusic);
+      backButton.removeEventListener("click", seekBackward);
+      forwardButton.removeEventListener("click", seekForward);
+      progress.removeEventListener("input", seekFromProgress);
+      audio.removeEventListener("timeupdate", updateMusicProgress);
+      audio.removeEventListener("loadedmetadata", updateMusicProgress);
+      audio.removeEventListener("play", updatePlayButton);
+      audio.removeEventListener("pause", updatePlayButton);
+      audio.removeEventListener("ended", handleTrackEnded);
+      audio.removeEventListener("error", handleAudioError);
+    };
+  },
+  capsule: function init_capsule() {
+    const form = document.getElementById("capsule-form");
+    const titleInput = document.getElementById("capsule-title");
+    const messageInput = document.getElementById("capsule-message");
+    const dateInput = document.getElementById("capsule-date");
+    const characterCount = document.getElementById("capsule-character-count");
+    const status = document.getElementById("capsule-status");
+    const summary = document.getElementById("capsule-summary");
+    const list = document.getElementById("capsule-list");
+    let statusTimer = null;
+
+    function toLocalDateString(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function getTomorrowString() {
+      const tomorrow = new Date();
+      tomorrow.setHours(0, 0, 0, 0);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return toLocalDateString(tomorrow);
+    }
+
+    function parseCapsuleDate(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+      const date = new Date(`${value}T00:00:00`);
+      return !Number.isNaN(date.getTime()) && toLocalDateString(date) === value ? date : null;
+    }
+
+    function isUnlocked(capsule) {
+      const unlockDate = parseCapsuleDate(capsule.unlockDate);
+      if (!unlockDate) return false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return unlockDate <= today;
+    }
+
+    function formatUnlockDate(value) {
+      const date = parseCapsuleDate(value);
+      return date
+        ? date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
+        : "Unknown date";
+    }
+
+    function getCapsules() {
+      return getUserArray(STORAGE_KEYS.TIME_CAPSULES).filter(
+        (capsule) =>
+          typeof capsule.id === "string" &&
+          typeof capsule.title === "string" &&
+          typeof capsule.message === "string" &&
+          parseCapsuleDate(capsule.unlockDate),
+      );
+    }
+
+    function saveCapsules(capsules) {
+      setUserItem(STORAGE_KEYS.TIME_CAPSULES, JSON.stringify(capsules));
+    }
+
+    function showStatus(message, type = "success") {
+      status.textContent = message;
+      status.className = `capsule-status ${type}`;
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => {
+        status.textContent = "";
+        status.className = "capsule-status";
+      }, 5000);
+    }
+
+    function createCapsuleCard(capsule) {
+      const unlocked = isUnlocked(capsule);
+      const article = document.createElement("article");
+      article.className = `saved-capsule ${unlocked ? "is-unlocked" : "is-locked"}`;
+
+      const icon = document.createElement("span");
+      icon.className = "saved-capsule-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.innerHTML = unlocked ? '<i class="fa-solid fa-lock-open"></i>' : '<i class="fa-solid fa-lock"></i>';
+
+      const content = document.createElement("div");
+      content.className = "saved-capsule-content";
+      const heading = document.createElement("h3");
+      heading.textContent = capsule.title;
+      const date = document.createElement("p");
+      date.className = "saved-capsule-date";
+      date.textContent = `${unlocked ? "Unlocked" : "Unlocks"} ${formatUnlockDate(capsule.unlockDate)}`;
+      const message = document.createElement("p");
+      message.className = "saved-capsule-message";
+      message.textContent = unlocked ? capsule.message : "This message is sealed until its unlock date.";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "capsule-delete";
+      deleteButton.type = "button";
+      deleteButton.dataset.capsuleId = capsule.id;
+      deleteButton.setAttribute("aria-label", `Delete ${capsule.title}`);
+      deleteButton.innerHTML = '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+
+      content.append(heading, date, message);
+      article.append(icon, content, deleteButton);
+      return article;
+    }
+
+    function renderCapsules() {
+      const capsules = getCapsules().sort((first, second) => first.unlockDate.localeCompare(second.unlockDate));
+      list.replaceChildren();
+
+      if (capsules.length === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "capsule-empty";
+        emptyState.innerHTML = '<i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>';
+        const emptyText = document.createElement("p");
+        emptyText.textContent = "Your future messages will appear here after you seal them.";
+        emptyState.appendChild(emptyText);
+        list.appendChild(emptyState);
+        summary.textContent = "No capsules saved yet.";
+        return;
+      }
+
+      const unlockedCount = capsules.filter(isUnlocked).length;
+      summary.textContent = `${capsules.length} saved · ${capsules.length - unlockedCount} locked · ${unlockedCount} unlocked`;
+      capsules.forEach((capsule) => list.appendChild(createCapsuleCard(capsule)));
+    }
+
+    function updateCharacterCount() {
+      characterCount.textContent = `${messageInput.value.length} / 2000`;
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      const title = titleInput.value.trim();
+      const message = messageInput.value.trim();
+      const unlockDate = parseCapsuleDate(dateInput.value);
+      const tomorrow = parseCapsuleDate(getTomorrowString());
+
+      if (!title || !message || !unlockDate) {
+        showStatus("Complete every field before sealing your capsule.", "error");
+        return;
+      }
+      if (unlockDate < tomorrow) {
+        showStatus("Choose tomorrow or a later unlock date.", "error");
+        dateInput.focus();
+        return;
+      }
+
+      const capsules = getCapsules();
+      capsules.push({
+        id: createAccountId(),
+        title,
+        message,
+        unlockDate: dateInput.value,
+        createdAt: new Date().toISOString(),
+      });
+
+      try {
+        saveCapsules(capsules);
+        form.reset();
+        dateInput.min = getTomorrowString();
+        updateCharacterCount();
+        renderCapsules();
+        showStatus("Your time capsule has been sealed.");
+        titleInput.focus();
+      } catch (error) {
+        console.warn("Ascendra could not save the time capsule.", error);
+        showStatus("Your capsule could not be saved. Please try again.", "error");
+      }
+    }
+
+    function handleListClick(event) {
+      const deleteButton = event.target.closest("[data-capsule-id]");
+      if (!deleteButton) return;
+      const capsules = getCapsules();
+      const capsule = capsules.find((item) => item.id === deleteButton.dataset.capsuleId);
+      if (!capsule || !confirm(`Delete the time capsule “${capsule.title}”?`)) return;
+
+      try {
+        saveCapsules(capsules.filter((item) => item.id !== capsule.id));
+        renderCapsules();
+        showStatus("Time capsule deleted.");
+      } catch (error) {
+        console.warn("Ascendra could not delete the time capsule.", error);
+        showStatus("The capsule could not be deleted.", "error");
+      }
+    }
+
+    dateInput.min = getTomorrowString();
+    form.addEventListener("submit", handleSubmit);
+    messageInput.addEventListener("input", updateCharacterCount);
+    list.addEventListener("click", handleListClick);
+    updateCharacterCount();
+    renderCapsules();
+
+    return () => {
+      clearTimeout(statusTimer);
+      form.removeEventListener("submit", handleSubmit);
+      messageInput.removeEventListener("input", updateCharacterCount);
+      list.removeEventListener("click", handleListClick);
+    };
+  },
   minitools: function init_minitools() {
     const flipButton = document.getElementById("flip");
     const rollButton = document.getElementById("roll");
@@ -5074,6 +5542,10 @@ const searchablePages = [
   { name: "Privacy Policy", route: "privacy" },
   { name: "Terms of Service", route: "terms" },
   { name: "Unwind", route: "unwind" },
+  { name: "Study Space", route: "studyspace" },
+  { name: "Time Capsule", route: "capsule" },
+  { name: "Projects", route: "projects" },
+  { name: "Coming Soon", route: "comingsoon" },
 ];
 let searchPreviousFocus = null;
 
@@ -5347,8 +5819,9 @@ function ascendraAIReply(question) {
   }
 
   if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(normalizedQuestion)) {
+    const currentUsername = getLoggedInUsername() || "there";
     return chooseFreshAiChatReply([
-      `Hey ${username}! What are we working on?`,
+      `Hey ${currentUsername}! What are we working on?`,
       "Hi! Ask what I can do, or tell me which Ascendra page to open.",
       "Hello! Tiny fox, ready to help.",
     ]);
@@ -5375,7 +5848,7 @@ function ascendraAIReply(question) {
   }
 
   if (/\b(journal|privacy|private)\b/.test(normalizedQuestion) && !navigationIntent) {
-    return "Your journal entries are saved in this browser’s local storage. They are not an online account backup, so avoid entering sensitive secrets.";
+    return "Your journal entries sync through Ascendra’s backend and also keep a local browser backup. Avoid entering sensitive secrets because the journal is not end-to-end encrypted.";
   }
 
   if (/\b(achievement|achievements|badge|badges|xp)\b/.test(normalizedQuestion) && !navigationIntent) {
@@ -5469,6 +5942,38 @@ function checkManualResponse(input) {
   }
 
   return null;
+}
+
+/* ============================= */
+/* AI CHAT                       */
+/* ============================= */
+
+function initializeAscendraAIChat() {
+  const form = document.getElementById("ai-chat-form");
+  const input = document.getElementById("ai-chat-input");
+
+  if (!form || !input) return;
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const question = input.value.trim();
+    if (!question) return;
+
+    input.value = "";
+    const manualResponse = checkManualResponse(question);
+
+    if (manualResponse) {
+      if (manualResponse.type === "makeTask" && typeof window.createTodoFromAI === "function") {
+        window.createTodoFromAI(manualResponse.name, manualResponse.note, manualResponse.priority);
+      }
+
+      showAscendraAIMessage(manualResponse.response, { bypassCooldown: true });
+      return;
+    }
+
+    showAscendraAIMessage(ascendraAIReply(question), { bypassCooldown: true });
+  });
 }
 
 
@@ -5639,10 +6144,6 @@ function initializeAscendraAI() {
   }
 
   function noteInteraction(event) {
-    if (event.target instanceof Element && event.target.closest("#ascendra-ai")) {
-      return;
-    }
-
     lastInteraction = Date.now();
     lastTarget = null;
 
