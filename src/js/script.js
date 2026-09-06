@@ -1815,7 +1815,7 @@ document.addEventListener("visibilitychange", function handleAccountVisibility()
 });
 
 function getSavedSettings() {
-  const defaults = { accentColor: "purple", lightMode: true };
+  const defaults = { accentColor: "purple", lightMode: true, ascendraAIEnabled: true };
   const saved = readUserJson("ascendraSettings", null);
   return saved && typeof saved === "object" && !Array.isArray(saved) ? { ...defaults, ...saved } : defaults;
 }
@@ -1836,8 +1836,31 @@ function applySavedSettings() {
   document.documentElement.style.setProperty("--muted", darkModeEnabled ? "#cbd5e1" : "#666");
   document.body.classList.toggle("dark-mode", darkModeEnabled);
 
+  const ascendraAIEnabled = settings.ascendraAIEnabled !== false;
+  const companion = document.getElementById("ascendra-ai");
+  if (companion) {
+    companion.hidden = !ascendraAIEnabled;
+
+    if (!ascendraAIEnabled) {
+      companion.classList.remove(
+        "is-roaming",
+        "is-jumping",
+        "is-speaking",
+        "is-tail-wagging",
+        "is-looking-around",
+        "is-stretching",
+        "is-napping",
+      );
+      companion.style.setProperty("--ai-shift-x", "0px");
+      companion.style.setProperty("--ai-shift-y", "0px");
+    }
+  }
+
   const modeToggle = document.getElementById("mode");
   if (modeToggle) modeToggle.checked = darkModeEnabled;
+
+  const ascendraAIToggle = document.getElementById("ascendra-ai-enabled");
+  if (ascendraAIToggle) ascendraAIToggle.checked = ascendraAIEnabled;
 }
 
 function clearWindowRouteFunction(name, routeFunction) {
@@ -4085,6 +4108,7 @@ const ROUTE_INITIALIZERS = {
   },
   settings: function init_settings() {
     const modeToggle = document.getElementById("mode");
+    const ascendraAIToggle = document.getElementById("ascendra-ai-enabled");
 
     function handleModeChange() {
       const settings = getSavedSettings();
@@ -4096,6 +4120,18 @@ const ROUTE_INITIALIZERS = {
     if (modeToggle) {
       modeToggle.checked = getSavedSettings().lightMode === false;
       modeToggle.addEventListener("change", handleModeChange);
+    }
+
+    function handleAscendraAIChange() {
+      const settings = getSavedSettings();
+      settings.ascendraAIEnabled = ascendraAIToggle.checked;
+      setUserItem("ascendraSettings", JSON.stringify(settings));
+      applySavedSettings();
+    }
+
+    if (ascendraAIToggle) {
+      ascendraAIToggle.checked = getSavedSettings().ascendraAIEnabled !== false;
+      ascendraAIToggle.addEventListener("change", handleAscendraAIChange);
     }
 
     function resetSettings() {
@@ -4125,6 +4161,7 @@ const ROUTE_INITIALIZERS = {
 
     return () => {
       if (modeToggle) modeToggle.removeEventListener("change", handleModeChange);
+      if (ascendraAIToggle) ascendraAIToggle.removeEventListener("change", handleAscendraAIChange);
       clearWindowRouteFunction("resetSettings", resetSettings);
       clearWindowRouteFunction("deleteAllData", deleteAllData);
     };
@@ -5738,7 +5775,7 @@ function showAscendraAIMessage(message, options = {}) {
   const cleanMessage = String(message || "").trim();
   const now = Date.now();
 
-  if (!companion || !messageElement || cleanMessage === "") {
+  if (!companion || companion.hidden || !messageElement || cleanMessage === "") {
     return false;
   }
 
@@ -6009,7 +6046,7 @@ function initializeAscendraAI() {
     clearTimeout(idleAnimationTimer);
 
     idleAnimationTimer = window.setTimeout(() => {
-      if (reduceMotion.matches || document.hidden || companion.classList.contains("is-jumping")) {
+      if (companion.hidden || reduceMotion.matches || document.hidden || companion.classList.contains("is-jumping")) {
         scheduleIdleAnimation();
         return;
       }
@@ -6081,7 +6118,7 @@ function initializeAscendraAI() {
   }
 
   function jumpToButton() {
-    if (reduceMotion.matches || document.hidden || Date.now() - lastInteraction < idleBeforeRoaming) {
+    if (companion.hidden || reduceMotion.matches || document.hidden || Date.now() - lastInteraction < idleBeforeRoaming) {
       return;
     }
 
