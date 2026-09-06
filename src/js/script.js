@@ -12,14 +12,169 @@ const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
 const DEFAULT_APP_NAME = "Ascendra";
 const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "placeholder", "title"]);
-const params = new URLSearchParams(window.location.search);
-const habitImport = params.get("habitImport");
-if (habitImport) {
-  const habitData = JSON.parse(habitImport);
+const HABIT_IMPORT_DAY_KEYS = Object.freeze(["mon", "tue", "wed", "thu", "fri", "sat", "sun"]);
+const HABIT_IMPORT_MAX_LENGTH = 10000;
+const HABIT_IMPORT_MAX_HABITS = 30;
 
-  console.log(habitData);
-  console.log(habitImport);
+function getStartOfWeek(date = new Date(), offsetWeeks = 0) {
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const daysSinceMonday = (start.getDay() + 6) % 7;
+  start.setDate(start.getDate() - daysSinceMonday + offsetWeeks * 7);
+  return start;
 }
+
+function getHabitImportWeekDates(weekStart) {
+  const start = parseLocalDateTime(weekStart);
+  if (!start) return [];
+
+  return HABIT_IMPORT_DAY_KEYS.map(function (_, index) {
+    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    date.setDate(start.getDate() + index);
+    return date;
+  });
+}
+
+function normalizeHabitImportStatus(value) {
+  if (value === true || value === false || value === null || value === undefined) {
+    return value ?? null;
+  }
+  throw new Error("Habit results must be true, false, or blank.");
+}
+
+function normalizeImportedHabit(value, index, compact = false) {
+  const source = compact
+    ? {
+        habit: value?.[0],
+        emoji: value?.[1],
+        type: value?.[2],
+        frequency: value?.[3],
+        results: value?.[4],
+      }
+    : value;
+
+  if (!isPlainRecord(source)) {
+    throw new Error(`Habit ${index + 1} is not a valid object.`);
+  }
+
+  const name = String(source.habit ?? source.name ?? "").trim();
+  const emoji = String(source.emoji ?? "").trim();
+  const type = source.type ?? "good";
+  const frequency = source.frequency ?? "daily";
+
+  if (!name || name.length > 120) {
+    throw new Error(`Habit ${index + 1} needs a name between 1 and 120 characters.`);
+  }
+  if (emoji.length > 8) {
+    throw new Error(`Habit ${index + 1} has an invalid emoji.`);
+  }
+  if (!["good", "bad"].includes(type)) {
+    throw new Error(`Habit ${index + 1} has an invalid type.`);
+  }
+  if (!["daily", "weekdays", "weekends"].includes(frequency)) {
+    throw new Error(`Habit ${index + 1} has an invalid frequency.`);
+  }
+
+  const compactResults = Array.isArray(source.results) ? source.results : null;
+  if (compactResults && compactResults.length > HABIT_IMPORT_DAY_KEYS.length) {
+    throw new Error(`Habit ${index + 1} contains too many daily results.`);
+  }
+
+  const results = HABIT_IMPORT_DAY_KEYS.map(function (dayKey, dayIndex) {
+    return normalizeHabitImportStatus(compactResults ? compactResults[dayIndex] : source[dayKey]);
+  });
+
+  return { name, emoji, type, frequency, results };
+}
+
+function validateHabitImportPayload(value) {
+  if (!isPlainRecord(value)) {
+    throw new Error("The QR data must contain a habit object.");
+  }
+
+  const isEnvelope =
+    Array.isArray(value.habits) || Array.isArray(value.h) || value.version !== undefined || value.v !== undefined || value.type === "ascendra-habit-week";
+  const version = value.version ?? value.v ?? 1;
+  if (version !== 1) {
+    throw new Error("This habit QR version is not supported.");
+  }
+  if (isEnvelope && value.type && value.type !== "ascendra-habit-week") {
+    throw new Error("This QR code is not an Ascendra weekly habit tracker.");
+  }
+
+  const requestedWeekStart = value.weekStart ?? value.w;
+  const fallbackWeekStart = formatLocalDate(getStartOfWeek());
+  const weekStart = requestedWeekStart === undefined ? fallbackWeekStart : String(requestedWeekStart);
+  const weekDates = getHabitImportWeekDates(weekStart);
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(weekStart) || weekDates.length !== 7 || formatLocalDate(weekDates[0]) !== weekStart) {
+    throw new Error("The imported week start date is invalid.");
+  }
+
+  let candidates;
+  let compact = false;
+  if (Array.isArray(value.habits)) {
+    candidates = value.habits;
+  } else if (Array.isArray(value.h)) {
+    candidates = value.h;
+    compact = true;
+  } else if (value.habit !== undefined || value.name !== undefined) {
+    candidates = [value];
+  } else {
+    throw new Error("The QR data does not contain any habits.");
+  }
+
+  if (candidates.length === 0 || candidates.length > HABIT_IMPORT_MAX_HABITS) {
+    throw new Error(`A habit QR can contain between 1 and ${HABIT_IMPORT_MAX_HABITS} habits.`);
+  }
+
+  const habits = candidates.map((habit, index) => normalizeImportedHabit(habit, index, compact));
+  const todayKey = formatLocalDate();
+  habits.forEach(function (habit) {
+    habit.results.forEach(function (result, index) {
+      if (typeof result === "boolean" && formatLocalDate(weekDates[index]) > todayKey) {
+        throw new Error("Future habit check-ins must stay blank.");
+      }
+    });
+  });
+
+  const names = new Set();
+  habits.forEach(function (habit) {
+    const key = habit.name.toLocaleLowerCase();
+    if (names.has(key)) throw new Error(`The QR data repeats the habit “${habit.name}”.`);
+    names.add(key);
+  });
+
+  return { version: 1, type: "ascendra-habit-week", weekStart, habits };
+}
+
+function consumeHabitImportParameter() {
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("habitImport")) return null;
+
+  const serializedImport = url.searchParams.get("habitImport");
+  url.searchParams.delete("habitImport");
+  history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
+
+  try {
+    if (!serializedImport || serializedImport.length > HABIT_IMPORT_MAX_LENGTH) {
+      throw new Error("The habit QR data is empty or too large.");
+    }
+
+    let parsedImport;
+    try {
+      parsedImport = JSON.parse(serializedImport);
+    } catch {
+      throw new Error("The habit QR data is not valid JSON.");
+    }
+
+    return { data: validateHabitImportPayload(parsedImport), error: null };
+  } catch (error) {
+    console.warn("Ascendra ignored an invalid habit import.", error);
+    return { data: null, error: error instanceof Error ? error.message : "The habit QR data could not be read." };
+  }
+}
+
+let pendingHabitImport = consumeHabitImportParameter();
 console.log(
   "Hello there! If there is an error that you would like to report, we would really appreciate it if you would go to https://github.com/AscendraOfficial/Ascendra/issues, thank you! 😃",
 );
@@ -1775,6 +1930,160 @@ function createModalController(dialog, initialFocus, options = {}) {
   }
 
   return { open, close, destroy };
+}
+
+function formatHabitImportWeek(weekStart) {
+  const dates = getHabitImportWeekDates(weekStart);
+  if (dates.length !== 7) return "Unknown week";
+
+  const format = { month: "short", day: "numeric", year: "numeric" };
+  return `${dates[0].toLocaleDateString(undefined, format)} – ${dates[6].toLocaleDateString(undefined, format)}`;
+}
+
+function initializeHabitImportPreview() {
+  if (!pendingHabitImport) return;
+
+  const dialog = document.getElementById("habit-import-dialog");
+  const title = document.getElementById("habit-import-title");
+  const description = document.getElementById("habit-import-description");
+  const preview = document.getElementById("habit-import-preview");
+  const status = document.getElementById("habit-import-status");
+  const confirmButton = document.getElementById("confirm-habit-import");
+  const cancelButton = document.getElementById("cancel-habit-import");
+  const closeButton = document.getElementById("close-habit-import");
+
+  if (!dialog || !title || !description || !preview || !status || !confirmButton || !cancelButton || !closeButton) return;
+
+  const modal = createModalController(dialog, pendingHabitImport.error ? closeButton : confirmButton, { display: "flex" });
+
+  function closeImportPreview() {
+    pendingHabitImport = null;
+    modal.close();
+  }
+
+  function renderImportPreview(data) {
+    const dates = getHabitImportWeekDates(data.weekStart);
+    preview.innerHTML = "";
+
+    data.habits.forEach(function (habit) {
+      const item = document.createElement("article");
+      item.className = "habit-import-item";
+
+      const heading = document.createElement("h3");
+      heading.textContent = `${habit.emoji ? `${habit.emoji} ` : ""}${habit.name}`;
+
+      const details = document.createElement("p");
+      const frequency = habit.frequency === "weekdays" ? "Weekdays" : habit.frequency === "weekends" ? "Weekends" : "Every day";
+      details.textContent = `${habit.type === "bad" ? "Avoid habit" : "Build habit"} · ${frequency}`;
+
+      const results = document.createElement("ul");
+      results.className = "habit-import-results";
+      const reviewedResults = habit.results
+        .map(function (result, index) {
+          if (result === null) return null;
+          const item = document.createElement("li");
+          const day = dates[index].toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+          item.textContent = `${result ? "✅" : "❌"} ${day}: ${result ? "Successful" : "Missed"}`;
+          return item;
+        })
+        .filter(Boolean);
+
+      if (reviewedResults.length === 0) {
+        const blankWeek = document.createElement("li");
+        blankWeek.textContent = "Blank week — no check-ins will be changed.";
+        results.appendChild(blankWeek);
+      } else {
+        results.append(...reviewedResults);
+      }
+
+      item.append(heading, details, results);
+      preview.appendChild(item);
+    });
+  }
+
+  function importReviewedHabits() {
+    const data = pendingHabitImport?.data;
+    const username = getLoggedInUsername();
+
+    if (!data) return;
+    if (!username) {
+      status.textContent = "Log in to an Ascendra account before importing these habits.";
+      return;
+    }
+
+    const savedHabits = getUserArray("habits");
+    const dates = getHabitImportWeekDates(data.weekStart);
+    let addedHabits = 0;
+    let updatedResults = 0;
+
+    data.habits.forEach(function (importedHabit, index) {
+      const normalizedName = importedHabit.name.toLocaleLowerCase();
+      let savedHabit = savedHabits.find((habit) => String(habit.name || "").trim().toLocaleLowerCase() === normalizedName);
+
+      if (!savedHabit) {
+        savedHabit = {
+          id: Date.now() + index,
+          name: importedHabit.name,
+          emoji: importedHabit.emoji,
+          type: importedHabit.type,
+          frequency: importedHabit.frequency,
+          goal: null,
+          unit: "",
+          reminder: null,
+          notes: "",
+          history: {},
+        };
+        savedHabits.push(savedHabit);
+        addedHabits++;
+      }
+
+      const history = { ...getHabitHistory(savedHabit) };
+      importedHabit.results.forEach(function (result, dayIndex) {
+        if (typeof result !== "boolean") return;
+        const dateKey = formatLocalDate(dates[dayIndex]);
+        if (history[dateKey] !== result) updatedResults++;
+        history[dateKey] = result;
+      });
+      savedHabit.history = history;
+    });
+
+    try {
+      if (addedHabits > 0 || updatedResults > 0) {
+        setUserItem("habits", JSON.stringify(savedHabits));
+        syncProgressionFromActivity();
+      }
+    } catch (error) {
+      console.error("Ascendra could not save the reviewed habit import.", error);
+      status.textContent = "The import could not be saved. Your existing habits were not changed.";
+      return;
+    }
+
+    pendingHabitImport = null;
+    modal.close();
+    if (["habits", "stats"].includes(getRoute())) renderRoute(getRoute(), { focusRoute: false });
+  }
+
+  closeButton.addEventListener("click", closeImportPreview);
+  cancelButton.addEventListener("click", closeImportPreview);
+  confirmButton.addEventListener("click", importReviewedHabits);
+  dialog.addEventListener("click", function (event) {
+    if (event.target === dialog) closeImportPreview();
+  });
+
+  if (pendingHabitImport.error) {
+    title.textContent = "Habit import could not be opened";
+    description.textContent = pendingHabitImport.error;
+    preview.hidden = true;
+    confirmButton.hidden = true;
+    cancelButton.textContent = "Dismiss";
+  } else {
+    const data = pendingHabitImport.data;
+    title.textContent = "Review habit import";
+    description.textContent = `${data.habits.length} habit${data.habits.length === 1 ? "" : "s"} · ${formatHabitImportWeek(data.weekStart)}`;
+    renderImportPreview(data);
+  }
+
+  modal.open();
 }
 
 localStorage.removeItem("password");
@@ -4228,6 +4537,14 @@ const ROUTE_INITIALIZERS = {
 
     const habitHistoryEmpty = document.getElementById("habit-history-empty");
 
+    const habitHistorySummary = document.getElementById("habit-history-summary");
+
+    const printStatsButton = document.getElementById("print-stats");
+
+    const habitTrackerQr = document.getElementById("habit-tracker-qr");
+
+    const habitTrackerQrStatus = document.getElementById("habit-tracker-qr-status");
+
     const achievementIcon = document.getElementById("achievement-icon");
 
     const achievementTitle = document.getElementById("achievement-title");
@@ -4298,14 +4615,6 @@ const ROUTE_INITIALIZERS = {
         taskProgressTrack.setAttribute("aria-valuemax", "100");
         taskProgressTrack.setAttribute("aria-valuenow", String(completionRate));
         taskProgressTrack.setAttribute("aria-valuetext", `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`);
-      }
-
-      const printStatsButton = document.getElementById("print-stats");
-
-      if (printStatsButton) {
-        printStatsButton.addEventListener("click", () => {
-          window.print();
-        });
       }
 
       updateTaskProgressMessage(totalTasks, completedTasks, completionRate);
@@ -4464,14 +4773,7 @@ const ROUTE_INITIALIZERS = {
       });
     }
 
-    function displayHabitHistory(habits) {
-      if (!habitHistoryTable || !habitHistoryBody || !habitHistoryEmpty) {
-        return;
-      }
-
-      const dates = getRecentHabitHistoryDates();
-      habitHistoryBody.innerHTML = "";
-
+    function renderHabitHistoryHeaders(dates) {
       habitHistoryDayHeaders.forEach(function (header, index) {
         const date = dates[index];
         if (!date) return;
@@ -4488,9 +4790,20 @@ const ROUTE_INITIALIZERS = {
           date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }),
         );
       });
+    }
+
+    function displayHabitHistory(habits) {
+      if (!habitHistoryTable || !habitHistoryBody || !habitHistoryEmpty) {
+        return;
+      }
+
+      const dates = getRecentHabitHistoryDates();
+      habitHistoryBody.innerHTML = "";
+      renderHabitHistoryHeaders(dates);
 
       habitHistoryTable.hidden = habits.length === 0;
       habitHistoryEmpty.hidden = habits.length !== 0;
+      if (habitHistorySummary) habitHistorySummary.textContent = "Your latest seven days of habit check-ins.";
 
       habits.forEach(function (habit) {
         const row = document.createElement("tr");
@@ -4538,6 +4851,113 @@ const ROUTE_INITIALIZERS = {
 
         habitHistoryBody.appendChild(row);
       });
+    }
+
+    function createPrintableHabitPayload(habits, weekStart) {
+      return {
+        v: 1,
+        w: weekStart,
+        h: habits.map(function (habit) {
+          return [
+            String(habit.name || "Untitled habit").trim().slice(0, 120),
+            String(habit.emoji || "").trim().slice(0, 8),
+            habit.type === "bad" ? "bad" : "good",
+            ["weekdays", "weekends"].includes(habit.frequency) ? habit.frequency : "daily",
+            [null, null, null, null, null, null, null],
+          ];
+        }),
+      };
+    }
+
+    function createHabitImportUrl(payload) {
+      const url = new URL(window.location.href);
+      url.search = "";
+      url.searchParams.set("habitImport", JSON.stringify(payload));
+      url.hash = "#/stats";
+      return url.href;
+    }
+
+    function preparePrintableHabitTracker() {
+      if (!habitHistoryTable || !habitHistoryBody || !habitHistoryEmpty) return;
+
+      const habits = getStoredArray("habits");
+      const weekStart = formatLocalDate(getStartOfWeek(new Date(), 1));
+      const dates = getHabitImportWeekDates(weekStart);
+      habitHistoryBody.innerHTML = "";
+      renderHabitHistoryHeaders(dates);
+      habitHistoryTable.hidden = habits.length === 0;
+      habitHistoryEmpty.hidden = habits.length !== 0;
+      habitHistoryEmpty.textContent = "Add habits before printing a weekly tracker.";
+
+      habits.forEach(function (habit) {
+        const row = document.createElement("tr");
+        const habitName = document.createElement("th");
+        const emoji = typeof habit.emoji === "string" && habit.emoji.trim() ? `${habit.emoji.trim()} ` : "";
+        habitName.scope = "row";
+        habitName.textContent = `${emoji}${habit.name || "Untitled habit"}`;
+        row.appendChild(habitName);
+
+        dates.forEach(function (date) {
+          const cell = document.createElement("td");
+          const blank = document.createElement("span");
+          const scheduled = isHabitScheduledForDate(habit, date);
+          blank.className = `habit-history-status print-blank${scheduled ? "" : " not-scheduled"}`;
+          blank.textContent = scheduled ? "□" : "—";
+          blank.setAttribute("aria-hidden", "true");
+          cell.appendChild(blank);
+          row.appendChild(cell);
+        });
+
+        habitHistoryBody.appendChild(row);
+      });
+
+      if (habitHistorySummary) {
+        habitHistorySummary.textContent = `Blank tracker for ${formatHabitImportWeek(weekStart)}. Your saved history is unchanged.`;
+      }
+
+      if (!habitTrackerQr || !habitTrackerQrStatus) return;
+      habitTrackerQr.innerHTML = "";
+
+      if (habits.length === 0) {
+        habitTrackerQrStatus.textContent = "Add a habit before generating an import QR code.";
+        return;
+      }
+      if (habits.length > HABIT_IMPORT_MAX_HABITS) {
+        habitTrackerQrStatus.textContent = `QR import supports up to ${HABIT_IMPORT_MAX_HABITS} habits at a time.`;
+        return;
+      }
+      if (typeof window.QRCode !== "function") {
+        habitTrackerQrStatus.textContent = "The QR generator did not load. The blank tracker can still be printed.";
+        return;
+      }
+
+      try {
+        const payload = createPrintableHabitPayload(habits, weekStart);
+        new window.QRCode(habitTrackerQr, {
+          text: createHabitImportUrl(payload),
+          width: 144,
+          height: 144,
+          correctLevel: window.QRCode.CorrectLevel.L,
+        });
+        habitTrackerQrStatus.textContent = "Scan this code to review and import these blank weekly habits.";
+      } catch (error) {
+        console.warn("Ascendra could not generate the habit tracker QR code.", error);
+        habitTrackerQrStatus.textContent = "The QR data is too large, but the blank tracker can still be printed.";
+      }
+    }
+
+    function restoreHabitHistoryAfterPrint() {
+      displayHabitHistory(getStoredArray("habits"));
+      if (habitTrackerQr) habitTrackerQr.innerHTML = "";
+    }
+
+    function printHabitTracker() {
+      preparePrintableHabitTracker();
+      try {
+        window.print();
+      } finally {
+        restoreHabitHistoryAfterPrint();
+      }
     }
 
     function updateAchievements() {
@@ -4673,10 +5093,15 @@ const ROUTE_INITIALIZERS = {
       displayRecentTasks(todos);
     }
 
+    if (printStatsButton) printStatsButton.addEventListener("click", printHabitTracker);
+    window.addEventListener("beforeprint", preparePrintableHabitTracker);
+    window.addEventListener("afterprint", restoreHabitHistoryAfterPrint);
+
     loadStats();
 
     window.displayRecentTasks = displayRecentTasks;
     window.displayHabitHistory = displayHabitHistory;
+    window.preparePrintableHabitTracker = preparePrintableHabitTracker;
     window.formatDate = formatDate;
     window.getStoredArray = getStoredArray;
     window.getTodayString = getTodayString;
@@ -4695,6 +5120,7 @@ const ROUTE_INITIALIZERS = {
       Object.entries({
         displayRecentTasks,
         displayHabitHistory,
+        preparePrintableHabitTracker,
         formatDate,
         getStoredArray,
         getTodayString,
@@ -4712,6 +5138,9 @@ const ROUTE_INITIALIZERS = {
       }).forEach(([name, routeFunction]) => {
         clearWindowRouteFunction(name, routeFunction);
       });
+      if (printStatsButton) printStatsButton.removeEventListener("click", printHabitTracker);
+      window.removeEventListener("beforeprint", preparePrintableHabitTracker);
+      window.removeEventListener("afterprint", restoreHabitHistoryAfterPrint);
     };
   },
   achievements: function init_achievements() {
@@ -5676,6 +6105,7 @@ if (location.hash !== canonicalRouteHash(initialRoute)) {
   history.replaceState({ route: initialRoute }, "", canonicalRouteHash(initialRoute));
 }
 renderRoute(initialRoute, { focusRoute: false });
+initializeHabitImportPreview();
 
 const searchablePages = [
   { name: "Home", route: "home" },

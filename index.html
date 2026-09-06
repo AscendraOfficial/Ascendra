@@ -794,7 +794,36 @@
             <span><span aria-hidden="true">•</span> Not checked</span>
             <span><span aria-hidden="true">—</span> Not scheduled</span>
           </div>
-          <button id="print-stats">Print Habit Table</button>
+          <div aria-hidden="true" class="print-habit-qr">
+            <div id="habit-tracker-qr"></div>
+            <div>
+              <strong>Continue in Ascendra</strong>
+              <p id="habit-tracker-qr-status">Scan this code to review and import these habits.</p>
+            </div>
+          </div>
+          <div aria-hidden="true" class="print-habit-instructions">
+            <h2>Using your Ascendra habit tracker</h2>
+            <ol>
+              <li>Each day, mark a box when you complete the habit. Leave it blank if you miss it.</li>
+              <li>At the end of the week, scan the QR code on the front with your phone camera.</li>
+              <li>Review the preview in Ascendra, then choose <strong>Import Habits</strong> to save your check-ins.</li>
+            </ol>
+            <p>Your saved history stays safe until you confirm an import. The QR code opens Ascendra's habit review page.</p>
+          </div>
+          <div class="habit-qr-controls">
+            <div class="habit-qr-label">
+              <span>Printable QR tracker</span>
+              <span class="beta-badge">Beta</span>
+              <details class="habit-qr-info">
+                <summary aria-label="How the printable QR habit tracker works">i</summary>
+                <p>
+                  Print a blank tracker for the new week, then scan its QR code to review the same habits in Ascendra.
+                  Nothing is saved until you confirm the import, and your existing habit history is not changed.
+                </p>
+              </details>
+            </div>
+            <button id="print-stats" type="button">Print Habit Table</button>
+          </div>
         </section>
         <section class="details-grid">
           <article class="details-card">
@@ -1852,6 +1881,7 @@
 
     <!-- Application Scripts -->
     <script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script defer src="src/js/config/config.js"></script>
     <script defer src="src/js/config/userconfig.js"></script>
     <script type="module" src="src/js/script.js"></script>
@@ -1863,6 +1893,22 @@
 
         <div aria-live="polite" id="searchResults"></div>
       </div>
+    </div>
+
+    <!-- Habit Import Preview Dialog -->
+    <div aria-hidden="true" aria-labelledby="habit-import-title" aria-modal="true" class="habit-import-dialog" id="habit-import-dialog" role="dialog">
+      <section class="habit-import-card" tabindex="-1">
+        <button aria-label="Close habit import preview" class="habit-import-close" id="close-habit-import" type="button">×</button>
+        <p class="habit-import-eyebrow">QR HABIT IMPORT</p>
+        <h2 id="habit-import-title">Review habit import</h2>
+        <p id="habit-import-description"></p>
+        <div class="habit-import-preview" id="habit-import-preview"></div>
+        <p aria-live="polite" class="habit-import-status" id="habit-import-status" role="status"></p>
+        <div class="habit-import-actions">
+          <button class="secondary" id="cancel-habit-import" type="button">Cancel</button>
+          <button id="confirm-habit-import" type="button">Import Habits</button>
+        </div>
+      </section>
     </div>
 
     <!-- Ascendra AI Companion -->
