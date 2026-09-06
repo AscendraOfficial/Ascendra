@@ -3747,63 +3747,81 @@ body::before {
 .ascendra-page[data-route="stats"] .habit-history-table {
   margin-top: 20px;
   overflow-x: auto;
+  border: 1px solid rgba(35, 60, 110, 0.12);
+  border-radius: 16px;
 }
 
 .ascendra-page[data-route="stats"] .habit-history-table table {
   width: 100%;
-  border-collapse: collapse;
+  min-width: 680px;
+  border-collapse: separate;
+  border-spacing: 0;
   table-layout: fixed;
 }
 
-.ascendra-page[data-route="stats"] .habit-history-table th {
-  padding: 14px 12px;
+.ascendra-page[data-route="stats"] .habit-history-table :is(th, td) {
+  padding: 13px 10px;
   text-align: center;
+  border-bottom: 1px solid rgba(35, 60, 110, 0.1);
+}
 
+.ascendra-page[data-route="stats"] .habit-history-table thead th {
   color: rgb(84, 100, 216);
+  background: rgb(243, 246, 255);
   font-size: 0.82rem;
-  font-weight: bold;
 }
 
-.ascendra-page[data-route="stats"] .habit-history-table th {
-  padding: 14px 12px;
-  text-align: center;
-
-  color: rgb(84, 100, 216);
-  font-size: 0.82rem;
-  font-weight: bold;
+.ascendra-page[data-route="stats"] .habit-history-table thead th span,
+.ascendra-page[data-route="stats"] .habit-history-table thead th small {
+  display: block;
 }
 
-.ascendra-page[data-route="stats"] .habit-history-table th:first-child,
-.ascendra-page[data-route="stats"] .habit-history-table td:first-child {
-  text-align: left;
-}
-
-.ascendra-page[data-route="stats"] .habit-history-table th,
-.ascendra-page[data-route="stats"] .habit-history-table td {
-  outline: 1px solid red;
-}
-
-.ascendra-page[data-route="stats"] .habit-history-table td:first-child {
-  font-weight: bold;
-  color: rgb(31, 57, 115);
+.ascendra-page[data-route="stats"] .habit-history-table thead th small {
+  margin-top: 3px;
+  color: rgb(100, 109, 137);
+  font-size: 0.7rem;
+  font-weight: normal;
 }
 
 .ascendra-page[data-route="stats"] .habit-history {
   margin-bottom: 30px;
   padding: 24px;
 
-  background-color: rgba(255, 255, 255, 0.75);
+  background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(35, 60, 110, 0.1);
   border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(30, 55, 110, 0.1);
 }
 
 .ascendra-page[data-route="stats"] .habit-history .section-heading {
   display: block;
 }
 
-.ascendra-page[data-route="stats"] .habit-history-table th:first-child,
-.ascendra-page[data-route="stats"] .habit-history-table td:first-child {
-  width: 18%;
+.ascendra-page[data-route="stats"] .habit-history-table :is(th:first-child, td:first-child) {
+  width: 160px;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  background: rgb(255, 255, 255);
+  box-shadow: 1px 0 rgba(35, 60, 110, 0.1);
+}
+
+.ascendra-page[data-route="stats"] .habit-history-table thead th:first-child {
+  z-index: 2;
+  background: rgb(243, 246, 255);
+}
+
+.ascendra-page[data-route="stats"] .habit-history-table tbody th {
+  overflow: hidden;
+  color: rgb(31, 57, 115);
+  font-size: 0.88rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ascendra-page[data-route="stats"] .habit-history-table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
 }
 
 .ascendra-page[data-route="stats"] .habit-history-table tbody tr {
@@ -3812,6 +3830,58 @@ body::before {
 
 .ascendra-page[data-route="stats"] .habit-history-table tbody tr:hover {
   background-color: rgba(84, 100, 216, 0.05);
+}
+
+.ascendra-page[data-route="stats"] .habit-history-status {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.9rem;
+}
+
+.ascendra-page[data-route="stats"] .habit-history-status.successful {
+  background: rgb(220, 252, 231);
+}
+
+.ascendra-page[data-route="stats"] .habit-history-status.missed {
+  background: rgb(254, 226, 226);
+}
+
+.ascendra-page[data-route="stats"] .habit-history-status.unchecked {
+  color: rgb(100, 109, 137);
+  background: rgb(241, 245, 249);
+  font-size: 1.35rem;
+}
+
+.ascendra-page[data-route="stats"] .habit-history-status.not-scheduled {
+  color: rgb(148, 163, 184);
+}
+
+.ascendra-page[data-route="stats"] .habit-history-empty {
+  margin: 20px 0 0;
+  padding: 24px;
+  text-align: center;
+  color: rgb(92, 102, 131);
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 14px;
+}
+
+.ascendra-page[data-route="stats"] .habit-history-summary {
+  margin: 14px 0 0;
+  color: rgb(92, 102, 131);
+  font-size: 0.85rem;
+}
+
+.ascendra-page[data-route="stats"] .habit-history-legend {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  color: rgb(92, 102, 131);
+  font-size: 0.78rem;
 }
 
 .ascendra-page[data-route="stats"] .category-title {
@@ -4188,7 +4258,8 @@ body::before {
 
   .ascendra-page[data-route="stats"] .progress-card,
   .ascendra-page[data-route="stats"] .details-card,
-  .ascendra-page[data-route="stats"] .recent-card {
+  .ascendra-page[data-route="stats"] .recent-card,
+  .ascendra-page[data-route="stats"] .habit-history {
     padding: 22px 18px;
   }
 
@@ -7950,6 +8021,7 @@ body.dark-mode
     .progress-card,
     .details-card,
     .recent-card,
+    .habit-history,
     .profile-card,
     .edit-profile-card,
     .options,
@@ -8151,6 +8223,37 @@ body.dark-mode .ascendra-page[data-route="stats"] .task-status.pending {
 body.dark-mode .ascendra-page[data-route="settings"] :is(.toggle-row, .danger-item),
 body.dark-mode .ascendra-page[data-route="stats"] :is(.detail-row, .recent-task) {
   border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-table {
+  border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-table :is(th, td) {
+  border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-table :is(thead th, tbody th) {
+  background: var(--dark-surface-raised) !important;
+  color: var(--dark-text) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-table thead th small,
+body.dark-mode .ascendra-page[data-route="stats"] :is(.habit-history-summary, .habit-history-legend, .habit-history-empty) {
+  color: var(--dark-muted) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-empty,
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-status.unchecked {
+  background: var(--dark-surface-raised) !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-status.successful {
+  background: #163a2b !important;
+}
+
+body.dark-mode .ascendra-page[data-route="stats"] .habit-history-status.missed {
+  background: #4a1f2b !important;
 }
 
 body.dark-mode .ascendra-page[data-route="profile"] :is(#profile-picture, .camera-button) {

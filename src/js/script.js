@@ -1815,6 +1815,7 @@ document.addEventListener("visibilitychange", function handleAccountVisibility()
 });
 
 function getSavedSettings() {
+  // Default to enabled so accounts created before this option keep their existing companion experience.
   const defaults = { accentColor: "purple", lightMode: true, ascendraAIEnabled: true };
   const saved = readUserJson("ascendraSettings", null);
   return saved && typeof saved === "object" && !Array.isArray(saved) ? { ...defaults, ...saved } : defaults;
@@ -1836,12 +1837,14 @@ function applySavedSettings() {
   document.documentElement.style.setProperty("--muted", darkModeEnabled ? "#cbd5e1" : "#666");
   document.body.classList.toggle("dark-mode", darkModeEnabled);
 
+  // Only an explicit opt-out hides the companion; missing legacy values continue to mean enabled.
   const ascendraAIEnabled = settings.ascendraAIEnabled !== false;
   const companion = document.getElementById("ascendra-ai");
   if (companion) {
     companion.hidden = !ascendraAIEnabled;
 
     if (!ascendraAIEnabled) {
+      // Clear temporary movement states so turning the companion back on starts from a stable position.
       companion.classList.remove(
         "is-roaming",
         "is-jumping",
@@ -4123,6 +4126,7 @@ const ROUTE_INITIALIZERS = {
     }
 
     function handleAscendraAIChange() {
+      // Use the account-scoped settings store so each signed-in user keeps their own preference.
       const settings = getSavedSettings();
       settings.ascendraAIEnabled = ascendraAIToggle.checked;
       setUserItem("ascendraSettings", JSON.stringify(settings));
@@ -4207,6 +4211,14 @@ const ROUTE_INITIALIZERS = {
     const habitsMissedTodayElement = document.getElementById("habits-missed-today");
 
     const habitsUncheckedTodayElement = document.getElementById("habits-unchecked-today");
+
+    const habitHistoryTable = document.querySelector(".habit-history-table table");
+
+    const habitHistoryDayHeaders = Array.from(document.querySelectorAll("[data-habit-history-day]"));
+
+    const habitHistoryBody = document.getElementById("habit-history-body");
+
+    const habitHistoryEmpty = document.getElementById("habit-history-empty");
 
     const achievementIcon = document.getElementById("achievement-icon");
 
@@ -4425,6 +4437,93 @@ const ROUTE_INITIALIZERS = {
       habitsUncheckedTodayElement.textContent = uncheckedToday;
     }
 
+    function getRecentHabitHistoryDates() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return Array.from({ length: 7 }, function (_, index) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - (6 - index));
+        return date;
+      });
+    }
+
+    function displayHabitHistory(habits) {
+      if (!habitHistoryTable || !habitHistoryBody || !habitHistoryEmpty) {
+        return;
+      }
+
+      const dates = getRecentHabitHistoryDates();
+      habitHistoryBody.innerHTML = "";
+
+      habitHistoryDayHeaders.forEach(function (header, index) {
+        const date = dates[index];
+        if (!date) return;
+
+        const weekday = document.createElement("span");
+        weekday.textContent = date.toLocaleDateString(undefined, { weekday: "short" });
+
+        const day = document.createElement("small");
+        day.textContent = date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+        header.replaceChildren(weekday, day);
+        header.setAttribute(
+          "aria-label",
+          date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }),
+        );
+      });
+
+      habitHistoryTable.hidden = habits.length === 0;
+      habitHistoryEmpty.hidden = habits.length !== 0;
+
+      habits.forEach(function (habit) {
+        const row = document.createElement("tr");
+        const habitName = document.createElement("th");
+        const emoji = typeof habit.emoji === "string" && habit.emoji.trim() ? `${habit.emoji.trim()} ` : "";
+
+        habitName.scope = "row";
+        habitName.textContent = `${emoji}${habit.name || "Untitled habit"}`;
+        row.appendChild(habitName);
+
+        const history = getHabitHistory(habit);
+
+        dates.forEach(function (date) {
+          const cell = document.createElement("td");
+          const status = document.createElement("span");
+          const dateKey = formatLocalDate(date);
+          const result = history[dateKey];
+          const isScheduled = isHabitScheduledForDate(habit, date);
+          let statusText = "Not checked";
+          let statusIcon = "•";
+          let statusClass = "unchecked";
+
+          if (!isScheduled) {
+            statusText = "Not scheduled";
+            statusIcon = "—";
+            statusClass = "not-scheduled";
+          } else if (result === true) {
+            statusText = habit.type === "bad" ? "Successfully avoided" : "Completed";
+            statusIcon = "✅";
+            statusClass = "successful";
+          } else if (result === false) {
+            statusText = habit.type === "bad" ? "Habit occurred" : "Missed";
+            statusIcon = "❌";
+            statusClass = "missed";
+          }
+
+          status.className = `habit-history-status ${statusClass}`;
+          status.textContent = statusIcon;
+          status.setAttribute("role", "img");
+          status.setAttribute("aria-label", statusText);
+          status.title = statusText;
+          cell.appendChild(status);
+          row.appendChild(cell);
+        });
+
+        habitHistoryBody.appendChild(row);
+      });
+    }
+
     function updateAchievements() {
       const progression = syncProgressionFromActivity();
       renderProgressionSummary(progression.state);
@@ -4551,6 +4650,8 @@ const ROUTE_INITIALIZERS = {
 
       updateTodayHabitStatistics(habits);
 
+      displayHabitHistory(habits);
+
       updateAchievements();
 
       displayRecentTasks(todos);
@@ -4559,6 +4660,7 @@ const ROUTE_INITIALIZERS = {
     loadStats();
 
     window.displayRecentTasks = displayRecentTasks;
+    window.displayHabitHistory = displayHabitHistory;
     window.formatDate = formatDate;
     window.getStoredArray = getStoredArray;
     window.getTodayString = getTodayString;
@@ -4576,6 +4678,7 @@ const ROUTE_INITIALIZERS = {
     return () => {
       Object.entries({
         displayRecentTasks,
+        displayHabitHistory,
         formatDate,
         getStoredArray,
         getTodayString,
