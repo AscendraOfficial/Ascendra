@@ -12,7 +12,9 @@ const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
 const DEFAULT_APP_NAME = "Ascendra";
 const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "placeholder", "title"]);
-
+console.log(
+  "Hello there! If there is an error that you would like to report, we would really appreciate it if you would go to https://github.com/AscendraOfficial/Ascendra/issues, thank you! 😃",
+);
 function changeText(element, newText) {
   element.textContent = newText;
 }
@@ -5270,9 +5272,7 @@ const ROUTE_INITIALIZERS = {
 
     function formatUnlockDate(value) {
       const date = parseCapsuleDate(value);
-      return date
-        ? date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
-        : "Unknown date";
+      return date ? date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "Unknown date";
     }
 
     function getCapsules() {
@@ -5975,7 +5975,6 @@ function initializeAscendraAIChat() {
     showAscendraAIMessage(ascendraAIReply(question), { bypassCooldown: true });
   });
 }
-
 
 /* ============================= */
 /* AI COMPANION                  */
