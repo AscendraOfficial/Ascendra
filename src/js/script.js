@@ -1973,7 +1973,7 @@ function findHabitTrackerScanCorners(imageData) {
   for (let pixelIndex = 0; pixelIndex < pixelCount; pixelIndex++) {
     const dataIndex = pixelIndex * 4;
     const luminance = data[dataIndex] * 0.299 + data[dataIndex + 1] * 0.587 + data[dataIndex + 2] * 0.114;
-    dark[pixelIndex] = data[dataIndex + 3] > 80 && luminance < 85 ? 1 : 0;
+    dark[pixelIndex] = data[dataIndex + 3] > 80 && luminance < 145 ? 1 : 0;
   }
 
   const queue = new Int32Array(pixelCount);
@@ -2023,7 +2023,7 @@ function findHabitTrackerScanCorners(imageData) {
     const boxHeight = maxY - minY + 1;
     const density = count / (boxWidth * boxHeight);
     const aspect = boxWidth / boxHeight;
-    if (boxWidth >= 5 && boxHeight >= 5 && boxWidth <= 90 && boxHeight <= 90 && aspect >= 0.72 && aspect <= 1.38 && density >= 0.72) {
+    if (boxWidth >= 5 && boxHeight >= 5 && boxWidth <= 140 && boxHeight <= 140 && aspect >= 0.62 && aspect <= 1.62 && density >= 0.5) {
       candidates.push({
         x: (minX + maxX) / 2,
         y: (minY + maxY) / 2,
@@ -2053,11 +2053,11 @@ function findHabitTrackerScanCorners(imageData) {
           const leftHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
           const rightHeight = Math.hypot(bottomRight.x - topRight.x, bottomRight.y - topRight.y);
 
-          if (Math.min(topWidth, bottomWidth) < averageSide * 12 || Math.min(leftHeight, rightHeight) < averageSide * 3.5) continue;
-          if (Math.max(topWidth, bottomWidth) / Math.min(topWidth, bottomWidth) > 1.55) continue;
-          if (Math.max(leftHeight, rightHeight) / Math.min(leftHeight, rightHeight) > 1.8) continue;
-          if (Math.abs(topRight.y - topLeft.y) / topWidth > 0.3 || Math.abs(bottomRight.y - bottomLeft.y) / bottomWidth > 0.3) continue;
-          if (Math.abs(bottomLeft.x - topLeft.x) / leftHeight > 0.3 || Math.abs(bottomRight.x - topRight.x) / rightHeight > 0.3) continue;
+          if (Math.min(topWidth, bottomWidth) < averageSide * 12 || Math.min(leftHeight, rightHeight) < averageSide * 2) continue;
+          if (Math.max(topWidth, bottomWidth) / Math.min(topWidth, bottomWidth) > 1.8) continue;
+          if (Math.max(leftHeight, rightHeight) / Math.min(leftHeight, rightHeight) > 2) continue;
+          if (Math.abs(topRight.y - topLeft.y) / topWidth > 0.45 || Math.abs(bottomRight.y - bottomLeft.y) / bottomWidth > 0.45) continue;
+          if (Math.abs(bottomLeft.x - topLeft.x) / leftHeight > 0.45 || Math.abs(bottomRight.x - topRight.x) / rightHeight > 0.45) continue;
 
           const area = ((topWidth + bottomWidth) / 2) * ((leftHeight + rightHeight) / 2);
           const score = area * averageSide;

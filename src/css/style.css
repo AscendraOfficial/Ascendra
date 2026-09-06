@@ -9962,13 +9962,16 @@ body.dark-mode .habit-qr-info summary {
   }
 
   .habit-scan-marker {
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
     position: absolute;
     z-index: 2;
     display: block;
     background: #000 !important;
-    box-shadow: 0 0 0 4px #fff;
+    border: 5px solid #fff;
+    box-sizing: content-box;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
     transform: translate(-50%, -50%);
   }
 
