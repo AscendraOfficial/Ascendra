@@ -5100,14 +5100,15 @@ const ROUTE_INITIALIZERS = {
             String(habit.emoji || "").trim().slice(0, 8),
             habit.type === "bad" ? "bad" : "good",
             ["weekdays", "weekends"].includes(habit.frequency) ? habit.frequency : "daily",
-            [null, null, null, null, null, null, null],
           ];
         }),
       };
     }
 
     function createHabitImportUrl(payload) {
-      const url = new URL(window.location.href);
+      const isLocalPreview = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname) || window.location.protocol === "file:";
+      const baseUrl = isLocalPreview ? APP_CONFIG.publicUrl : window.location.href;
+      const url = new URL(baseUrl);
       url.search = "";
       url.searchParams.set("habitImport", JSON.stringify(payload));
       url.hash = "#/stats";
@@ -5172,8 +5173,8 @@ const ROUTE_INITIALIZERS = {
         const payload = createPrintableHabitPayload(habits, weekStart);
         new window.QRCode(habitTrackerQr, {
           text: createHabitImportUrl(payload),
-          width: 144,
-          height: 144,
+          width: 192,
+          height: 192,
           correctLevel: window.QRCode.CorrectLevel.L,
         });
         habitTrackerQrStatus.textContent = "Scan this code to review and import these blank weekly habits.";
@@ -5185,7 +5186,6 @@ const ROUTE_INITIALIZERS = {
 
     function restoreHabitHistoryAfterPrint() {
       displayHabitHistory(getStoredArray("habits"));
-      if (habitTrackerQr) habitTrackerQr.innerHTML = "";
     }
 
     function printHabitTracker() {

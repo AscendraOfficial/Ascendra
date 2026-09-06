@@ -2,6 +2,7 @@ const APP_CONFIG = {
   name: "Ascendra",
   version: "1.1.3-beta",
   update: "Horizon",
+  publicUrl: "https://ascendraofficial.github.io/Ascendra/",
 };
 
 let API_URL;

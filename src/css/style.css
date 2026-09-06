@@ -10029,14 +10029,17 @@ body.dark-mode .habit-qr-info summary {
   }
 
   #habit-tracker-qr {
-    width: 144px;
-    height: 144px;
-    flex: 0 0 144px;
+    width: 216px;
+    height: 216px;
+    padding: 12px;
+    flex: 0 0 216px;
+    box-sizing: border-box;
+    background: white !important;
   }
 
   #habit-tracker-qr :is(canvas, img) {
-    width: 144px !important;
-    height: 144px !important;
+    width: 192px !important;
+    height: 192px !important;
   }
 
   .print-habit-qr p {
