@@ -1,39 +1,701 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background: rgb(240, 248, 255);
-    margin: 3px;
-    text-align: center;
-    font-family: sans-serif;
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+        radial-gradient(circle at 10% 10%, rgba(125, 92, 180, 0.10), transparent 30%),
+        radial-gradient(circle at 90% 90%, rgba(80, 110, 180, 0.10), transparent 30%),
+        rgb(240, 242, 246);
+
+    color: rgb(5, 10, 35);
+
+    font-family: Arial, sans-serif;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================
+   PAGE
+========================================= */
+
+.policy-page {
+    padding: 55px 20px;
 }
 
 .policy-container {
-    width: 75%;
-    margin: 40px auto;
-    padding: 30px;
+    width: min(900px, 100%);
+    margin: 0 auto;
 
-    background-color: white;
-    border: none;
-    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.96);
 
-    box-shadow: 0 4px 15px rgba(5, 10, 35, 0.15);
+    border-radius: 32px;
+
+    padding: 55px;
+
+    box-shadow:
+        0 20px 60px rgba(5, 10, 35, 0.10),
+        0 4px 15px rgba(5, 10, 35, 0.06);
+
+    border: 1px solid rgba(5, 10, 35, 0.05);
 }
 
-/* Makes everything deep blue. */
-.policies {
-    color: rgb(5, 10, 35);
+
+/* =========================================
+   HEADER
+========================================= */
+
+.policy-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    margin-bottom: 30px;
 }
 
-/* This makes the list align to the left and highlights it in yellow. */
-#no_center {
-    background-color: rgb(255, 255, 0);
+.privacy-icon {
+    width: 75px;
+    height: 75px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 24px;
+
+    background: linear-gradient(
+        135deg,
+        rgb(92, 65, 150),
+        rgb(125, 92, 180)
+    );
+
+    color: white;
+
+    font-size: 32px;
+
+    box-shadow:
+        0 10px 25px rgba(92, 65, 150, 0.25);
+}
+
+.eyebrow {
+    margin: 0 0 2px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    letter-spacing: 3px;
+
+    color: rgb(125, 92, 180);
+}
+
+.policy-header h1 {
+    margin: 0;
+
+    font-family: "Handlee", cursive;
+
+    font-size: clamp(38px, 6vw, 54px);
+
+    line-height: 1.1;
+}
+
+.subtitle {
+    margin: 7px 0 0;
+
+    color: rgb(105, 110, 125);
+
+    font-size: 16px;
+}
+
+
+/* =========================================
+   UPDATED
+========================================= */
+
+.updated {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 8px 14px;
+
+    border-radius: 30px;
+
+    background: rgb(247, 246, 250);
+
+    color: rgb(100, 100, 115);
+
+    font-size: 13px;
+
+    margin-bottom: 35px;
+}
+
+.updated i {
+    color: rgb(125, 92, 180);
+}
+
+
+/* =========================================
+   INTRO CARD
+========================================= */
+
+.intro-card {
+    display: flex;
+    gap: 20px;
+
+    padding: 25px;
+
+    margin-bottom: 50px;
+
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgb(248, 246, 252),
+            rgb(244, 244, 250)
+        );
+
+    border: 1px solid rgba(125, 92, 180, 0.10);
+}
+
+.intro-icon {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: white;
+
+    color: rgb(125, 92, 180);
+
+    box-shadow: 0 5px 15px rgba(5, 10, 35, 0.07);
+}
+
+.intro-card h2 {
+    margin: 0 0 5px;
+
+    font-size: 20px;
+}
+
+.intro-card p {
+    margin: 0;
+
+    color: rgb(80, 85, 100);
+}
+
+
+/* =========================================
+   SECTIONS
+========================================= */
+
+.policy-section {
+    margin-bottom: 50px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    margin-bottom: 18px;
+}
+
+.section-icon {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: rgb(245, 242, 250);
+
+    color: rgb(105, 75, 160);
+
+    font-size: 18px;
+}
+
+.section-number {
+    display: block;
+
+    font-size: 11px;
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    color: rgb(145, 145, 155);
+
+    line-height: 1;
+}
+
+.section-heading h2 {
+    margin: 5px 0 0;
+
+    font-size: 23px;
+
+    line-height: 1.2;
+}
+
+.policy-section > p {
+    margin: 0 0 20px;
+
+    color: rgb(65, 70, 85);
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   DATA GRID
+========================================= */
+
+.data-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 12px;
+}
+
+.data-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 15px 17px;
+
+    background: rgb(249, 250, 252);
+
+    border: 1px solid rgb(235, 237, 242);
+
+    border-radius: 14px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.data-item:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(125, 92, 180, 0.25);
+
+    box-shadow: 0 7px 20px rgba(5, 10, 35, 0.06);
+}
+
+.data-item i {
+    color: rgb(125, 92, 180);
+
+    width: 20px;
+
     text-align: center;
 }
 
-/* This highlights the important text. */
-.important_text {
-    background-color: 255, 255, 0;
+
+/* =========================================
+   SECURITY CARD
+========================================= */
+
+.security-card,
+.warning-card {
+    display: flex;
+    gap: 17px;
+
+    padding: 21px;
+
+    border-radius: 18px;
+
+    margin-top: 20px;
 }
 
-/* The class red includes the words reffering to does not. */
-.red {
-    color: rgb(255, 0, 0);
+.security-card {
+    background: linear-gradient(
+        135deg,
+        rgb(244, 241, 251),
+        rgb(249, 247, 253)
+    );
+
+    border: 1px solid rgba(125, 92, 180, 0.14);
+}
+
+.security-icon {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: rgb(125, 92, 180);
+
+    color: white;
+}
+
+.security-card h3,
+.warning-card h3 {
+    margin: 0 0 4px;
+
+    font-size: 16px;
+}
+
+.security-card p,
+.warning-card p {
+    margin: 0;
+
+    color: rgb(75, 78, 95);
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   PRIVACY STATEMENT
+========================================= */
+
+.privacy-statement {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 17px 20px;
+
+    border-radius: 16px;
+
+    background: rgb(248, 250, 249);
+
+    border: 1px solid rgb(226, 235, 229);
+}
+
+.check-icon {
+    width: 35px;
+    height: 35px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgb(225, 240, 230);
+
+    color: rgb(42, 125, 70);
+
+    font-size: 14px;
+}
+
+.privacy-statement p {
+    margin: 0;
+
+    color: rgb(60, 70, 65);
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   WARNING
+========================================= */
+
+.warning-card {
+    background: rgb(255, 249, 237);
+
+    border: 1px solid rgb(245, 224, 180);
+}
+
+.warning-icon {
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: rgb(247, 190, 75);
+
+    color: white;
+}
+
+
+/* =========================================
+   SECURITY CTA
+========================================= */
+
+.security-cta {
+    position: relative;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+
+    gap: 25px;
+
+    padding: 32px;
+
+    margin-top: 10px;
+    margin-bottom: 50px;
+
+    border-radius: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgb(67, 45, 112),
+            rgb(105, 75, 160)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 15px 35px rgba(92, 65, 150, 0.25);
+}
+
+.security-cta::after {
+    content: "";
+
+    position: absolute;
+
+    width: 220px;
+    height: 220px;
+
+    right: -90px;
+    top: -90px;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.cta-lock {
+    width: 60px;
+    height: 60px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.14);
+
+    font-size: 23px;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+}
+
+.cta-label {
+    font-size: 10px;
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    opacity: 0.7;
+}
+
+.security-cta h2 {
+    margin: 4px 0 5px;
+
+    font-size: 24px;
+}
+
+.security-cta p {
+    margin: 0 0 18px;
+
+    max-width: 600px;
+
+    color: rgba(255, 255, 255, 0.82);
+
+    font-size: 14px;
+}
+
+.security-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 11px 18px;
+
+    border-radius: 12px;
+
+    background: white;
+
+    color: rgb(75, 50, 120);
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.security-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.policy-footer {
+    margin-top: 20px;
+}
+
+.footer-line {
+    height: 1px;
+
+    background: rgb(232, 233, 238);
+
+    margin-bottom: 25px;
+}
+
+.footer-content {
+    text-align: center;
+
+    color: rgb(140, 142, 150);
+
+    font-size: 12px;
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-bottom: 5px;
+
+    color: rgb(80, 65, 120);
+
+    font-family: "Handlee", cursive;
+
+    font-size: 20px;
+}
+
+.footer-brand i {
+    font-size: 17px;
+}
+
+.footer-content p {
+    margin: 3px 0;
+}
+
+.copyright {
+    margin-top: 12px !important;
+
+    font-size: 11px;
+
+    color: rgb(165, 166, 175);
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .policy-page {
+        padding: 20px 10px;
+    }
+
+    .policy-container {
+        padding: 30px 22px;
+
+        border-radius: 24px;
+    }
+
+    .policy-header {
+        align-items: flex-start;
+
+        gap: 16px;
+    }
+
+    .privacy-icon {
+        width: 58px;
+        height: 58px;
+
+        border-radius: 18px;
+
+        font-size: 24px;
+    }
+
+    .policy-header h1 {
+        font-size: 38px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+    .data-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .security-cta {
+        align-items: flex-start;
+
+        padding: 25px;
+
+        flex-direction: column;
+    }
+
+    .section-heading h2 {
+        font-size: 20px;
+    }
+}
+
+
+@media (max-width: 450px) {
+
+    .policy-header {
+        flex-direction: column;
+    }
+
+    .intro-card {
+        flex-direction: column;
+    }
+
+    .updated {
+        font-size: 12px;
+    }
+
 }
