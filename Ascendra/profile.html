@@ -7,11 +7,7 @@
 
     <title>Ascendra - Profile</title>
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    >
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="profile.css">
 </head>
 
@@ -66,7 +62,6 @@
 
         </section>
 
-
         <section class="stats-container">
 
             <div class="stat-card">
@@ -88,7 +83,6 @@
             </div>
 
         </section>
-
 
         <!-- EDIT PROFILE -->
 
@@ -118,7 +112,6 @@
 
             </div>
 
-
             <div class="input-group">
 
                 <label for="surname-input">Surname</label>
@@ -137,7 +130,6 @@
                 </div>
 
             </div>
-
 
             <div class="input-group">
 
@@ -158,7 +150,6 @@
 
             </div>
 
-
             <div class="input-group">
 
                 <label for="bio-input">Bio</label>
@@ -173,201 +164,14 @@
 
             </div>
 
-
             <button id="save-button" type="button">
-
                 <i class="fa-solid fa-floppy-disk"></i>
-
                 Save Changes
-
             </button>
 
             <p id="save-message"></p>
 
         </section>
-
-
-        <!-- CHANGE PASSWORD -->
-
-        <section class="password-card">
-
-            <h2>
-
-                <i class="fa-solid fa-lock"></i>
-
-                Change Password
-
-            </h2>
-
-
-            <div class="input-group">
-
-                <label for="password-username">
-                    Account Username
-                </label>
-
-                <div class="input-wrapper">
-
-                    <i class="fa-solid fa-at"></i>
-
-                    <input
-                        type="text"
-                        id="password-username"
-                        placeholder="Enter your username"
-                        autocomplete="username"
-                    >
-
-                </div>
-
-            </div>
-
-
-            <button
-                id="send-code-button"
-                type="button"
-            >
-
-                <i class="fa-solid fa-paper-plane"></i>
-
-                Send Verification Code
-
-            </button>
-
-
-            <div
-                id="verification-section"
-                hidden
-            >
-
-                <div class="input-group">
-
-                    <label for="verification-code">
-                        Verification Code
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <i class="fa-solid fa-shield-halved"></i>
-
-                        <input
-                            type="text"
-                            id="verification-code"
-                            placeholder="Enter 6-digit code"
-                            inputmode="numeric"
-                            maxlength="6"
-                            autocomplete="one-time-code"
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    id="verify-code-button"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-circle-check"></i>
-
-                    Verify Code
-
-                </button>
-
-            </div>
-
-
-            <div
-                id="new-password-section"
-                hidden
-            >
-
-                <div class="input-group">
-
-                    <label for="new-password">
-                        New Password
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <i class="fa-solid fa-key"></i>
-
-                        <input
-                            type="password"
-                            id="new-password"
-                            placeholder="Enter your new password"
-                            minlength="8"
-                            autocomplete="new-password"
-                        >
-
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            data-target="new-password"
-                            aria-label="Show password"
-                        >
-
-                            <i class="fa-solid fa-eye"></i>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="confirm-password">
-                        Confirm New Password
-                    </label>
-
-                    <div class="input-wrapper">
-
-                        <i class="fa-solid fa-key"></i>
-
-                        <input
-                            type="password"
-                            id="confirm-password"
-                            placeholder="Confirm your new password"
-                            minlength="8"
-                            autocomplete="new-password"
-                        >
-
-                        <button
-                            type="button"
-                            class="password-toggle"
-                            data-target="confirm-password"
-                            aria-label="Show password"
-                        >
-
-                            <i class="fa-solid fa-eye"></i>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    id="change-password-button"
-                    type="button"
-                >
-
-                    <i class="fa-solid fa-lock"></i>
-
-                    Change Password
-
-                </button>
-
-            </div>
-
-
-            <p id="password-message"></p>
-
-        </section>
-
 
         <!-- LOG OUT -->
 
@@ -376,15 +180,11 @@
             id="logout-button"
             type="button"
         >
-
             Log Out
-
             <i class="fa-solid fa-right-from-bracket"></i>
-
         </button>
 
     </main>
-
 
     <script src="profile.js"></script>
 
