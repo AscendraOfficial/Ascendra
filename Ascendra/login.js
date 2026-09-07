@@ -1,49 +1,83 @@
 const form = document.getElementById("login");
 
 form.addEventListener("submit", async function(event) {
+
     event.preventDefault();
 
-    const usernameInput = document.getElementById("username");
-    const passwordInput = document.getElementById("password");
+    const usernameInput =
+        document.getElementById("name");
 
-    const username = usernameInput.value
-        .trim()
-        .replace(/@/g, "")
-        .replace(/\s+/g, "");
+    const passwordInput =
+        document.getElementById("password");
 
-    const password = passwordInput.value;
+    const username =
+        usernameInput.value
+            .trim()
+            .replace(/@/g, "")
+            .replace(/\s+/g, "");
+
+    const password =
+        passwordInput.value;
+
 
     if (!username || !password) {
         alert("Please enter your username and password.");
         return;
     }
 
-    const userData = localStorage.getItem(username);
+
+    /* Find the account */
+
+    const userData =
+        localStorage.getItem(username);
+
 
     if (!userData) {
         alert("Incorrect username or password.");
         return;
     }
 
+
     let user;
 
     try {
+
         user = JSON.parse(userData);
+
     } catch {
-        alert("Account data is corrupted.");
+
+        alert("Account data could not be read.");
         return;
+
     }
 
-    /* New secure password system */
-    if (user.password && user.passwordSalt) {
 
-        const encoder = new TextEncoder();
+    /* ================================
+       SECURE PASSWORD CHECK
+    ================================ */
 
-        const salt = new Uint8Array(
-            user.passwordSalt.match(/.{1,2}/g).map(
-                byte => parseInt(byte, 16)
-            )
-        );
+    if (
+        user.password &&
+        user.passwordSalt
+    ) {
+
+        const encoder =
+            new TextEncoder();
+
+
+        /* Convert saved hexadecimal salt */
+
+        const salt =
+            new Uint8Array(
+                user.passwordSalt
+                    .match(/.{1,2}/g)
+                    .map(function(byte) {
+                        return parseInt(byte, 16);
+                    })
+            );
+
+
+        /* Turn entered password into key material */
 
         const keyMaterial =
             await crypto.subtle.importKey(
@@ -53,6 +87,9 @@ form.addEventListener("submit", async function(event) {
                 false,
                 ["deriveBits"]
             );
+
+
+        /* Hash entered password */
 
         const bits =
             await crypto.subtle.deriveBits(
@@ -66,34 +103,58 @@ form.addEventListener("submit", async function(event) {
                 256
             );
 
-        const hash = Array.from(
-            new Uint8Array(bits)
-        )
-        .map(byte =>
-            byte.toString(16).padStart(2, "0")
-        )
-        .join("");
+
+        const hash =
+            Array.from(
+                new Uint8Array(bits)
+            )
+            .map(function(byte) {
+
+                return byte
+                    .toString(16)
+                    .padStart(2, "0");
+
+            })
+            .join("");
+
+
+        /* Compare hashes */
 
         if (hash !== user.password) {
-            alert("Incorrect username or password.");
+
+            alert(
+                "Incorrect username or password."
+            );
+
             return;
         }
 
     } else {
 
-        /* Old accounts using plain passwords */
+        /* Compatibility with old accounts */
+
         if (password !== user.password) {
-            alert("Incorrect username or password.");
+
+            alert(
+                "Incorrect username or password."
+            );
+
             return;
         }
     }
 
-    /* Remember the logged-in account */
+
+    /* ================================
+       LOGIN SUCCESSFUL
+    ================================ */
+
     localStorage.setItem(
         "loggedInUser",
         username
     );
 
-    /* Go to Ascendra */
-    window.location.href = "home.html";
+
+    window.location.href =
+        "home.html";
+
 });
