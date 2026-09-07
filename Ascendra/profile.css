@@ -74,7 +74,8 @@ main {
 }
 
 .profile-card,
-.edit-profile-card {
+.edit-profile-card,
+.password-card {
     background-color: rgba(255, 255, 255, 0.94);
 
     border: 1px solid rgba(30, 55, 110, 0.1);
@@ -199,12 +200,14 @@ main {
     padding: 32px;
 }
 
-.edit-profile-card h2 {
+.edit-profile-card h2,
+.password-card h2 {
     margin-top: 0;
     margin-bottom: 28px;
 }
 
-.edit-profile-card h2 i {
+.edit-profile-card h2 i,
+.password-card h2 i {
     margin-right: 8px;
     color: rgb(78, 98, 220);
 }
@@ -238,7 +241,7 @@ main {
     border-color: rgb(102, 119, 225);
 }
 
-.input-wrapper i {
+.input-wrapper > i {
     margin-left: 16px;
     color: rgb(116, 125, 150);
 }
@@ -285,7 +288,10 @@ textarea:focus {
     font-size: 0.9rem;
 }
 
-#save-button {
+#save-button,
+#send-code-button,
+#verify-code-button,
+#change-password-button {
     width: 100%;
     padding: 15px 20px;
 
@@ -308,16 +314,27 @@ textarea:focus {
     transition: 0.2s ease;
 }
 
-#save-button:hover {
+#save-button:hover,
+#send-code-button:hover,
+#verify-code-button:hover,
+#change-password-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(73, 99, 220, 0.32);
+
+    box-shadow:
+        0 12px 24px rgba(73, 99, 220, 0.32);
 }
 
-#save-button:active {
+#save-button:active,
+#send-code-button:active,
+#verify-code-button:active,
+#change-password-button:active {
     transform: translateY(0);
 }
 
-#save-button i {
+#save-button i,
+#send-code-button i,
+#verify-code-button i,
+#change-password-button i {
     margin-right: 7px;
 }
 
@@ -337,32 +354,79 @@ textarea:focus {
     color: rgb(208, 63, 63);
 }
 
-@media screen and (max-width: 650px) {
-    .top-bar {
-        padding: 10px 14px;
-    }
 
-    .top-bar h1 {
-        font-size: 1.35rem;
-    }
+/* ================================
+   CHANGE PASSWORD
+================================ */
 
-    main {
-        width: 94%;
-        margin-top: 22px;
-    }
-
-    .profile-card {
-        padding: 30px 18px;
-    }
-
-    .stats-container {
-        grid-template-columns: 1fr;
-    }
-
-    .edit-profile-card {
-        padding: 24px 18px;
-    }
+.password-card {
+    margin-top: 25px;
+    padding: 32px;
 }
+
+.password-card h2 {
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgb(116, 125, 150);
+    background: transparent;
+
+    border: none;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: rgb(78, 98, 220);
+}
+
+#verification-section,
+#new-password-section {
+    margin-top: 25px;
+}
+
+#password-message {
+    min-height: 22px;
+    margin: 15px 0 0;
+
+    text-align: center;
+    font-weight: bold;
+}
+
+#password-message.success-message {
+    color: rgb(31, 145, 87);
+}
+
+#password-message.error-message {
+    color: rgb(208, 63, 63);
+}
+
+#send-code-button:disabled,
+#verify-code-button:disabled,
+#change-password-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* ================================
+   LOG OUT
+================================ */
+
 #logout-button {
     width: 100%;
     padding: 15px 20px;
