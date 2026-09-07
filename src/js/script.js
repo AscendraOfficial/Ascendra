@@ -2023,7 +2023,7 @@ function findHabitTrackerScanCorners(imageData) {
     const boxHeight = maxY - minY + 1;
     const density = count / (boxWidth * boxHeight);
     const aspect = boxWidth / boxHeight;
-    if (boxWidth >= 5 && boxHeight >= 5 && boxWidth <= 140 && boxHeight <= 140 && aspect >= 0.62 && aspect <= 1.62 && density >= 0.5) {
+    if (boxWidth >= 5 && boxHeight >= 5 && boxWidth <= 140 && boxHeight <= 140 && aspect >= 0.62 && aspect <= 1.62 && density >= 0.8) {
       candidates.push({
         x: (minX + maxX) / 2,
         y: (minY + maxY) / 2,
