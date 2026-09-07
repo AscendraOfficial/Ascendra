@@ -92,7 +92,11 @@ function validateHabitImportPayload(value) {
   }
 
   const isEnvelope =
-    Array.isArray(value.habits) || Array.isArray(value.h) || value.version !== undefined || value.v !== undefined || value.type === "ascendra-habit-week";
+    Array.isArray(value.habits) ||
+    Array.isArray(value.h) ||
+    value.version !== undefined ||
+    value.v !== undefined ||
+    value.type === "ascendra-habit-week";
   const version = value.version ?? value.v ?? 1;
   if (version !== 1) {
     throw new Error("This habit QR version is not supported.");
@@ -2067,7 +2071,8 @@ function findHabitTrackerScanCorners(imageData) {
     }
   }
 
-  if (!best) throw new Error("Ascendra could not find all four table corner squares. Retake the photo straight-on with the whole table visible.");
+  if (!best)
+    throw new Error("Ascendra could not find all four table corner squares. Retake the photo straight-on with the whole table visible.");
   return best;
 }
 
@@ -2134,7 +2139,7 @@ async function detectHabitTrackerMarks(file, importData) {
 
   importData.habits.forEach(function (habit, habitIndex) {
     habit.results = dates.map(function (date, dayIndex) {
-      if (!isHabitScheduledForDate(habit, date) || formatLocalDate(date) > todayKey) return null;
+      if (!isHabitScheduledForDate(habit, date)) return null;
       const horizontal = nameColumnWidth + dayColumnWidth * (dayIndex + 0.5);
       const vertical = rowHeight * (habitIndex + 1.5);
       const mark = measureHabitTrackerMark(imageData, corners, horizontal, vertical, dayColumnWidth * 0.09, rowHeight * 0.13);
@@ -2162,7 +2167,20 @@ function initializeHabitImportPreview() {
   const cancelButton = document.getElementById("cancel-habit-import");
   const closeButton = document.getElementById("close-habit-import");
 
-  if (!dialog || !title || !description || !preview || !status || !photoSection || !photoInput || !photoStatus || !confirmButton || !cancelButton || !closeButton) return;
+  if (
+    !dialog ||
+    !title ||
+    !description ||
+    !preview ||
+    !status ||
+    !photoSection ||
+    !photoInput ||
+    !photoStatus ||
+    !confirmButton ||
+    !cancelButton ||
+    !closeButton
+  )
+    return;
 
   const modal = createModalController(dialog, pendingHabitImport.error ? closeButton : confirmButton, { display: "flex" });
 
@@ -2200,10 +2218,22 @@ function initializeHabitImportPreview() {
         function updateResultButton() {
           const current = habit.results[index];
           resultButton.dataset.result = current === null ? "pending" : String(current);
-          resultButton.textContent = !scheduled ? `— ${day}` : future ? `• ${day} · Future` : current === true ? `✅ ${day}` : current === false ? `❌ ${day}` : `• ${day} · Review`;
+          resultButton.textContent = !scheduled
+            ? `— ${day}`
+            : future
+              ? `• ${day} · Future`
+              : current === true
+                ? `✅ ${day}`
+                : current === false
+                  ? `❌ ${day}`
+                  : `• ${day} · Review`;
           resultButton.setAttribute(
             "aria-label",
-            !scheduled ? `${day}, not scheduled` : future ? `${day}, future date` : `${day}, ${current === true ? "successful" : current === false ? "missed" : "not reviewed"}. Activate to change.`,
+            !scheduled
+              ? `${day}, not scheduled`
+              : future
+                ? `${day}, future date`
+                : `${day}, ${current === true ? "successful" : current === false ? "missed" : "not reviewed"}. Activate to change.`,
           );
         }
 
@@ -2261,7 +2291,12 @@ function initializeHabitImportPreview() {
 
     data.habits.forEach(function (importedHabit, index) {
       const normalizedName = importedHabit.name.toLocaleLowerCase();
-      let savedHabit = savedHabits.find((habit) => String(habit.name || "").trim().toLocaleLowerCase() === normalizedName);
+      let savedHabit = savedHabits.find(
+        (habit) =>
+          String(habit.name || "")
+            .trim()
+            .toLocaleLowerCase() === normalizedName,
+      );
 
       if (!savedHabit) {
         savedHabit = {
@@ -5108,8 +5143,12 @@ const ROUTE_INITIALIZERS = {
         w: weekStart,
         h: habits.map(function (habit) {
           return [
-            String(habit.name || "Untitled habit").trim().slice(0, 120),
-            String(habit.emoji || "").trim().slice(0, 8),
+            String(habit.name || "Untitled habit")
+              .trim()
+              .slice(0, 120),
+            String(habit.emoji || "")
+              .trim()
+              .slice(0, 8),
             habit.type === "bad" ? "bad" : "good",
             ["weekdays", "weekends"].includes(habit.frequency) ? habit.frequency : "daily",
           ];
