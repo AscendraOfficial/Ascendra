@@ -2143,6 +2143,12 @@ async function detectHabitTrackerMarks(file, importData) {
       const horizontal = nameColumnWidth + dayColumnWidth * (dayIndex + 0.5);
       const vertical = rowHeight * (habitIndex + 1.5);
       const mark = measureHabitTrackerMark(imageData, corners, horizontal, vertical, dayColumnWidth * 0.09, rowHeight * 0.13);
+      alert(
+        `${habit.name} day ${dayIndex}\n` +
+          `inkRatio: ${mark.inkRatio}\n` +
+          `rowCoverage: ${mark.rowCoverage}\n` +
+          `columnCoverage: ${mark.columnCoverage}`,
+      );
       const marked = mark.inkRatio >= 0.035 && mark.rowCoverage >= 0.27 && mark.columnCoverage >= 0.27;
       if (marked) detected++;
       return marked;
