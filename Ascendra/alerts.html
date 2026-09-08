@@ -1,70 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Ascendra - Alerts</title>
 
-    <link rel="stylesheet" href="settings.css">
-    
     <link rel="stylesheet" href="global.css">
     <link rel="stylesheet" href="alerts.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
 </head>
 
 <body>
-    <h1 id="alert">Alerts</h1>
-    <h5 id="subtitle2">For convenience and notifications</h5>
 
-    <!-- "<div id="alertList"></div>" makes all of the todos appear on the screen. -->
-    <!-- The todos are listed in due date and priority. -->
-    <div id="alertList"></div>
+    <div class="alerts-page">
 
-    <script src="alerts.js"></script>
+        <header class="alerts-header">
 
-    <!-- Navigation bar -->
+            <div class="header-icon">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+
+            <div>
+                <h1>Alerts</h1>
+                <p>For convenience and notifications</p>
+            </div>
+
+        </header>
+
+        <section class="alert-summary">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+
+            <div>
+                <span class="summary-label">ALERT STATUS</span>
+
+                <h2 id="alertSummary">
+                    Checking your alerts...
+                </h2>
+            </div>
+
+        </section>
+
+        <main id="alertList">
+        </main>
+
+    </div>
+
+
     <nav class="navbar">
-        <!-- home button -->
+
         <button onclick="window.location.href='home.html'">
-            <i class="fa-solid fa-mug-saucer"></i><br>Home
+            <i class="fa-solid fa-mug-saucer"></i>
+            <span>Home</span>
         </button>
 
-        <!-- alerts button -->
-        <!-- ✨Improvement: No need for the alerts button when in alerts. -->
         <button class="current">
-            <i class="fa-regular fa-bell"></i><br>Alerts
+            <i class="fa-solid fa-bell"></i>
+            <span>Alerts</span>
         </button>
 
-        <!-- to-dos button -->
         <button onclick="window.location.href='todos.html'">
-            <i class="fa-solid fa-list-check"></i><br>To-Dos
+            <i class="fa-solid fa-list-check"></i>
+            <span>To-Dos</span>
         </button>
 
-        <!-- habits button -->
         <button onclick="window.location.href='habits.html'">
-            <i class="fa-regular fa-thumbs-up"></i><br>Habits
+            <i class="fa-solid fa-thumbs-up"></i>
+            <span>Habits</span>
         </button>
 
-        <!-- breathing button -->
         <button onclick="window.location.href='breathing.html'">
-            <i class="fa-solid fa-wind"></i><br>Breathing
+            <i class="fa-solid fa-wind"></i>
+            <span>Breathing</span>
         </button>
 
-        <!-- Calendar button -->
         <button onclick="window.location.href='calendar.html'">
-            <i class="fa-regular fa-calendar"></i><br>Calendar
+            <i class="fa-solid fa-calendar"></i>
+            <span>Calendar</span>
         </button>
 
-        <!-- Journal button -->
         <button onclick="window.location.href='journal.html'">
-            <i class="fa-solid fa-book-open"></i><br>Journal
+            <i class="fa-solid fa-book-open"></i>
+            <span>Journal</span>
         </button>
 
-        <!-- menu button -->
         <button onclick="window.location.href='menu.html'">
-            <i class="fa-solid fa-bars-staggered"></i><br>Menu
+            <i class="fa-solid fa-bars-staggered"></i>
+            <span>Menu</span>
         </button>
+
     </nav>
 
+
+    <script src="alerts.js"></script>
     <script src="global-settings.js"></script>
 
 </body>
