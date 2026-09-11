@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ascendra Focus Sprint</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f0d17;
+      --panel: #171321;
+      --panel-2: #211a31;
+      --text: #f5f2ff;
+      --muted: #aaa1bd;
+      --accent: #9f7aea;
+      --accent-2: #7c5ce0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top, rgba(159, 122, 234, 0.18), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .focus-card {
+      width: min(440px, 100%);
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      background: rgba(23, 19, 33, 0.92);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 7vw, 2.5rem);
+    }
+
+    .subtitle {
+      margin: 8px 0 26px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .timer-ring {
+      --progress: 0deg;
+      width: 220px;
+      aspect-ratio: 1;
+      margin: 0 auto 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(var(--accent) var(--progress), var(--panel-2) 0deg);
+      position: relative;
+    }
+
+    .timer-ring::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: inherit;
+      background: var(--panel);
+    }
+
+    .time {
+      position: relative;
+      z-index: 1;
+      font-size: 3rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .preset-row,
+    .control-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    button.primary {
+      min-width: 118px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .control-row { margin-top: 16px; }
+
+    .status {
+      min-height: 24px;
+      margin: 20px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="focus-card">
+    <p class="eyebrow">Ascendra Lab</p>
+    <h1>Focus Sprint</h1>
+    <p class="subtitle">Pick a sprint, lock in, and let the circle disappear.</p>
+
+    <div class="timer-ring" id="timerRing" aria-label="Focus timer progress">
+      <div class="time" id="timeDisplay">05:00</div>
+    </div>
+
+    <div class="preset-row" aria-label="Timer presets">
+      <button data-minutes="5">5 min</button>
+      <button data-minutes="15">15 min</button>
+      <button data-minutes="25">25 min</button>
+    </div>
+
+    <div class="control-row">
+      <button class="primary" id="startPause">Start</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <p class="status" id="status">Ready when you are.</p>
+  </main>
+
+  <script>
+    const display = document.getElementById('timeDisplay');
+    const ring = document.getElementById('timerRing');
+    const startPauseButton = document.getElementById('startPause');
+    const resetButton = document.getElementById('reset');
+    const status = document.getElementById('status');
+    const presetButtons = document.querySelectorAll('[data-minutes]');
+
+    let duration = 5 * 60;
+    let remaining = duration;
+    let intervalId = null;
+    let running = false;
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function render() {
+      display.textContent = formatTime(remaining);
+      const completed = duration === 0 ? 1 : (duration - remaining) / duration;
+      ring.style.setProperty('--progress', `${completed * 360}deg`);
+      document.title = `${formatTime(remaining)} · Focus Sprint`;
+    }
+
+    function stopTimer(message = 'Paused.') {
+      clearInterval(intervalId);
+      intervalId = null;
+      running = false;
+      startPauseButton.textContent = 'Start';
+      status.textContent = message;
+    }
+
+    function tick() {
+      if (remaining <= 0) {
+        stopTimer('Sprint complete. Tiny victory unlocked ✨');
+        return;
+      }
+
+      remaining -= 1;
+      render();
+
+      if (remaining === 0) {
+        stopTimer('Sprint complete. Tiny victory unlocked ✨');
+      }
+    }
+
+    startPauseButton.addEventListener('click', () => {
+      if (remaining === 0) remaining = duration;
+
+      if (running) {
+        stopTimer();
+        return;
+      }
+
+      running = true;
+      startPauseButton.textContent = 'Pause';
+      status.textContent = 'Locked in. You got this.';
+      intervalId = setInterval(tick, 1000);
+    });
+
+    resetButton.addEventListener('click', () => {
+      stopTimer('Reset and ready.');
+      remaining = duration;
+      render();
+    });
+
+    presetButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        stopTimer(`Set to ${button.dataset.minutes} minutes.`);
+        duration = Number(button.dataset.minutes) * 60;
+        remaining = duration;
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>
