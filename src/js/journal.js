@@ -47,6 +47,11 @@ function getRequestUrl(input) {
   return String(input?.url || "");
 }
 
+function makeRecoveryCode(userId, token) {
+  const recoveryCode = "ASCJBT1." + userId + "." + token;
+  return recoveryCode;
+}
+
 function getRequestMethod(input, init) {
   return String(init?.method || (input instanceof Request ? input.method : "GET")).toUpperCase();
 }
@@ -607,6 +612,8 @@ async function securePost(nativeFetch, input, init) {
   }
 
   const token = getOrCreateJournalToken(userId);
+  const recoveryCode = makeRecoveryCode(userId, token);
+  console.log(recoveryCode);
   const encryptedEntry = await encryptEntry(
     {
       ...plaintextEntry,
