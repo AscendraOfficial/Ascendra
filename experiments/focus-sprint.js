@@ -1,17 +1,23 @@
 const timeDisplay = document.getElementById('timeDisplay');
 const startButton = document.getElementById('startButton');
 const resetButton = document.getElementById('resetButton');
+const fiveMinutes = document.getElementById('fiveMinutes');
+const fifteenMinutes = document.getElementById('fifteenMinutes');
+const twentyFiveMinutes = document.getElementById('twentyFiveMinutes');
 const statusText = document.getElementById('statusText');
-const presetButtons = document.querySelectorAll('[data-minutes]');
 
-let duration = 5 * 60;
+let duration = 300;
 let remaining = duration;
 let timer = null;
 
 function updateDisplay() {
   const minutes = Math.floor(remaining / 60);
   const seconds = remaining % 60;
-  timeDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+  const minuteText = String(minutes).padStart(2, '0');
+  const secondText = String(seconds).padStart(2, '0');
+
+  timeDisplay.textContent = minuteText + ':' + secondText;
 }
 
 function stopTimer() {
@@ -20,22 +26,26 @@ function stopTimer() {
   startButton.textContent = 'Start';
 }
 
+function chooseTime(minutes) {
+  stopTimer();
+  duration = minutes * 60;
+  remaining = duration;
+  statusText.textContent = 'Ready.';
+  updateDisplay();
+}
+
 function startTimer() {
-  if (timer) {
+  if (timer !== null) {
     stopTimer();
     statusText.textContent = 'Paused.';
     return;
   }
 
-  if (remaining === 0) {
-    remaining = duration;
-  }
-
   startButton.textContent = 'Pause';
   statusText.textContent = 'Focus time.';
 
-  timer = setInterval(() => {
-    remaining--;
+  timer = setInterval(function () {
+    remaining = remaining - 1;
     updateDisplay();
 
     if (remaining <= 0) {
@@ -45,23 +55,26 @@ function startTimer() {
   }, 1000);
 }
 
-startButton.addEventListener('click', startTimer);
-
-resetButton.addEventListener('click', () => {
+function resetTimer() {
   stopTimer();
   remaining = duration;
-  updateDisplay();
   statusText.textContent = 'Ready.';
+  updateDisplay();
+}
+
+startButton.addEventListener('click', startTimer);
+resetButton.addEventListener('click', resetTimer);
+
+fiveMinutes.addEventListener('click', function () {
+  chooseTime(5);
 });
 
-presetButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    stopTimer();
-    duration = Number(button.dataset.minutes) * 60;
-    remaining = duration;
-    updateDisplay();
-    statusText.textContent = `Set to ${button.dataset.minutes} minutes.`;
-  });
+fifteenMinutes.addEventListener('click', function () {
+  chooseTime(15);
+});
+
+twentyFiveMinutes.addEventListener('click', function () {
+  chooseTime(25);
 });
 
 updateDisplay();
