@@ -25,7 +25,7 @@ window.fetch = async function ascendraSecureFetch(input, init) {
     const pathname = new URL(rawUrl, window.location.href).pathname;
     isJournalRequest = pathname.endsWith("/journal");
   } catch {
-    // Let the native fetch handle malformed/non-standard URLs.
+    console.error("There was an error reaching the servers, please try again later.")
   }
 
   if (!isJournalRequest) {
