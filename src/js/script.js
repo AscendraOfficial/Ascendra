@@ -4263,6 +4263,9 @@ const ROUTE_INITIALIZERS = {
 
     // Holds the journal entries downloaded from the backend.
     let journalEntries = [];
+    let journalBackendNotice = "";
+    let journalActive = true;
+    const journalRequests = new Set();
 
     const monthNames = [
       "January",
@@ -4278,6 +4281,7 @@ const ROUTE_INITIALIZERS = {
       "November",
       "December",
     ];
+    const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     const monthTitle = document.getElementById("monthTitle");
     const dateGrid = document.getElementById("dateGrid");
@@ -4294,6 +4298,29 @@ const ROUTE_INITIALIZERS = {
 
     const saveEntry = document.getElementById("saveEntry");
     const statusMessage = document.getElementById("statusMessage");
+
+    function setJournalStatus(message = "", state = "") {
+      statusMessage.textContent = message;
+
+      if (state) {
+        statusMessage.dataset.state = state;
+      } else {
+        delete statusMessage.dataset.state;
+      }
+    }
+
+    async function journalRequest(url, options = {}) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      journalRequests.add(controller);
+
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        clearTimeout(timeoutId);
+        journalRequests.delete(controller);
+      }
+    }
 
     function getCurrentUserId() {
       return getActiveIdentityItem("accountId");
@@ -4336,8 +4363,11 @@ const ROUTE_INITIALIZERS = {
         return journalEntries;
       }
 
-      const query = new URLSearchParams({ user_id: currentUserId });
-      const response = await fetch(`${API_URL}/journal?${query}`);
+      const response = await journalRequest(`${API_URL}/journal`, {
+        headers: {
+          "X-Ascendra-Account-Id": currentUserId,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Journal request failed: ${response.status}`);
@@ -4345,7 +4375,7 @@ const ROUTE_INITIALIZERS = {
 
       const data = await response.json();
 
-      journalEntries = Array.isArray(data) ? data : [];
+      journalEntries = Array.isArray(data) ? data.filter((entry) => entry && typeof entry === "object") : [];
 
       // Normalize backend field names so frontend code can rely on `userId`
       journalEntries = journalEntries.map((e) => {
@@ -4363,26 +4393,9 @@ const ROUTE_INITIALIZERS = {
       return journalEntries.find((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey) || null;
     }
 
-    async function loadEntry(day) {
+    function loadEntry(day) {
       selectedDay = day;
-
-      let entry = null;
-
-      try {
-        await loadJournalEntries();
-        entry = findEntry(day) || readUserJson(getEntryKey(day), null);
-
-        if (statusMessage.textContent === "Backend unavailable. Loaded the local backup.") {
-          statusMessage.textContent = "";
-        }
-      } catch (error) {
-        console.error("Could not load the journal backend:", error);
-
-        // Temporary backup while the backend is still being tested.
-        entry = readUserJson(getEntryKey(day), null);
-
-        statusMessage.textContent = "Backend unavailable. Loaded the local backup.";
-      }
+      const entry = findEntry(day) || readUserJson(getEntryKey(day), null);
 
       entryTitle.textContent = `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
@@ -4392,7 +4405,8 @@ const ROUTE_INITIALIZERS = {
       learnText.value = entry?.learn || "";
       goalText.value = entry?.goal || "";
 
-      const canEdit = isTodayDate(day);
+      const hasAccount = Boolean(getCurrentUserId());
+      const canEdit = hasAccount && isTodayDate(day);
 
       mood.disabled = !canEdit;
       dayText.disabled = !canEdit;
@@ -4402,10 +4416,14 @@ const ROUTE_INITIALIZERS = {
 
       saveEntry.style.display = canEdit ? "block" : "none";
 
-      if (!canEdit) {
-        statusMessage.textContent = isFutureDate(day) ? "Future entries cannot be edited." : "Past entries are read-only.";
-      } else if (statusMessage.textContent !== "Backend unavailable. Loaded the local backup.") {
-        statusMessage.textContent = "";
+      if (!hasAccount) {
+        setJournalStatus("Log in to write and sync journal entries.", "error");
+      } else if (!canEdit) {
+        setJournalStatus(isFutureDate(day) ? "Future entries cannot be edited." : "Past entries are read-only.", "info");
+      } else if (journalBackendNotice) {
+        setJournalStatus(journalBackendNotice, "warning");
+      } else {
+        setJournalStatus();
       }
     }
 
@@ -4414,14 +4432,33 @@ const ROUTE_INITIALIZERS = {
       monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
       const currentUserId = getCurrentUserId();
+
+      weekdayNames.forEach((weekday) => {
+        const label = document.createElement("span");
+        label.className = "calendar-weekday";
+        label.textContent = weekday;
+        dateGrid.appendChild(label);
+      });
+
+      const firstWeekday = new Date(currentYear, currentMonth, 1).getDay();
+      for (let spacerIndex = 0; spacerIndex < firstWeekday; spacerIndex++) {
+        const spacer = document.createElement("span");
+        spacer.className = "date-grid-spacer";
+        spacer.setAttribute("aria-hidden", "true");
+        dateGrid.appendChild(spacer);
+      }
 
       for (let day = 1; day <= daysInMonth; day++) {
         const button = document.createElement("button");
 
+        button.type = "button";
         button.textContent = day;
         button.classList.add("date-button");
+        button.setAttribute(
+          "aria-label",
+          `${monthNames[currentMonth]} ${day}, ${currentYear}${day === selectedDay ? ", selected" : ""}`,
+        );
 
         const dateKey = getEntryKey(day);
 
@@ -4444,17 +4481,20 @@ const ROUTE_INITIALIZERS = {
           button.classList.add("future");
           button.disabled = true;
         } else {
-          button.onclick = async () => {
-            await loadEntry(day);
+          button.onclick = () => {
+            loadEntry(day);
             buildDateGrid();
           };
         }
 
         dateGrid.appendChild(button);
       }
+
+      const currentDate = getCurrentDateParts();
+      nextMonth.disabled = currentYear > currentDate.year || (currentYear === currentDate.year && currentMonth >= currentDate.month);
     }
 
-    prevMonth.onclick = async () => {
+    prevMonth.onclick = () => {
       currentMonth--;
 
       if (currentMonth < 0) {
@@ -4464,11 +4504,13 @@ const ROUTE_INITIALIZERS = {
 
       selectedDay = 1;
 
-      await loadEntry(selectedDay);
+      loadEntry(selectedDay);
       buildDateGrid();
     };
 
-    nextMonth.onclick = async () => {
+    nextMonth.onclick = () => {
+      if (nextMonth.disabled) return;
+
       currentMonth++;
 
       if (currentMonth > 11) {
@@ -4478,20 +4520,21 @@ const ROUTE_INITIALIZERS = {
 
       selectedDay = 1;
 
-      await loadEntry(selectedDay);
+      loadEntry(selectedDay);
       buildDateGrid();
     };
 
     saveEntry.onclick = async () => {
       if (!isTodayDate(selectedDay)) {
-        statusMessage.textContent = isFutureDate(selectedDay) ? "Future entries cannot be edited." : "Past entries are read-only.";
+        setJournalStatus(isFutureDate(selectedDay) ? "Future entries cannot be edited." : "Past entries are read-only.", "info");
 
         return;
       }
 
-      const uid = getCurrentUserId() || localStorage.getItem("accountId") || localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID);
+      const uid = getCurrentUserId();
       const entry = {
         user_id: uid,
+        userId: uid,
         date: getEntryKey(selectedDay),
         mood: mood.value,
         day: dayText.value,
@@ -4501,15 +4544,15 @@ const ROUTE_INITIALIZERS = {
       };
 
       if (!entry.user_id) {
-        statusMessage.textContent = "Could not identify the logged-in account.";
+        setJournalStatus("Log in before saving a journal entry.", "error");
         return;
       }
 
       saveEntry.disabled = true;
-      statusMessage.textContent = "Saving...";
+      setJournalStatus("Saving...", "info");
 
       try {
-        const response = await fetch(API_URL + "/journal", {
+        const response = await journalRequest(API_URL + "/journal", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -4534,17 +4577,25 @@ const ROUTE_INITIALIZERS = {
         // Keep this temporarily as a backup.
         setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
 
-        statusMessage.textContent = "Entry saved!";
+        journalBackendNotice = "";
+        setJournalStatus("Entry saved!");
         buildDateGrid();
       } catch (error) {
+        if (error.name === "AbortError" && !journalActive) return;
         console.error("Could not save the journal entry:", error);
 
         // Save locally if the backend fails.
-        setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
-
-        statusMessage.textContent = "Saved locally, but the backend could not be reached.";
+        try {
+          setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
+          journalBackendNotice = "The backend is unavailable. This entry is saved only in this browser.";
+          setJournalStatus(journalBackendNotice, "warning");
+          buildDateGrid();
+        } catch (storageError) {
+          console.error("Could not save the local journal backup:", storageError);
+          setJournalStatus("This entry could not be saved. Please try again.", "error");
+        }
       } finally {
-        saveEntry.disabled = false;
+        if (journalActive) saveEntry.disabled = false;
       }
     };
 
@@ -4554,9 +4605,23 @@ const ROUTE_INITIALIZERS = {
       if (currentDateKey === journalDateKey) return;
 
       journalDateKey = currentDateKey;
+      const currentDate = getCurrentDateParts();
+      currentMonth = currentDate.month;
+      currentYear = currentDate.year;
+      selectedDay = currentDate.day;
 
+      try {
+        await loadJournalEntries();
+        journalBackendNotice = "";
+      } catch (error) {
+        if (error.name === "AbortError" && !journalActive) return;
+        console.error("Could not refresh the journal backend:", error);
+        journalBackendNotice = "The backend is unavailable. Showing entries saved in this browser.";
+      }
+
+      if (!journalActive) return;
+      loadEntry(selectedDay);
       buildDateGrid();
-      await loadEntry(selectedDay);
     }
 
     function handleJournalVisibilityChange() {
@@ -4570,7 +4635,18 @@ const ROUTE_INITIALIZERS = {
     document.addEventListener("visibilitychange", handleJournalVisibilityChange);
 
     async function initializeJournal() {
-      await loadEntry(selectedDay);
+      try {
+        await loadJournalEntries();
+        journalBackendNotice = "";
+      } catch (error) {
+        if (error.name === "AbortError" && !journalActive) return;
+        console.error("Could not load the journal backend:", error);
+        journalEntries = [];
+        journalBackendNotice = "The backend is unavailable. Showing entries saved in this browser.";
+      }
+
+      if (!journalActive) return;
+      loadEntry(selectedDay);
       buildDateGrid();
     }
 
@@ -4583,6 +4659,9 @@ const ROUTE_INITIALIZERS = {
     window.loadEntry = loadEntry;
 
     return () => {
+      journalActive = false;
+      journalRequests.forEach((controller) => controller.abort());
+      journalRequests.clear();
       window.removeEventListener("focus", refreshJournalDateRules);
 
       document.removeEventListener("visibilitychange", handleJournalVisibilityChange);

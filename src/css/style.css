@@ -2597,6 +2597,7 @@ body::before {
 
 .ascendra-page[data-route="journal"] .date-grid-card,
 .ascendra-page[data-route="journal"] .entry-card {
+  box-sizing: border-box;
   background-color: white;
   border-radius: 18px;
   padding: 25px;
@@ -2615,6 +2616,19 @@ body::before {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
+}
+
+.ascendra-page[data-route="journal"] .calendar-weekday {
+  padding: 4px 0;
+  color: rgb(90, 90, 90);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ascendra-page[data-route="journal"] .date-grid-spacer {
+  min-width: 0;
 }
 
 .ascendra-page[data-route="journal"] .date-button {
@@ -2637,6 +2651,18 @@ body::before {
   background-color: rgb(143, 63, 216);
   box-shadow: 0 5px 12px rgba(143, 63, 216, 0.4);
   color: white;
+}
+
+.ascendra-page[data-route="journal"] .date-button.selected-day {
+  outline: 3px solid rgb(37, 99, 235);
+  outline-offset: 2px;
+}
+
+.ascendra-page[data-route="journal"] .date-button:focus-visible,
+.ascendra-page[data-route="journal"] .mini-calendar-header button:focus-visible,
+.ascendra-page[data-route="journal"] #saveEntry:focus-visible {
+  outline: 3px solid rgb(37, 99, 235);
+  outline-offset: 3px;
 }
 
 .ascendra-page[data-route="journal"] .date-button.future {
@@ -2683,8 +2709,21 @@ body::before {
 }
 
 .ascendra-page[data-route="journal"] #statusMessage {
+  min-height: 1.35em;
   color: rgb(0, 128, 0);
   font-weight: bold;
+}
+
+.ascendra-page[data-route="journal"] #statusMessage[data-state="warning"] {
+  color: rgb(146, 83, 0);
+}
+
+.ascendra-page[data-route="journal"] #statusMessage[data-state="info"] {
+  color: rgb(71, 85, 105);
+}
+
+.ascendra-page[data-route="journal"] #statusMessage[data-state="error"] {
+  color: rgb(185, 28, 28);
 }
 
 /* Bottom Navigation */
@@ -8118,6 +8157,22 @@ body.dark-mode .ascendra-page[data-route="todos"] .priority-low,
 body.dark-mode .ascendra-page[data-route="journal"] #statusMessage,
 body.dark-mode .ascendra-page[data-route="profile"] .success-message {
   color: #86efac !important;
+}
+
+body.dark-mode .ascendra-page[data-route="journal"] #statusMessage[data-state="warning"] {
+  color: #fcd34d !important;
+}
+
+body.dark-mode .ascendra-page[data-route="journal"] #statusMessage[data-state="info"] {
+  color: #cbd5e1 !important;
+}
+
+body.dark-mode .ascendra-page[data-route="journal"] #statusMessage[data-state="error"] {
+  color: #fca5a5 !important;
+}
+
+body.dark-mode .ascendra-page[data-route="journal"] .calendar-weekday {
+  color: var(--dark-muted) !important;
 }
 
 body.dark-mode .ascendra-page[data-route="habits"] .habit-streak {
