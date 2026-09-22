@@ -455,7 +455,7 @@
               <h2 id="monthTitle">Month</h2>
               <button aria-label="Next month" id="nextMonth" type="button">›</button>
             </div>
-            <div class="date-grid" id="dateGrid"></div>
+            <div aria-labelledby="monthTitle" class="date-grid" id="dateGrid" role="group"></div>
           </div>
           <div class="entry-card">
             <h2 id="entryTitle">Today's Entry</h2>
@@ -469,15 +469,15 @@
               <option value="Tired">🥱 Tired</option>
             </select>
             <label for="dayText">How was your day?</label>
-            <textarea id="dayText"></textarea>
+            <textarea id="dayText" maxlength="2000" placeholder="Write about the moments that stood out today."></textarea>
             <label for="gratefulText">What are you grateful for?</label>
-            <textarea id="gratefulText"></textarea>
+            <textarea id="gratefulText" maxlength="2000" placeholder="Name something, big or small, that you appreciated."></textarea>
             <label for="learnText">What did you learn today?</label>
-            <textarea id="learnText"></textarea>
+            <textarea id="learnText" maxlength="2000" placeholder="Capture an idea, lesson, or discovery."></textarea>
             <label for="goalText">Goal for tomorrow</label>
-            <textarea id="goalText"></textarea>
+            <textarea id="goalText" maxlength="2000" placeholder="Choose one helpful next step for tomorrow."></textarea>
             <button id="saveEntry" type="button">Save Entry</button>
-            <p aria-live="polite" id="statusMessage"></p>
+            <p aria-live="polite" id="statusMessage" role="status"></p>
           </div>
         </div>
       </div>
