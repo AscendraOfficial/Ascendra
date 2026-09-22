@@ -14,6 +14,7 @@ from supabase import create_client
 # Starting up
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
 
 default_origins = [
     "https://ascendraofficial.github.io",
@@ -277,6 +278,22 @@ def validate_journal_entry(value):
 # --------------------
 # Routes
 # --------------------
+
+@app.after_request
+def disable_journal_caching(response):
+    if request.path in ("/journal", "/journal/claim"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
+
+@app.errorhandler(413)
+def journal_payload_too_large(_error):
+    return json_error(
+        "Journal data is too large.",
+        413,
+        "journal_payload_too_large",
+    )
+
 
 @app.get("/journal")
 def getJournal():
