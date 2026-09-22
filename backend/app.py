@@ -1,18 +1,20 @@
 # Importing
 
-from datetime import date as calendar_date
+import hashlib
+import os
 import re
+import secrets
+from datetime import date
 
 from flask import Flask, request
 from flask_cors import CORS
-import os
 from supabase import create_client
 
 
 # Starting up
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 20 * 1024
+app.config["MAX_CONTENT_LENGTH"] = 64 * 1024
 
 default_origins = [
     "https://ascendraofficial.github.io",
@@ -25,19 +27,20 @@ default_origins = [
 ]
 allowed_origins = [
     origin.strip()
-    for origin in os.environ.get("ASCENDRA_ALLOWED_ORIGINS", ",".join(default_origins)).split(",")
+    for origin in os.environ.get(
+        "ASCENDRA_ALLOWED_ORIGINS",
+        ",".join(default_origins),
+    ).split(",")
     if origin.strip()
 ]
-CORS(app, resources={r"/journal": {"origins": allowed_origins}})
-
-ACCOUNT_ID_PATTERN = re.compile(
-    r"^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$",
-    re.IGNORECASE,
+CORS(
+    app,
+    resources={
+        r"/journal": {"origins": allowed_origins},
+        r"/journal/claim": {"origins": allowed_origins},
+    },
+    allow_headers=["Content-Type", "Authorization"],
 )
-JOURNAL_DATE_PATTERN = re.compile(r"^journal-(\d{4})-(\d{1,2})-(\d{1,2})$")
-JOURNAL_MOODS = {"Happy", "Good", "Okay", "Sad", "Angry", "Tired"}
-JOURNAL_TEXT_FIELDS = ("day", "grateful", "learn", "goal")
-MAX_JOURNAL_FIELD_LENGTH = 2000
 
 
 # Supabase
@@ -47,163 +50,406 @@ SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 
 supabase = create_client(
     SUPABASE_URL,
-    SUPABASE_KEY
+    SUPABASE_KEY,
 )
 
 
 # --------------------
-# Routes
+# Journal security
 # --------------------
 
-def error_response(message, status_code):
-    return {
-        "status": "error",
-        "message": message,
-    }, status_code
+JOURNAL_AUTH_DATE = "__auth__"
+JOURNAL_AUTH_PREFIX = "auth-v1:"
+JOURNAL_FIELDS = (
+    "user_id",
+    "date",
+    "mood",
+    "day",
+    "grateful",
+    "learn",
+    "goal",
+)
+USER_ID_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{8,128}$")
+TOKEN_PATTERN = re.compile(r"^[A-Za-z0-9_-]{40,128}$")
+JOURNAL_DATE_PATTERN = re.compile(r"^journal-(\d{4})-(\d{1,2})-(\d{1,2})$")
 
 
-def is_valid_account_id(user_id):
-    return bool(ACCOUNT_ID_PATTERN.fullmatch(user_id))
-
-
-def is_valid_journal_date(value):
+def valid_journal_date(value):
     match = JOURNAL_DATE_PATTERN.fullmatch(value)
+
     if not match:
         return False
 
     try:
-        calendar_date(*(int(part) for part in match.groups()))
+        date(
+            int(match.group(1)),
+            int(match.group(2)),
+            int(match.group(3)),
+        )
     except ValueError:
         return False
 
     return True
 
 
-def validate_journal_entry(payload):
-    if not isinstance(payload, dict):
-        return None, "Journal data must be a JSON object."
+def json_error(message, status, code=None):
+    body = {
+        "status": "error",
+        "message": message,
+    }
 
-    user_id = str(payload.get("user_id", "")).strip()
-    entry_date = str(payload.get("date", "")).strip()
-    mood = payload.get("mood", "Happy")
+    if code:
+        body["code"] = code
 
-    if not is_valid_account_id(user_id):
-        return None, "A valid account ID is required."
+    return body, status
 
-    if not is_valid_journal_date(entry_date):
-        return None, "A valid journal date is required."
 
-    if not isinstance(mood, str) or mood not in JOURNAL_MOODS:
-        return None, "The selected mood is not valid."
+def normalize_user_id(value):
+    user_id = str(value or "").strip()
+
+    if not USER_ID_PATTERN.fullmatch(user_id):
+        return ""
+
+    return user_id
+
+
+def get_bearer_token():
+    authorization = request.headers.get("Authorization", "")
+    scheme, _, token = authorization.partition(" ")
+
+    if scheme.lower() != "bearer":
+        return ""
+
+    token = token.strip()
+
+    if not TOKEN_PATTERN.fullmatch(token):
+        return ""
+
+    return token
+
+
+def journal_token_hash(token):
+    digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    return JOURNAL_AUTH_PREFIX + digest
+
+
+def get_journal_auth_value(user_id):
+    result = (
+        supabase
+        .table("journal")
+        .select("mood")
+        .eq("user_id", user_id)
+        .eq("date", JOURNAL_AUTH_DATE)
+        .execute()
+    )
+
+    if not result.data:
+        return ""
+
+    return str(result.data[0].get("mood", ""))
+
+
+def journal_auth_status(user_id, token):
+    expected = get_journal_auth_value(user_id)
+
+    if not expected:
+        return "missing"
+
+    actual = journal_token_hash(token)
+
+    if secrets.compare_digest(expected, actual):
+        return "ok"
+
+    return "denied"
+
+
+def get_journal_rows(user_id):
+    result = (
+        supabase
+        .table("journal")
+        .select(",".join(JOURNAL_FIELDS))
+        .eq("user_id", user_id)
+        .execute()
+    )
+
+    return [
+        row
+        for row in (result.data or [])
+        if row.get("date") != JOURNAL_AUTH_DATE
+    ]
+
+
+def clean_claim_entry(value):
+    if not isinstance(value, dict):
+        return None
+
+    date = str(value.get("date", "")).strip()
+
+    if not valid_journal_date(date):
+        return None
+
+    fields = ("mood", "day", "grateful", "learn", "goal")
+    cleaned = {"date": date}
+
+    for field in fields:
+        field_value = value.get(field, "")
+
+        if not isinstance(field_value, str):
+            return None
+
+        cleaned[field] = field_value
+
+    return cleaned
+
+
+def claim_matches_row(claim, row):
+    if not claim:
+        return False
+
+    return all(
+        str(row.get(field, "")) == claim[field]
+        for field in ("date", "mood", "day", "grateful", "learn", "goal")
+    )
+
+
+def require_journal_auth(user_id):
+    token = get_bearer_token()
+
+    if not token:
+        return None, json_error(
+            "Journal authentication is required.",
+            401,
+            "journal_auth_missing",
+        )
+
+    status = journal_auth_status(user_id, token)
+
+    if status == "missing":
+        return None, json_error(
+            "This journal needs to initialize its security token.",
+            428,
+            "journal_auth_required",
+        )
+
+    if status != "ok":
+        return None, json_error(
+            "Journal authentication failed.",
+            403,
+            "journal_auth_denied",
+        )
+
+    return token, None
+
+
+def validate_journal_entry(value):
+    if not isinstance(value, dict):
+        return None
+
+    user_id = normalize_user_id(value.get("user_id"))
+    date = str(value.get("date", "")).strip()
+
+    if not user_id or not valid_journal_date(date):
+        return None
 
     clean_entry = {
         "user_id": user_id,
-        "date": entry_date,
-        "mood": mood,
+        "date": date,
     }
 
-    for field in JOURNAL_TEXT_FIELDS:
-        value = payload.get(field, "")
-        if not isinstance(value, str):
-            return None, f"{field} must be text."
-        if len(value) > MAX_JOURNAL_FIELD_LENGTH:
-            return None, f"{field} must be {MAX_JOURNAL_FIELD_LENGTH} characters or fewer."
-        clean_entry[field] = value
+    limits = {
+        "mood": 100,
+        "day": 100_000,
+        "grateful": 10_000,
+        "learn": 10_000,
+        "goal": 10_000,
+    }
 
-    return clean_entry, None
+    for field, limit in limits.items():
+        field_value = value.get(field, "")
 
+        if not isinstance(field_value, str) or len(field_value) > limit:
+            return None
+
+        clean_entry[field] = field_value
+
+    return clean_entry
+
+
+# --------------------
+# Routes
+# --------------------
 
 @app.after_request
 def disable_journal_caching(response):
-    if request.path == "/journal":
+    if request.path in ("/journal", "/journal/claim"):
         response.headers["Cache-Control"] = "no-store"
     return response
 
 
 @app.errorhandler(413)
 def journal_payload_too_large(_error):
-    return error_response("Journal data is too large.", 413)
+    return json_error(
+        "Journal data is too large.",
+        413,
+        "journal_payload_too_large",
+    )
 
 
 @app.get("/journal")
 def getJournal():
-    user_id = request.headers.get("X-Ascendra-Account-Id", request.args.get("user_id", "")).strip()
+    user_id = normalize_user_id(request.args.get("user_id"))
 
-    if not is_valid_account_id(user_id):
-        return error_response("A valid account ID is required.", 400)
+    if not user_id:
+        return json_error(
+            "A valid user_id is required.",
+            400,
+            "invalid_user_id",
+        )
+
+    _, auth_error = require_journal_auth(user_id)
+
+    if auth_error:
+        return auth_error
+
+    return get_journal_rows(user_id)
+
+
+@app.post("/journal/claim")
+def claimJournal():
+    body = request.get_json(silent=True)
+
+    if not isinstance(body, dict):
+        return json_error(
+            "No journal security data received.",
+            400,
+            "invalid_request",
+        )
+
+    user_id = normalize_user_id(body.get("user_id"))
+    token = get_bearer_token()
+
+    if not user_id:
+        return json_error(
+            "A valid user_id is required.",
+            400,
+            "invalid_user_id",
+        )
+
+    if not token:
+        return json_error(
+            "Journal authentication is required.",
+            401,
+            "journal_auth_missing",
+        )
+
+    current_status = journal_auth_status(user_id, token)
+
+    if current_status == "ok":
+        return {"status": "success"}
+
+    if current_status == "denied":
+        return json_error(
+            "This journal already has a different security token.",
+            403,
+            "journal_auth_denied",
+        )
+
+    rows = get_journal_rows(user_id)
+
+    if rows:
+        claim = clean_claim_entry(body.get("claim"))
+
+        if not claim or not any(
+            claim_matches_row(claim, row)
+            for row in rows
+        ):
+            return json_error(
+                "A matching local journal entry is required to secure this older journal.",
+                403,
+                "legacy_proof_required",
+            )
+
+    auth_entry = {
+        "user_id": user_id,
+        "date": JOURNAL_AUTH_DATE,
+        "mood": journal_token_hash(token),
+        "day": "",
+        "grateful": "",
+        "learn": "",
+        "goal": "",
+    }
 
     try:
-        data = (
-            supabase
-            .table("journal")
-            .select("user_id,date,mood,day,grateful,learn,goal")
-            .eq("user_id", user_id)
-            .execute()
-        )
+        supabase.table("journal").insert(auth_entry).execute()
     except Exception:
-        app.logger.exception("Could not load journal entries from Supabase.")
-        return error_response("The journal service is temporarily unavailable.", 503)
+        # If two setup requests raced, accept the winner only when it
+        # installed the same token. Otherwise keep the journal locked.
+        if journal_auth_status(user_id, token) != "ok":
+            raise
 
-    return data.data
+    return {"status": "success"}
 
 
 @app.post("/journal")
 def postJournal():
-    newEntry = request.get_json(silent=True)
-    clean_entry, validation_error = validate_journal_entry(newEntry)
+    new_entry = request.get_json(silent=True)
+    clean_entry = validate_journal_entry(new_entry)
 
-    if validation_error:
-        return error_response(validation_error, 400)
+    if not clean_entry:
+        return json_error(
+            "Invalid journal data received.",
+            400,
+            "invalid_journal_entry",
+        )
 
     user_id = clean_entry["user_id"]
-    entry_date = clean_entry["date"]
+    _, auth_error = require_journal_auth(user_id)
 
-    try:
-        existing = (
+    if auth_error:
+        return auth_error
+
+    existing = (
+        supabase
+        .table("journal")
+        .select("user_id,date")
+        .eq("user_id", user_id)
+        .eq("date", clean_entry["date"])
+        .execute()
+    )
+
+    if existing.data:
+        (
             supabase
             .table("journal")
-            .select("user_id")
+            .update(clean_entry)
             .eq("user_id", user_id)
-            .eq("date", entry_date)
+            .eq("date", clean_entry["date"])
+            .execute()
+        )
+    else:
+        (
+            supabase
+            .table("journal")
+            .insert(clean_entry)
             .execute()
         )
 
-        if existing.data:
-            (
-                supabase
-                .table("journal")
-                .update(clean_entry)
-                .eq("user_id", user_id)
-                .eq("date", entry_date)
-                .execute()
-            )
-        else:
-            (
-                supabase
-                .table("journal")
-                .insert(clean_entry)
-                .execute()
-            )
-    except Exception:
-        app.logger.exception("Could not save a journal entry to Supabase.")
-        return error_response("The journal service is temporarily unavailable.", 503)
-
     return {
-        "status": "success"
+        "status": "success",
     }
 
 
 @app.get("/test")
 def test():
     return {
-        "status": "worked"
+        "status": "worked",
     }
 
 
 @app.get("/health")
 def health():
     return {
-        "status": "ok"
+        "status": "ok",
     }
 
 
