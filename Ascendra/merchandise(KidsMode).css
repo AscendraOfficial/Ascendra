@@ -16,3 +16,22 @@
     background-clip: text;
     color: transparent;
 }
+
+#merchandise_subtitle {
+    color: background: linear-gradient(
+        90deg,
+        red,
+        orange,
+        yellow,
+        green,
+        blue,
+        indigo,
+        violet
+    );
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+/* rainbow for the unique vibe */
