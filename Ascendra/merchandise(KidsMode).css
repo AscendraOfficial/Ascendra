@@ -1,37 +1,116 @@
-#merchandise {
-/* makes text rainbow */    
-    color: background: linear-gradient(
-        90deg,
-        red,
-        orange,
-        yellow,
-        green,
-        blue,
-        indigo,
-        violet
-    );
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
+* {
+    box-sizing: border-box;
 }
+
+body {
+    margin: 0;
+
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: Arial, sans-serif;
+
+    background: white;
+
+    color: #222;
+}
+
+
+/* Main box */
+
+.main-box {
+    width: 700px;
+
+    padding: 40px;
+
+    text-align: center;
+
+    background: white;
+
+    border: 1px solid #ddd;
+
+    border-radius: 15px;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Merchandise title */
+
+#merchandise {
+    margin: 0 0 10px;
+
+    font-size: 40px;
+}
+
+
+/* Subtitle */
 
 #merchandise_subtitle {
-    color: background: linear-gradient(
-        90deg,
-        red,
-        orange,
-        yellow,
-        green,
-        blue,
-        indigo,
-        violet
-    );
+    margin-top: 0;
 
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
+    color: #666;
+
+    font-weight: normal;
 }
-/* rainbow for the unique vibe */
+
+
+/* Merchandise area */
+
+.merchandise-content {
+    min-height: 250px;
+
+    margin-top: 30px;
+
+    padding: 20px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+}
+
+
+/* Navigation */
+
+.box-navbar {
+    display: flex;
+
+    gap: 5px;
+
+    margin-top: 30px;
+
+    padding: 5px;
+
+    background: #f5f5f5;
+
+    border-radius: 10px;
+}
+
+
+/* Navigation buttons */
+
+.box-navbar button {
+    flex: 1;
+
+    padding: 12px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #333;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+
+.box-navbar button:hover {
+    background: #ddd;
+}
