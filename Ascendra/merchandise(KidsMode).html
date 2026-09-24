@@ -3,25 +3,96 @@
 
 <head>
     <meta charset="UTF-8">
+
     <title>Merchandise 👕</title>
+
     <link rel="stylesheet" href="merchandise(KidsMode).css">
 </head>
+
 <body>
+
     <div class="main-box">
-        <h1 id="merchandise">Merchandise</h1>
-        <h3 id="merchandise_subtitle">
-            to make your character cool and unique
-        </h3>
-        <!-- Merchandise area -->
-        <div class="merchandise-content">
-        </div>
-         <!-- Navigation -->
+
+        <!-- HOME SECTION -->
+
+        <section id="homeSection" class="page-section">
+
+            <h1>Kids Mode</h1>
+
+            <p>Welcome to your Ascendra character!</p>
+
+        </section>
+
+
+        <!-- CHARACTER SECTION -->
+
+        <section id="characterSection" class="page-section">
+
+            <h1>Character</h1>
+
+            <p>Customize your character here.</p>
+
+        </section>
+
+
+        <!-- MERCHANDISE SECTION -->
+
+        <section id="merchandiseSection" class="page-section">
+
+            <h1 id="merchandise">
+                Merchandise 👕
+            </h1>
+
+            <h3 id="merchandise_subtitle">
+                to make your character cool and unique
+            </h3>
+
+            <div class="merchandise-content">
+
+                <p>
+                    Your merchandise will appear here.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- SHOP SECTION -->
+
+        <section id="shopSection" class="page-section">
+
+            <h1>Shop</h1>
+
+            <p>Spend your coins on cool items!</p>
+
+        </section>
+
+
+        <!-- NAVIGATION -->
+
         <nav class="box-navbar">
-            <button>Home</button>
-            <button>Character</button>
-            <button>Merchandise</button>
-            <button>Shop</button>
+
+            <button onclick="showSection('homeSection')">
+                Home
+            </button>
+
+            <button onclick="showSection('characterSection')">
+                Character
+            </button>
+
+            <button onclick="showSection('merchandiseSection')">
+                Merchandise
+            </button>
+
+            <button onclick="showSection('shopSection')">
+                Shop
+            </button>
+
         </nav>
+
     </div>
+
 </body>
+
 </html>
