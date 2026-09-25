@@ -5,5 +5,8 @@ just better if I can access this code in the code branch if I want to.
 What I am working on:
 •Kids Mode merchandise to buy for character
 
-What can you help with:
+What can you help with:                                                   ! = need extra help
 •commit all of my code so that we both have easy access to it
+•draw some clothes, avatars and other things with javascript; make sure
+you store the code in a variable so that I can use it later. PS: I don't care
+if it is not drawn with js, as long as I can position it someway 
