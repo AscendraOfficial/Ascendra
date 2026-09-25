@@ -1,1 +1,9 @@
 Feel free to look at my code! Please don't edit it until you ask me.
+If you want, commit the code of kids mode in the code branch, it's 
+just better if I can access this code in the code branch if I want to.
+
+What I am working on:
+•Kids Mode merchandise to buy for character
+
+What can you help with:
+•commit all of my code so that we both have easy access to it
