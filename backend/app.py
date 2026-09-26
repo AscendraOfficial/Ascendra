@@ -751,6 +751,75 @@ def createSyncAccount():
     }, 201
 
 
+@app.put("/sync/account/username")
+def renameSyncUsername():
+    body = request.get_json(silent=True)
+
+    if not isinstance(body, dict):
+        return json_error(
+            "Invalid profile sync username data.",
+            400,
+            "invalid_sync_username",
+        )
+
+    account_id = normalize_user_id(body.get("account_id"))
+    username = normalize_sync_username(body.get("username"))
+
+    if not account_id or not username:
+        return json_error(
+            "Invalid profile sync username data.",
+            400,
+            "invalid_sync_username",
+        )
+
+    account, auth_error = require_sync_account(account_id)
+    if auth_error:
+        return auth_error
+
+    username_key = username.casefold()
+    existing = sync_account_by_username(username)
+
+    if existing and existing.get("account_id") != account_id:
+        return json_error(
+            "That username is already registered for profile sync.",
+            409,
+            "profile_sync_username_exists",
+        )
+
+    now = datetime.now(timezone.utc).isoformat()
+
+    result = (
+        supabase
+        .table(PROFILE_SYNC_TABLE)
+        .update(
+            {
+                "username": username,
+                "username_key": username_key,
+                "updated_at": now,
+            }
+        )
+        .eq("account_id", account_id)
+        .execute()
+    )
+
+    if not result.data:
+        return json_error(
+            "Profile sync account could not be updated.",
+            500,
+            "profile_sync_update_failed",
+        )
+
+    updated_account = sync_account_by_id(account_id)
+
+    return {
+        "status": "success",
+        "account_id": account_id,
+        "username": username,
+        "updated_at": now,
+        "token": create_sync_token(updated_account),
+    }
+
+
 @app.post("/sync/login")
 def loginSyncAccount():
     if not PROFILE_SYNC_SERIALIZER:
