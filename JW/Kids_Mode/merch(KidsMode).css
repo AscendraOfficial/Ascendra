@@ -32,4 +32,10 @@ body {
     transition: 0.2s ease;
 }
 
-#merch-
+#merch-heading {
+    color: cyan;
+}
+
+#merch-subtitle {
+    color: purple;
+}
