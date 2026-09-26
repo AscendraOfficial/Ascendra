@@ -10145,3 +10145,56 @@ body.dark-mode .habit-qr-info summary {
     margin: 0.4in;
   }
 }
+
+
+/* Global profile sync status */
+.sync-status {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(120, 82, 190, 0.28);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.sync-status i {
+  color: rgb(120, 82, 190);
+}
+
+#sync-status-display {
+  margin: 0;
+  color: #222;
+  font-size: 0.85rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sync-status {
+    background: rgba(28, 28, 34, 0.9);
+    border-color: rgba(190, 150, 240, 0.34);
+  }
+
+  #sync-status-display {
+    color: #f4f4f4;
+  }
+}
+
+@media (max-width: 520px) {
+  .sync-status {
+    top: 12px;
+    right: 12px;
+    padding: 8px 11px;
+  }
+}
+
+@media print {
+  .sync-status {
+    display: none !important;
+  }
+}
