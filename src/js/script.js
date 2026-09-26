@@ -9,6 +9,7 @@ import {
   getLastSyncedAt,
   getSyncMode,
   loginCloudAccount,
+  markSynced,
   manualSyncProfile,
   pullCloudProfile,
   registerCloudAccount,
@@ -828,20 +829,58 @@ async function connectLocalAccountToCloud(password) {
       password,
     });
 
+    let syncIdentity = identity;
+    let relinked = false;
+
     if (cloud.account_id !== identity.accountId) {
-      throw new Error(
-        "That cloud username belongs to a different Ascendra account.",
+      const accountRecord = findStoredAccount(identity.username);
+
+      if (!accountRecord) {
+        throw new Error("Ascendra could not reconnect this device to the cloud account.");
+      }
+
+      const updatedAccount = {
+        ...accountRecord.account,
+        username: String(cloud.username || identity.username).trim(),
+        accountId: cloud.account_id,
+      };
+
+      saveStoredAccount(updatedAccount);
+
+      if (accountRecord.key !== accountStorageKey(updatedAccount.username)) {
+        localStorage.removeItem(accountRecord.key);
+      }
+
+      syncIdentity = {
+        ...identity,
+        accountId: cloud.account_id,
+        username: updatedAccount.username,
+      };
+
+      setActiveIdentity(
+        {
+          ...syncIdentity,
+          loggedInUser: updatedAccount.username,
+        },
+        { previousUsername: identity.username },
       );
+
+      relinked = true;
     }
 
     if (getSyncMode() === SYNC_MODES.AUTO) {
       await autoSyncProfile({
         apiUrl: API_URL,
-        identity,
+        identity: syncIdentity,
+      });
+    } else {
+      await manualSyncProfile({
+        apiUrl: API_URL,
+        identity: syncIdentity,
       });
     }
 
-    return { connected: true, created: false };
+    return { connected: true, created: false, relinked };
   } catch (error) {
     if (error?.code !== "profile_sync_login_denied") {
       throw error;
@@ -857,7 +896,7 @@ async function connectLocalAccountToCloud(password) {
       throw new Error("Ascendra could not verify the new cloud account.");
     }
 
-    return { connected: true, created: true };
+    return { connected: true, created: true, relinked: false };
   }
 }
 
@@ -909,6 +948,12 @@ async function restoreCloudAccountToThisDevice(username, password) {
     saveStoredAccount(account);
     setActiveIdentity(finalIdentity);
   }
+
+  markSynced(
+    cloud.account_id,
+    cloud.profile_version,
+    cloud.updated_at || new Date().toISOString(),
+  );
 
   return finalIdentity;
 }
@@ -3051,25 +3096,23 @@ const ROUTE_INITIALIZERS = {
         });
         localStorage.removeItem("password");
 
+        let cloudConnected = true;
+
         try {
-          await registerCloudAccount({
-            apiUrl: API_URL,
-            identity: {
-              accountId: user.accountId,
-              username,
-              name,
-              surname,
-            },
-            password,
-          });
+          await connectLocalAccountToCloud(password);
         } catch (syncError) {
+          cloudConnected = false;
           console.warn(
             "Account created locally, but profile sync could not be enabled yet.",
             syncError,
           );
         }
 
-        alert("Account created!");
+        alert(
+          cloudConnected
+            ? "Account created and synced!"
+            : "Account created on this device, but cloud sync could not connect yet.",
+        );
         signupForm.reset();
         navigate("home");
       } catch (error) {
