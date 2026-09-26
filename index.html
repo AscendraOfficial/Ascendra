@@ -570,7 +570,7 @@
               </label>
             </div>
             <div class="kidsModeSetup">
-              <h5>Set up kids mode <a>here</a></h5>
+              <h5>Set up kids mode <a href="seperate%20pages/kids%20mode%20setup/index.html">here</a></h5>
             </div>
           </section>
 
@@ -1891,6 +1891,7 @@
     <script defer src="src/js/vendor/matrix-code.min.js"></script>
     <script defer src="src/js/config/config.js"></script>
     <script defer src="src/js/config/userconfig.js"></script>
+    <script defer src="src/js/syncing.js"></script>
     <script type="module" src="src/js/script.js"></script>
     <!-- Global Search Dialog -->
     <div aria-label="Search Ascendra" aria-modal="true" class="search-overlay" hidden id="searchOverlay" role="dialog">
@@ -1970,8 +1971,9 @@
         <span class="ai-mouth"></span>
       </span>
     </div>
-    <div class="sync-status">
-      <h5 id="sync-status-display"></h5>
+    <div class="sync-status" aria-live="polite" role="status">
+      <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+      <h5 id="sync-status-display">Not synced</h5>
     </div>
   </body>
 </html>
