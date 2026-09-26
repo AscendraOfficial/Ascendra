@@ -492,12 +492,28 @@ window.addEventListener("ascendra:sync-mode-change", function (event) {
   }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  const display = getSyncStatusDisplay();
-  if (display && !display.textContent.trim()) {
-    setManualSyncStatus(false);
+function getActiveSyncAccountId() {
+  try {
+    return String(
+      sessionStorage.getItem("ascendra:tab-identity:accountId") ||
+        localStorage.getItem("accountId") ||
+        "",
+    ).trim();
+  } catch {
+    return "";
   }
-});
+}
+
+function initializeSyncStatus() {
+  const accountId = getActiveSyncAccountId();
+  setManualSyncStatus(Boolean(accountId && getLastSyncedAt(accountId)));
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeSyncStatus);
+} else {
+  initializeSyncStatus();
+}
 
 window.ascendraSyncUI = Object.freeze({
   statuses: SYNC_STATUSES,
