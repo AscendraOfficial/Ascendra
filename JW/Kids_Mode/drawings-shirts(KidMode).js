@@ -1,4 +1,6 @@
-/* This is going to be all the merchandise you can buy and wear at the shop pleae make more if you can. */
+/* This is going to be all the merchandise you can buy and wear at the shop. */
+/* This works when you store the code that draws something in a variable, then
+you make an image with the variable being the 'what' part */
 
 /* This shirt is called 'nature', it shows a sun and grass floor on a blue background. */
 let natureShirt;
@@ -7,6 +9,7 @@ function setup() {
   
     createCanvas(400, 400);
 
+    /* make sure to remember the this thing ⬇⬇⬇⬇⬇⬇ */
     /* In this case, the variable is 'natureShirt' */
     natureShirt = createGraphics(400, 400);
 
@@ -452,11 +455,178 @@ function setup() {
 }
 
 
+/* This shirt is called ice, it is a shirt with an ice theme. */
+let iceShirt;
+
+function setup() {
+
+    createCanvas(400, 400);
+
+    iceShirt = createGraphics(400, 400);
+
+    iceShirt.noStroke();
+
+    /* =========================
+       MAIN PART
+    ========================= */
+
+    iceShirt.fill(115, 220, 255);
+
+    iceShirt.rect(
+        100, 50,
+        200, 300
+    );
+
+
+    /* =========================
+       SHOULDER PARTS
+    ========================= */
+
+    iceShirt.fill(65, 170, 225);
+
+    iceShirt.triangle(
+        100, 50,
+        40, 119,
+        100, 145
+    );
+
+    iceShirt.triangle(
+        300, 50,
+        367, 126,
+        300, 145
+    );
+
+
+    /* =========================
+       COLLAR
+    ========================= */
+
+    iceShirt.fill(245, 255, 255);
+
+    iceShirt.ellipse(
+        200, 50,
+        75, 75
+    );
+
+
+    /* =========================
+       ICE EMBLEM
+    ========================= */
+
+    /* Outer circle */
+
+    iceShirt.fill(40, 125, 210);
+
+    iceShirt.ellipse(
+        200, 200,
+        150, 150
+    );
+
+
+    /* Light blue layer */
+
+    iceShirt.fill(100, 205, 250);
+
+    iceShirt.ellipse(
+        200, 200,
+        140, 140
+    );
+
+
+    /* Inner ice layer */
+
+    iceShirt.fill(185, 240, 255);
+
+    iceShirt.ellipse(
+        200, 200,
+        125, 125
+    );
+
+
+    /* =========================
+       SNOWFLAKE
+    ========================= */
+
+    iceShirt.stroke(255, 255, 255);
+    iceShirt.strokeWeight(8);
+    iceShirt.strokeCap(ROUND);
+
+    /* Vertical */
+
+    iceShirt.line(
+        200, 155,
+        200, 245
+    );
+
+    /* Horizontal */
+
+    iceShirt.line(
+        155, 200,
+        245, 200
+    );
+
+    /* Diagonal */
+
+    iceShirt.line(
+        168, 168,
+        232, 232
+    );
+
+    iceShirt.line(
+        232, 168,
+        168, 232
+    );
+
+
+    /* =========================
+       SNOWFLAKE BRANCHES
+    ========================= */
+
+    iceShirt.strokeWeight(5);
+
+    /* Top */
+
+    iceShirt.line(200, 165, 190, 175);
+    iceShirt.line(200, 165, 210, 175);
+
+    /* Bottom */
+
+    iceShirt.line(200, 235, 190, 225);
+    iceShirt.line(200, 235, 210, 225);
+
+    /* Left */
+
+    iceShirt.line(165, 200, 175, 190);
+    iceShirt.line(165, 200, 175, 210);
+
+    /* Right */
+
+    iceShirt.line(235, 200, 225, 190);
+    iceShirt.line(235, 200, 225, 210);
+
+
+    /* =========================
+       BOTTOM SECTION
+    ========================= */
+
+    iceShirt.noStroke();
+
+    iceShirt.fill(40, 125, 210);
+
+    iceShirt.rect(
+        100, 299,
+        200, 51
+    );
+}
+
+
 /* Where all the shirts are: 
 1. nature, line 3
 2. sunset, line 38
 3. nintendo, line 159
-
+4. fire, line 303
+5. ice, line 456
 */
-/* to paste a shirt simply write the code: image(name of variable, x, y, width, height); */
+
+/* to paste a shirt simply write the code: image(variable name, x, y, width, height) */
 /* PS:What I mean by variable is what everything is stored in */
