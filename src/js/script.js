@@ -1,6 +1,20 @@
 "use strict";
 import { STORAGE_KEYS } from "./data/storageKeys.js";
 import { responses, manualResponses } from "./ascendraAI/responses.js";
+import {
+  SYNC_MODES,
+  applyProfileSnapshot,
+  autoSyncProfile,
+  clearSyncSession,
+  getLastSyncedAt,
+  getSyncMode,
+  loginCloudAccount,
+  manualSyncProfile,
+  pullCloudProfile,
+  registerCloudAccount,
+  renameCloudUsername,
+  setSyncMode,
+} from "./syncing.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -785,7 +799,171 @@ function getLoggedInUsername() {
     .toLowerCase();
 }
 
+function getProfileSyncIdentity() {
+  const username = String(
+    getActiveIdentityItem("username") ||
+      getActiveIdentityItem("loggedInUser") ||
+      "",
+  ).trim();
+
+  return {
+    accountId: String(getActiveIdentityItem("accountId") || "").trim(),
+    username,
+    name: String(getActiveIdentityItem("name") || ""),
+    surname: String(getActiveIdentityItem("surname") || ""),
+  };
+}
+
+async function connectLocalAccountToCloud(password) {
+  const identity = getProfileSyncIdentity();
+
+  if (!identity.accountId || !identity.username) {
+    return { connected: false, reason: "missing-identity" };
+  }
+
+  try {
+    const cloud = await loginCloudAccount({
+      apiUrl: API_URL,
+      username: identity.username,
+      password,
+    });
+
+    if (cloud.account_id !== identity.accountId) {
+      throw new Error(
+        "That cloud username belongs to a different Ascendra account.",
+      );
+    }
+
+    if (getSyncMode() === SYNC_MODES.AUTO) {
+      await autoSyncProfile({
+        apiUrl: API_URL,
+        identity,
+      });
+    }
+
+    return { connected: true, created: false };
+  } catch (error) {
+    if (error?.code !== "profile_sync_login_denied") {
+      throw error;
+    }
+
+    const cloud = await registerCloudAccount({
+      apiUrl: API_URL,
+      identity,
+      password,
+    });
+
+    if (cloud.account_id !== identity.accountId) {
+      throw new Error("Ascendra could not verify the new cloud account.");
+    }
+
+    return { connected: true, created: true };
+  }
+}
+
+async function restoreCloudAccountToThisDevice(username, password) {
+  const cloud = await loginCloudAccount({
+    apiUrl: API_URL,
+    username,
+    password,
+  });
+
+  const cloudUsername = String(cloud.username || username).trim();
+  const profile = cloud.profile && typeof cloud.profile === "object" ? cloud.profile : {};
+  const credentials = await createPasswordCredentials(password);
+
+  const account = {
+    version: 3,
+    name: String(profile.name || ""),
+    surname: String(profile.surname || ""),
+    username: cloudUsername,
+    accountId: cloud.account_id,
+    credentials,
+  };
+
+  saveStoredAccount(account);
+
+  const identity = {
+    loggedInUser: cloudUsername,
+    username: cloudUsername,
+    accountId: cloud.account_id,
+    name: account.name,
+    surname: account.surname,
+  };
+
+  setActiveIdentity(identity);
+
+  const identityUpdate = applyProfileSnapshot(profile, identity);
+  const finalIdentity = {
+    ...identity,
+    name: identityUpdate.name,
+    surname: identityUpdate.surname,
+  };
+
+  if (
+    finalIdentity.name !== identity.name ||
+    finalIdentity.surname !== identity.surname
+  ) {
+    account.name = finalIdentity.name;
+    account.surname = finalIdentity.surname;
+    saveStoredAccount(account);
+    setActiveIdentity(finalIdentity);
+  }
+
+  return finalIdentity;
+}
+
 initializeTabIdentity();
+
+window.ascendraSync = Object.freeze({
+  getMode: getSyncMode,
+  setMode: setSyncMode,
+  getLastSynced() {
+    const accountId = getActiveIdentityItem("accountId");
+    return accountId ? getLastSyncedAt(accountId) : "";
+  },
+  async syncNow() {
+    const identity = getProfileSyncIdentity();
+    if (!identity.accountId || !identity.username) {
+      throw new Error("Log in before syncing your profile.");
+    }
+
+    return manualSyncProfile({
+      apiUrl: API_URL,
+      identity,
+    });
+  },
+  async pullNow() {
+    const identity = getProfileSyncIdentity();
+    if (!identity.accountId || !identity.username) {
+      throw new Error("Log in before syncing your profile.");
+    }
+
+    const result = await pullCloudProfile({
+      apiUrl: API_URL,
+      identity,
+    });
+
+    const accountRecord = findStoredAccount(identity.username);
+    if (accountRecord) {
+      const updatedAccount = {
+        ...accountRecord.account,
+        name: result.identityUpdate.name,
+        surname: result.identityUpdate.surname,
+      };
+      saveStoredAccount(updatedAccount);
+    }
+
+    setActiveIdentity({
+      ...identity,
+      loggedInUser: identity.username,
+      name: result.identityUpdate.name,
+      surname: result.identityUpdate.surname,
+    });
+
+    return result;
+  },
+});
 
 function userStorageKey(key, username = getLoggedInUsername()) {
   const cleanUsername = String(username || "")
@@ -2683,6 +2861,45 @@ const ROUTE_INITIALIZERS = {
 
       submitButton.disabled = true;
       try {
+        if (!record) {
+          try {
+            const restoredIdentity = await restoreCloudAccountToThisDevice(
+              username,
+              password,
+            );
+
+            if (!loginActive) return;
+
+            alert(
+              "Welcome back, " +
+                (restoredIdentity.name || restoredIdentity.username) +
+                "!",
+            );
+            loginForm.reset();
+            navigate("home");
+            return;
+          } catch (cloudError) {
+            if (!loginActive) return;
+
+            console.warn("Cloud login was unavailable or denied:", cloudError);
+
+            if (
+              cloudError?.code === "profile_sync_unavailable" ||
+              cloudError?.status >= 500
+            ) {
+              alert(
+                "This account is not saved on this device, and cloud login is unavailable right now.",
+              );
+            } else {
+              alert("Wrong username or password!");
+            }
+
+            passwordInput.value = "";
+            passwordInput.focus();
+            return;
+          }
+        }
+
         let savedUser = record?.account || null;
         let passwordMatches = false;
         let needsMigration = false;
@@ -2738,6 +2955,16 @@ const ROUTE_INITIALIZERS = {
           accountId: savedUser.accountId,
         });
         localStorage.removeItem("password");
+
+        try {
+          await connectLocalAccountToCloud(password);
+        } catch (syncError) {
+          console.warn(
+            "Ascendra logged in locally, but cloud sync could not connect.",
+            syncError,
+          );
+        }
+
         alert("Welcome back, " + (savedUser.name || savedUsername) + "!");
         loginForm.reset();
         navigate("home");
@@ -2823,6 +3050,24 @@ const ROUTE_INITIALIZERS = {
           accountId: user.accountId,
         });
         localStorage.removeItem("password");
+
+        try {
+          await registerCloudAccount({
+            apiUrl: API_URL,
+            identity: {
+              accountId: user.accountId,
+              username,
+              name,
+              surname,
+            },
+            password,
+          });
+        } catch (syncError) {
+          console.warn(
+            "Account created locally, but profile sync could not be enabled yet.",
+            syncError,
+          );
+        }
 
         alert("Account created!");
         signupForm.reset();
@@ -5762,7 +6007,7 @@ const ROUTE_INITIALIZERS = {
       }, 3000);
     }
 
-    function handleProfileSave() {
+    async function handleProfileSave() {
       const name = nameInput.value.trim();
       const surname = surnameInput.value.trim();
       const username = cleanUsername(usernameInput.value);
@@ -5855,7 +6100,45 @@ const ROUTE_INITIALIZERS = {
 
         usernameInput.value = username;
 
-        showMessage("Profile saved successfully!", "success");
+        if (accountRecord && updatedAccountId) {
+          const syncIdentity = {
+            accountId: updatedAccountId,
+            username,
+            name,
+            surname,
+          };
+
+          try {
+            if (
+              oldUsername &&
+              oldUsername.toLowerCase() !== username.toLowerCase()
+            ) {
+              await renameCloudUsername({
+                apiUrl: API_URL,
+                identity: syncIdentity,
+                username,
+              });
+            }
+
+            if (getSyncMode() === SYNC_MODES.AUTO) {
+              await autoSyncProfile({
+                apiUrl: API_URL,
+                identity: syncIdentity,
+              });
+              showMessage("Profile saved and synced!", "success");
+            } else {
+              showMessage("Profile saved successfully!", "success");
+            }
+          } catch (syncError) {
+            console.warn(
+              "Profile saved locally, but cloud sync did not finish.",
+              syncError,
+            );
+            showMessage("Profile saved locally; sync is pending.", "success");
+          }
+        } else {
+          showMessage("Profile saved successfully!", "success");
+        }
       } catch (error) {
         console.error("Could not safely save the profile:", error);
         showMessage(error.message || "Could not safely save your profile.", "error");
@@ -5867,6 +6150,12 @@ const ROUTE_INITIALIZERS = {
     }
 
     function handleLogout() {
+      const accountId = getActiveIdentityItem("accountId");
+
+      if (accountId) {
+        clearSyncSession(accountId);
+      }
+
       clearActiveIdentity();
       navigate("login");
     }
@@ -5906,6 +6195,18 @@ const ROUTE_INITIALIZERS = {
         try {
           setUserItem("ascendra-profile-picture", reader.result, pictureOwner);
           profilePicture.src = reader.result;
+
+          if (getSyncMode() === SYNC_MODES.AUTO) {
+            autoSyncProfile({
+              apiUrl: API_URL,
+              identity: getProfileSyncIdentity(),
+            }).catch((syncError) => {
+              console.warn(
+                "Profile picture saved locally, but cloud sync did not finish.",
+                syncError,
+              );
+            });
+          }
 
           showMessage("Profile picture updated!", "success");
         } catch (error) {
