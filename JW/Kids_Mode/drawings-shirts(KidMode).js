@@ -299,6 +299,7 @@ function setup() {
 }
 
 
+/* This shirt is called fire, it is a shir twith a fire theme. */
 let fireShirt;
 
 function setup() {
