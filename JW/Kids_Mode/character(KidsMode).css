@@ -46,6 +46,8 @@ body {
 #character-heading {
     text-align: center;
     color: purple;
+    top: 10px;
+    left: 48%;
 }
 
 #character-subtitle {
