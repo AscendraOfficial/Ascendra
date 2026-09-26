@@ -1,1 +1,41 @@
+body {
+    text-align: center;
+    font-family: sans-serif;
+}
 
+.go_back {
+    width: 100px;
+    height: 40px;
+
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: white;
+
+    color: cyan;
+
+    border: none;
+    border-radius: 10px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+#shop-heading {
+    color: cyan;
+}
+
+#shop-subtitle {
+    color: purple;
+}
