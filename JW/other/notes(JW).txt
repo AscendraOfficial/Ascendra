@@ -10,6 +10,7 @@ What can you help with:                                                   ! = ne
 !•draw some clothes, avatars and other things with javascript; make sure
 you store the code in a variable so that I can use it later. PS: I don't care
 if it is not drawn with js, as long as I can position it someway 
+!•find a way to not prevent people from cheating there to-dos 
 
 Hey Jayden! I'm gonna start working on my own kids mode on the dc branch, we can both combine our code to make a better one. Thanks for the update!
 
