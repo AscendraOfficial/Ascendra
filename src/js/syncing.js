@@ -391,3 +391,24 @@ export async function autoSyncProfile({ apiUrl, identity }) {
     throw error;
   }
 }
+
+
+export async function renameCloudUsername({ apiUrl, identity, username }) {
+  const accountId = requireAccountId(identity?.accountId);
+  const response = await fetch(`${cleanApiUrl(apiUrl)}/sync/account/username`, {
+    method: "PUT",
+    headers: authHeaders(accountId, { "Content-Type": "application/json" }),
+    body: JSON.stringify({
+      account_id: accountId,
+      username,
+    }),
+  });
+
+  const body = await readJsonResponse(response);
+
+  if (body.token) {
+    setSyncToken(accountId, body.token);
+  }
+
+  return body;
+}
