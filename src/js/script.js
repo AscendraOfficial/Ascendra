@@ -4608,11 +4608,9 @@ const ROUTE_INITIALIZERS = {
         return journalEntries;
       }
 
-      const response = await journalRequest(`${API_URL}/journal`, {
-        headers: {
-          "X-Ascendra-Account-Id": currentUserId,
-        },
-      });
+      const response = await journalRequest(
+        `${API_URL}/journal?user_id=${encodeURIComponent(currentUserId)}`,
+      );
 
       if (!response.ok) {
         throw new Error(`Journal request failed: ${response.status}`);
