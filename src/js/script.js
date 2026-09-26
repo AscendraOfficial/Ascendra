@@ -6,10 +6,14 @@ import {
   applyProfileSnapshot,
   autoSyncProfile,
   clearSyncSession,
+  getLastSyncedAt,
   getSyncMode,
   loginCloudAccount,
+  manualSyncProfile,
+  pullCloudProfile,
   registerCloudAccount,
   renameCloudUsername,
+  setSyncMode,
 } from "./syncing.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
@@ -910,6 +914,56 @@ async function restoreCloudAccountToThisDevice(username, password) {
 }
 
 initializeTabIdentity();
+
+window.ascendraSync = Object.freeze({
+  getMode: getSyncMode,
+  setMode: setSyncMode,
+  getLastSynced() {
+    const accountId = getActiveIdentityItem("accountId");
+    return accountId ? getLastSyncedAt(accountId) : "";
+  },
+  async syncNow() {
+    const identity = getProfileSyncIdentity();
+    if (!identity.accountId || !identity.username) {
+      throw new Error("Log in before syncing your profile.");
+    }
+
+    return manualSyncProfile({
+      apiUrl: API_URL,
+      identity,
+    });
+  },
+  async pullNow() {
+    const identity = getProfileSyncIdentity();
+    if (!identity.accountId || !identity.username) {
+      throw new Error("Log in before syncing your profile.");
+    }
+
+    const result = await pullCloudProfile({
+      apiUrl: API_URL,
+      identity,
+    });
+
+    const accountRecord = findStoredAccount(identity.username);
+    if (accountRecord) {
+      const updatedAccount = {
+        ...accountRecord.account,
+        name: result.identityUpdate.name,
+        surname: result.identityUpdate.surname,
+      };
+      saveStoredAccount(updatedAccount);
+    }
+
+    setActiveIdentity({
+      ...identity,
+      loggedInUser: identity.username,
+      name: result.identityUpdate.name,
+      surname: result.identityUpdate.surname,
+    });
+
+    return result;
+  },
+});
 
 function userStorageKey(key, username = getLoggedInUsername()) {
   const cleanUsername = String(username || "")
