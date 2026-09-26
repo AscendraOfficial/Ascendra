@@ -287,7 +287,7 @@ export async function loginCloudAccount({ apiUrl, username, password }) {
 
   const body = await readJsonResponse(response);
   setSyncToken(body.account_id, body.token);
-  markSynced(body.account_id, body.profile_version, body.updated_at || new Date().toISOString());
+  setProfileVersion(body.account_id, body.profile_version);
   return body;
 }
 
@@ -340,6 +340,29 @@ export async function pushCloudProfile({ apiUrl, identity }) {
   const body = await readJsonResponse(response);
   markSynced(accountId, body.profile_version, body.updated_at || new Date().toISOString());
   return body;
+}
+
+export async function manualSyncProfile({ apiUrl, identity }) {
+  window.dispatchEvent(
+    new CustomEvent("ascendra:profile-syncing", {
+      detail: { accountId: identity?.accountId || "", mode: SYNC_MODES.MANUAL },
+    }),
+  );
+
+  try {
+    return await pushCloudProfile({ apiUrl, identity });
+  } catch (error) {
+    window.dispatchEvent(
+      new CustomEvent("ascendra:profile-sync-error", {
+        detail: {
+          accountId: identity?.accountId || "",
+          message: error?.message || "Profile sync failed.",
+          code: error?.code || "",
+        },
+      }),
+    );
+    throw error;
+  }
 }
 
 export async function autoSyncProfile({ apiUrl, identity }) {
