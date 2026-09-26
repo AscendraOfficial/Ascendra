@@ -455,7 +455,7 @@
               <h2 id="monthTitle">Month</h2>
               <button aria-label="Next month" id="nextMonth" type="button">›</button>
             </div>
-            <div class="date-grid" id="dateGrid"></div>
+            <div aria-labelledby="monthTitle" class="date-grid" id="dateGrid" role="group"></div>
           </div>
           <div class="entry-card">
             <h2 id="entryTitle">Today's Entry</h2>
@@ -469,15 +469,15 @@
               <option value="Tired">🥱 Tired</option>
             </select>
             <label for="dayText">How was your day?</label>
-            <textarea id="dayText"></textarea>
+            <textarea id="dayText" maxlength="2000" placeholder="Write about the moments that stood out today."></textarea>
             <label for="gratefulText">What are you grateful for?</label>
-            <textarea id="gratefulText"></textarea>
+            <textarea id="gratefulText" maxlength="2000" placeholder="Name something, big or small, that you appreciated."></textarea>
             <label for="learnText">What did you learn today?</label>
-            <textarea id="learnText"></textarea>
+            <textarea id="learnText" maxlength="2000" placeholder="Capture an idea, lesson, or discovery."></textarea>
             <label for="goalText">Goal for tomorrow</label>
-            <textarea id="goalText"></textarea>
+            <textarea id="goalText" maxlength="2000" placeholder="Choose one helpful next step for tomorrow."></textarea>
             <button id="saveEntry" type="button">Save Entry</button>
-            <p aria-live="polite" id="statusMessage"></p>
+            <p aria-live="polite" id="statusMessage" role="status"></p>
           </div>
         </div>
       </div>
@@ -568,6 +568,9 @@
                 <span class="sr-only">Enable Ascendra AI</span>
                 <input aria-describedby="ascendra-ai-setting-description" checked id="ascendra-ai-enabled" type="checkbox" />
               </label>
+            </div>
+            <div class="kidsModeSetup">
+              <h5>Set up kids mode <a href="seperate%20pages/kids%20mode%20setup/index.html">here</a></h5>
             </div>
           </section>
 
@@ -821,8 +824,8 @@
               <details class="habit-qr-info">
                 <summary aria-label="How the printable QR habit tracker works">i</summary>
                 <p>
-                  Print a blank tracker and mark completed habits with a bold X. Scan its QR code, photograph the full
-                  table, and review Ascendra's detected results. Nothing is saved until you confirm the import.
+                  Print a blank tracker and mark completed habits with a bold X. Scan its QR code, photograph the full table, and review
+                  Ascendra's detected results. Nothing is saved until you confirm the import.
                 </p>
               </details>
             </div>
@@ -1900,7 +1903,14 @@
     </div>
 
     <!-- Habit Import Preview Dialog -->
-    <div aria-hidden="true" aria-labelledby="habit-import-title" aria-modal="true" class="habit-import-dialog" id="habit-import-dialog" role="dialog">
+    <div
+      aria-hidden="true"
+      aria-labelledby="habit-import-title"
+      aria-modal="true"
+      class="habit-import-dialog"
+      id="habit-import-dialog"
+      role="dialog"
+    >
       <section class="habit-import-card" tabindex="-1">
         <button aria-label="Close habit import preview" class="habit-import-close" id="close-habit-import" type="button">×</button>
         <p class="habit-import-eyebrow">QR HABIT IMPORT</p>
@@ -1959,6 +1969,10 @@
         <span class="ai-eyes"></span>
         <span class="ai-mouth"></span>
       </span>
+    </div>
+    <div class="sync-status" aria-live="polite" role="status">
+      <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+      <h5 id="sync-status-display">Not synced</h5>
     </div>
   </body>
 </html>

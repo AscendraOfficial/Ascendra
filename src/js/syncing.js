@@ -435,3 +435,73 @@ export async function renameCloudUsername({ apiUrl, identity, username }) {
 
   return body;
 }
+
+
+// --------------------
+// Global sync status UI
+// --------------------
+
+function getSyncStatusDisplay() {
+  return document.getElementById("sync-status-display");
+}
+
+function setSyncStatus(status) {
+  const display = getSyncStatusDisplay();
+
+  if (!display) {
+    return;
+  }
+
+  display.textContent = String(status || SYNC_STATUSES.manual_sync_statuses[1]);
+}
+
+function setManualSyncStatus(isSynced) {
+  setSyncStatus(
+    isSynced
+      ? SYNC_STATUSES.manual_sync_statuses[0]
+      : SYNC_STATUSES.manual_sync_statuses[1],
+  );
+}
+
+function setAutoSyncStatus(isSyncing) {
+  setSyncStatus(
+    isSyncing
+      ? SYNC_STATUSES.auto_sync_statuses[1]
+      : SYNC_STATUSES.auto_sync_statuses[0],
+  );
+}
+
+window.addEventListener("ascendra:profile-syncing", function () {
+  setSyncStatus("Syncing");
+});
+
+window.addEventListener("ascendra:profile-synced", function () {
+  setSyncStatus("Synced");
+});
+
+window.addEventListener("ascendra:profile-sync-error", function () {
+  setSyncStatus("Not synced");
+});
+
+window.addEventListener("ascendra:sync-mode-change", function (event) {
+  if (event.detail?.mode === SYNC_MODES.AUTO) {
+    const display = getSyncStatusDisplay();
+    if (display && !display.textContent.trim()) {
+      setSyncStatus("Synced");
+    }
+  }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const display = getSyncStatusDisplay();
+  if (display && !display.textContent.trim()) {
+    setManualSyncStatus(false);
+  }
+});
+
+window.ascendraSyncUI = Object.freeze({
+  statuses: SYNC_STATUSES,
+  setStatus: setSyncStatus,
+  setManualStatus: setManualSyncStatus,
+  setAutoStatus: setAutoSyncStatus,
+});

@@ -8,7 +8,7 @@ The project focuses on making productivity feel more motivating, visual, and per
 
 Ascendra is available through GitHub Pages:
 
-https://jedicuber.github.io/Ascendra/
+https://ascendraofficial.github.io/Ascendra/
 
 ## Main Features
 
