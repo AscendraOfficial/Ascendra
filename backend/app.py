@@ -208,7 +208,6 @@ def create_sync_token(account):
     return PROFILE_SYNC_SERIALIZER.dumps(
         {
             "account_id": account["account_id"],
-            "username_key": account["username_key"],
         }
     )
 
@@ -246,9 +245,8 @@ def get_sync_identity():
         )
 
     account_id = normalize_user_id(identity.get("account_id"))
-    username_key = str(identity.get("username_key", "")).strip()
 
-    if not account_id or not username_key:
+    if not account_id:
         return None, json_error(
             "Profile sync authentication failed.",
             403,
@@ -257,7 +255,6 @@ def get_sync_identity():
 
     return {
         "account_id": account_id,
-        "username_key": username_key,
     }, None
 
 
@@ -276,7 +273,7 @@ def require_sync_account(account_id):
 
     account = sync_account_by_id(account_id)
 
-    if not account or account.get("username_key") != identity["username_key"]:
+    if not account:
         return None, json_error(
             "Profile sync account could not be verified.",
             403,
