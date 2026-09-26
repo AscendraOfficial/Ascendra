@@ -7681,6 +7681,24 @@ body.dark-mode .ascendra-page[data-route="unwind"] .unwind-actions button.second
   font-weight: 700;
 }
 
+
+.roadmap-status-progress {
+  flex-shrink: 0;
+  padding: 8px 13px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.roadmap-page .progress-fill-sync {
+  width: 67%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6d28d9, #a855f7);
+}
+
 .roadmap-statusH {
   flex-shrink: 0;
   padding: 8px 13px;
