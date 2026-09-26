@@ -7,10 +7,10 @@ What I am working on:
 
 What can you help with:                                                   ! = need extra help
 •commit all of my code so that we both have easy access to it
-•draw some clothes, avatars and other things with javascript; make sure
+!•draw some clothes, avatars and other things with javascript; make sure
 you store the code in a variable so that I can use it later. PS: I don't care
 if it is not drawn with js, as long as I can position it someway 
 
 Hey Jayden! I'm gonna start working on my own kids mode on the dc branch, we can both combine our code to make a better one. Thanks for the update!
 
-I also think we should add syncing across devices, so how about you work on kids mode and I'll work on the backend stuff
+I also think we should add syncing across devices, so how about you work on kids mode and I'll work on the backend stuff <-- Sure! You just do all the backend while i do thee html and css.
