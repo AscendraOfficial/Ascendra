@@ -84,6 +84,8 @@ PROFILE_FIELDS = {
     "progression",
     "streak",
     "tasks_completed",
+    "todos",
+    "habits",
 }
 
 
@@ -134,6 +136,8 @@ def clean_sync_profile(value):
     progression = value.get("progression", {})
     streak = value.get("streak", 0)
     tasks_completed = value.get("tasks_completed", 0)
+    todos = value.get("todos", [])
+    habits = value.get("habits", [])
 
     if not isinstance(settings, dict):
         return None
@@ -145,12 +149,16 @@ def clean_sync_profile(value):
         return None
     if not isinstance(tasks_completed, (int, float)):
         return None
+    if not isinstance(todos, list) or not isinstance(habits, list):
+        return None
 
     profile["settings"] = settings
     profile["achievements"] = achievements
     profile["progression"] = progression
     profile["streak"] = streak
     profile["tasks_completed"] = tasks_completed
+    profile["todos"] = todos
+    profile["habits"] = habits
 
     try:
         serialized = json.dumps(
