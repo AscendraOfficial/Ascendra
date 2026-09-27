@@ -1,9 +1,9 @@
 export let moose;
 
 
-export function createMoose() {
+export function createMoose(p) {
 
-    moose = createGraphics(400, 400);
+    moose = p.createGraphics(400, 400);
 
     moose.noStroke();
 
@@ -65,7 +65,6 @@ export function createMoose() {
     moose.line(305, 35, 295, 15);
     moose.line(305, 35, 325, 25);
 
-
     moose.noStroke();
 
 
@@ -82,4 +81,7 @@ export function createMoose() {
     // TAIL
 
     moose.ellipse(105, 200, 35, 35);
+
+
+    return moose;
 }
