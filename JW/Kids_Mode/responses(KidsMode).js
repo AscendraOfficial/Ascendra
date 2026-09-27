@@ -1,5 +1,12 @@
 import { moose, createMoose } from "./drawings-character(KidsMode).js";
 
+function setup() {
+
+    createCanvas(600, 500);
+
+    createMoose();
+}
+
 export const responses = {
 
   greeting: [
@@ -176,3 +183,20 @@ export function getCurrentCharacter() {
   return currentCharacter;
 
 }
+
+/* Use this to draw the character⬇️ */
+
+/*
+function draw() {
+
+    background(255);
+
+    image(
+        what,
+        x,
+        y,
+        width,
+        height
+    );
+}
+*/
