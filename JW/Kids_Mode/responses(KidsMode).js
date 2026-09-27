@@ -1,3 +1,5 @@
+import { moose, createMoose } from "./drawings-character(KidsMode).js";
+
 export const responses = {
 
   greeting: [
