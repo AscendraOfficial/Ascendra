@@ -57,19 +57,102 @@ function setupMoosePreview() {
 
 
 /* =========================================
-   START MOOSE PREVIEW
+   CHARACTER SELECTION
+========================================= */
+
+function setupCharacterSelection() {
+
+    const characterBoxes =
+        document.querySelectorAll(".character-box");
+
+
+    characterBoxes.forEach((box) => {
+
+        box.addEventListener("click", () => {
+
+            /* Remove active state from every box */
+
+            characterBoxes.forEach((otherBox) => {
+
+                otherBox.classList.remove("active");
+
+            });
+
+
+            /* Make clicked box active */
+
+            box.classList.add("active");
+
+
+            /* Get character ID */
+
+            const characterId = box.id;
+
+
+            /* Determine which character was selected */
+
+            if (characterId === "moose-character") {
+
+                changeCharacter("moose");
+
+            }
+
+            else if (characterId === "fox-character") {
+
+                changeCharacter("fox");
+
+            }
+
+            else {
+
+                console.log(
+                    "Ascendra character not available yet."
+                );
+
+            }
+
+
+            console.log(
+                "Current character:",
+                currentCharacter.name
+            );
+
+        });
+
+    });
+
+}
+
+
+/* =========================================
+   INITIALISE CHARACTER PAGE
+========================================= */
+
+function initialiseCharacterPage() {
+
+    setupMoosePreview();
+
+    setupCharacterSelection();
+
+}
+
+
+/* =========================================
+   START AFTER PAGE LOAD
 ========================================= */
 
 if (document.readyState === "loading") {
 
     document.addEventListener(
         "DOMContentLoaded",
-        setupMoosePreview
+        initialiseCharacterPage
     );
 
-} else {
+}
 
-    setupMoosePreview();
+else {
+
+    initialiseCharacterPage();
 
 }
 
@@ -95,7 +178,7 @@ export const responses = {
             `Hey ${username}! Let's make today productive!`,
 
         (username) =>
-            `Welcome back, ${username}!`,
+            `Welcome back, ${username}!`
 
     ],
 
@@ -112,7 +195,7 @@ export const responses = {
             `Take care, ${username}!`,
 
         () =>
-            `I'll be here when you get back.`,
+            `I'll be here when you get back.`
 
     ],
 
@@ -132,7 +215,7 @@ export const responses = {
             `Way to ascend your day, ${username}!`,
 
         (remainingTodos) =>
-            `One down! ${remainingTodos} to go!`,
+            `One down! ${remainingTodos} to go!`
 
     ],
 
@@ -146,7 +229,7 @@ export const responses = {
             `Amazing work, ${username}! You're all caught up.`,
 
         () =>
-            `Mission accomplished!`,
+            `Mission accomplished!`
 
     ],
 
@@ -163,7 +246,7 @@ export const responses = {
             `Another habit done!`,
 
         (username) =>
-            `Great work, ${username}!`,
+            `Great work, ${username}!`
 
     ],
 
@@ -177,7 +260,7 @@ export const responses = {
             `Awesome consistency!`,
 
         () =>
-            `Perfect! Every habit is finished.`,
+            `Perfect! Every habit is finished.`
 
     ],
 
@@ -197,7 +280,7 @@ export const responses = {
             `One task at a time.`,
 
         () =>
-            `Every little bit counts.`,
+            `Every little bit counts.`
 
     ],
 
@@ -211,7 +294,7 @@ export const responses = {
             `Don't forget to check your habits today.`,
 
         () =>
-            `Need help planning your day?`,
+            `Need help planning your day?`
 
     ],
 
@@ -225,7 +308,7 @@ export const responses = {
             `Don't forget to write in your journal.`,
 
         () =>
-            `A few sentences can go a long way.`,
+            `A few sentences can go a long way.`
 
     ],
 
@@ -239,7 +322,7 @@ export const responses = {
             `Stretch your legs for a minute!`,
 
         () =>
-            `Remember to stay hydrated. 💧`,
+            `Remember to stay hydrated. 💧`
 
     ],
 
@@ -253,7 +336,7 @@ export const responses = {
             `That didn't quite work.`,
 
         () =>
-            `I ran into a little problem.`,
+            `I ran into a little problem.`
 
     ],
 
@@ -267,7 +350,7 @@ export const responses = {
             `Getting everything ready...`,
 
         () =>
-            `Just a second...`,
+            `Just a second...`
 
     ],
 
@@ -281,9 +364,9 @@ export const responses = {
             `Looking that up...`,
 
         () =>
-            `One moment...`,
+            `One moment...`
 
-    ],
+    ]
 
 };
 
@@ -295,13 +378,13 @@ export const responses = {
 export const manualResponses = {
 
     taskHelp:
-        "Make a task named {name}, add a note saying {note}, priority {low, medium, high}",
+        "Make a task named {name}, add a note saying {note}, priority {low, medium, high}"
 
 };
 
 
 /* =========================================
-   CHARACTER SYSTEM
+   CHARACTERS
 ========================================= */
 
 export const characters = {
@@ -310,7 +393,7 @@ export const characters = {
 
         name: "Ascendra Fox",
 
-        type: "fox",
+        type: "fox"
 
     },
 
@@ -319,9 +402,9 @@ export const characters = {
 
         name: "Ascendra Moose",
 
-        type: "moose",
+        type: "moose"
 
-    },
+    }
 
 };
 
@@ -340,20 +423,21 @@ export let currentCharacter = characters.moose;
 export function changeCharacter(character) {
 
     if (!characters[character]) {
+
+        console.warn(
+            `Ascendra: Character "${character}" does not exist.`
+        );
+
         return;
+
     }
+
 
     currentCharacter = characters[character];
 
-}
 
-
-/* =========================================
-   GET CURRENT CHARACTER
-========================================= */
-
-export function getCurrentCharacter() {
-
-    return currentCharacter;
+    console.log(
+        `Ascendra character changed to: ${currentCharacter.name}`
+    );
 
 }
