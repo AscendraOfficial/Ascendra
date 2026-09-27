@@ -3427,6 +3427,12 @@ const ROUTE_INITIALIZERS = {
     function saveTodos() {
       setUserItem("todos", JSON.stringify(todos));
       announceProgressionReward(syncProgressionFromActivity());
+      autoSyncProfile({
+        apiUrl: API_URL,
+        identity: getProfileSyncIdentity(),
+      }).catch((syncError) => {
+        console.warn("Tasks saved locally, but cloud sync did not finish.", syncError);
+      });
     }
 
     function formatPriority(priority) {
@@ -3626,6 +3632,12 @@ const ROUTE_INITIALIZERS = {
     function saveTodos() {
       setUserItem("todos", JSON.stringify(todos));
       announceProgressionReward(syncProgressionFromActivity());
+      autoSyncProfile({
+        apiUrl: API_URL,
+        identity: getProfileSyncIdentity(),
+      }).catch((syncError) => {
+        console.warn("Tasks saved locally, but cloud sync did not finish.", syncError);
+      });
     }
 
     function updateDueDateFields() {
@@ -3935,6 +3947,12 @@ const ROUTE_INITIALIZERS = {
     function saveHabits() {
       setUserItem("habits", JSON.stringify(habits));
       announceProgressionReward(syncProgressionFromActivity());
+      autoSyncProfile({
+        apiUrl: API_URL,
+        identity: getProfileSyncIdentity(),
+      }).catch((syncError) => {
+        console.warn("Habits saved locally, but cloud sync did not finish.", syncError);
+      });
     }
 
     function getToday() {
