@@ -1,4 +1,12 @@
-import { moose, createMoose } from "./drawings-character(KidsMode).js";
+import {
+    moose,
+    createMoose
+} from "./drawings-character(KidsMode).js";
+
+
+/* =========================================
+   P5.JS SETUP
+========================================= */
 
 function setup() {
 
@@ -6,6 +14,29 @@ function setup() {
 
     createMoose();
 }
+
+
+/* =========================================
+   P5.JS DRAW
+========================================= */
+
+function draw() {
+
+    background(255);
+
+    image(
+        moose,
+        100,
+        50,
+        400,
+        400
+    );
+}
+
+
+/* =========================================
+   ASCENDRA RESPONSES
+========================================= */
 
 export const responses = {
 
@@ -115,8 +146,8 @@ export const responses = {
 
 export const manualResponses = {
 
-  taskHelp:
-    "Make a task named {name}, add a note saying {note}, priority {low, medium, high}",
+    taskHelp:
+        "Make a task named {name}, add a note saying {note}, priority {low, medium, high}",
 
 };
 
@@ -125,29 +156,17 @@ export const manualResponses = {
    CHARACTER SYSTEM
 ========================================= */
 
-/*
-   The AI belongs to Ascendra.
-
-   The character is only the appearance.
-
-   This means the same AI can use:
-   - Fox
-   - Moose
-   - Cat
-   - Any future character
-*/
-
 export const characters = {
 
-  fox: {
-    name: "Ascendra Fox",
-    type: "fox",
-  },
+    fox: {
+        name: "Ascendra Fox",
+        type: "fox",
+    },
 
-  moose: {
-    name: "Ascendra Moose",
-    type: "moose",
-  },
+    moose: {
+        name: "Ascendra Moose",
+        type: "moose",
+    },
 
 };
 
@@ -156,7 +175,7 @@ export const characters = {
    CURRENT CHARACTER
 ========================================= */
 
-export let currentCharacter = characters.fox;
+export let currentCharacter = characters.moose;
 
 
 /* =========================================
@@ -165,11 +184,11 @@ export let currentCharacter = characters.fox;
 
 export function changeCharacter(character) {
 
-  if (!characters[character]) {
-    return;
-  }
+    if (!characters[character]) {
+        return;
+    }
 
-  currentCharacter = characters[character];
+    currentCharacter = characters[character];
 
 }
 
@@ -180,23 +199,7 @@ export function changeCharacter(character) {
 
 export function getCurrentCharacter() {
 
-  return currentCharacter;
+    return currentCharacter;
 
 }
-
-/* Use this to draw the character⬇️ */
-
-/*
-function draw() {
-
-    background(255);
-
-    image(
-        what,
-        x,
-        y,
-        width,
-        height
-    );
-}
-*/
+One important thing
