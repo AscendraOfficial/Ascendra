@@ -628,5 +628,5 @@ function setup() {
 5. ice, line 456
 */
 
-/* to paste a shirt simply write the code: image(variable name, x, y, width, height) */
+/* to paste a shirt simply write the code: image(variable name, x, y, width, height); */
 /* PS:What I mean by variable is what everything is stored in */
