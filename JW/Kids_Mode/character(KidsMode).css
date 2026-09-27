@@ -1,155 +1,147 @@
-body {
-    text-align: center;
-    font-family: sans-serif;
+/* ============================================================
+   ASCENDRA AI CHARACTER SYSTEM
+   ============================================================ */
+
+#ai-avatar {
+    position: relative;
+    width: 74px;
+    height: 66px;
+    display: block;
 }
 
-.go_back {
-    width: 100px;
-    height: 40px;
-
+.kids-ai-character {
     position: absolute;
+    inset: 0;
+    width: 74px;
+    height: 66px;
+}
 
-    top: 10px;
-    left: 10px;
 
+/* ============================================================
+   MOOSE
+   ============================================================ */
+
+.kids-ai-moose {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    background-color: white;
-
-    color: cyan;
-
-    border: none;
-    border-radius: 10px;
-
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-
-    font-size: 16px;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
+    overflow: visible;
 }
 
-.go_back:hover {
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-
-    transform: translateY(-2px);
-}
-
-.go_back:active {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-
-    transform: translateY(1px);
-}
-#character-heading {
-    text-align: center;
-    color: purple;
-    top: 10px;
-    left: 48%;
-}
-
-#character-subtitle {
-    color: cyan;
-}
-
-/* CHARACTER LIST */
-
-#character-selector {
-    width: 90%;
-    max-width: 800px;
-    margin: 40px auto;
+.kids-ai-moose canvas {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    transform-origin: center bottom;
 }
 
 
-/* VERTICAL SCROLLING AREA */
+/* ============================================================
+   MOOSE ANIMATIONS
+   ============================================================ */
 
-.character-scroll {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.kids-ai-moose.is-jumping canvas {
+    animation: kids-moose-jump 280ms ease-in-out infinite alternate;
+}
 
-    max-height: 600px;
+.kids-ai-moose.is-looking-around canvas {
+    animation: kids-moose-look 1.25s ease-in-out;
+}
 
-    overflow-y: auto;
+.kids-ai-moose.is-stretching canvas {
+    animation: kids-moose-stretch 1.35s ease-in-out;
+}
 
-    padding: 20px;
+.kids-ai-moose.is-napping canvas {
+    animation: kids-moose-nap 1.5s ease-in-out;
+}
+
+.kids-ai-moose.is-speaking canvas {
+    animation: kids-moose-talk 220ms ease-in-out infinite alternate;
 }
 
 
-/* CHARACTER BOX */
+/* ============================================================
+   JUMP
+   ============================================================ */
 
-.character-box {
-    width: 100%;
-    min-height: 180px;
+@keyframes kids-moose-jump {
+    from {
+        transform: translateY(0) rotate(-1deg);
+    }
 
-    display: flex;
-    align-items: center;
-
-    padding: 20px;
-
-    box-sizing: border-box;
-
-    background: white;
-
-    border: 3px solid transparent;
-    border-radius: 20px;
-
-    cursor: pointer;
-
-    transition: 0.2s ease;
+    to {
+        transform: translateY(-5px) rotate(1deg);
+    }
 }
 
 
-/* HOVER */
+/* ============================================================
+   LOOK AROUND
+   ============================================================ */
 
-.character-box:hover {
-    transform: translateX(5px);
+@keyframes kids-moose-look {
+    0%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
 
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.15);
+    30% {
+        transform: translateX(-5px) rotate(-4deg);
+    }
+
+    70% {
+        transform: translateX(5px) rotate(4deg);
+    }
 }
 
 
-/* SELECTED CHARACTER */
+/* ============================================================
+   STRETCH
+   ============================================================ */
 
-.character-box.active {
-    border-color: purple;
+@keyframes kids-moose-stretch {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: translateY(4px) scale(1.12, 0.86);
+    }
+
+    70% {
+        transform: translateY(-3px) scale(0.96, 1.08);
+    }
 }
 
 
-/* CHARACTER PREVIEW */
+/* ============================================================
+   NAP
+   ============================================================ */
 
-.character-preview {
-    width: 150px;
-    height: 140px;
+@keyframes kids-moose-nap {
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-
-    font-size: 90px;
+    50% {
+        transform: translateY(3px) rotate(5deg);
+    }
 }
 
 
-/* CHARACTER NAME */
+/* ============================================================
+   TALK
+   ============================================================ */
 
-.character-box h3 {
-    margin: 0 0 8px;
+@keyframes kids-moose-talk {
+    from {
+        transform: translateY(0);
+    }
 
-    font-size: 22px;
-}
-
-
-/* CHARACTER DESCRIPTION */
-
-.character-box p {
-    margin: 0;
-
-    font-size: 14px;
-
-    opacity: 0.65;
+    to {
+        transform: translateY(-2px);
+    }
 }
