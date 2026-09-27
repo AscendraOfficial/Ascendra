@@ -1927,24 +1927,60 @@
     </div>
 
     <!-- Ascendra AI Companion -->
-    <div id="ascendra-ai">
-      <div id="speech-bubble">
+   <div id="ascendra-ai">
+
+    <div id="speech-bubble">
+
         <p aria-live="polite" id="ai-message"></p>
-        <form aria-label="Ask the Ascendra fox" id="ai-chat-form">
-          <label class="sr-only" for="ai-chat-input">Ask the Ascendra fox</label>
-          <input
-            aria-describedby="ai-chat-hint"
-            autocomplete="off"
-            id="ai-chat-input"
-            maxlength="160"
-            placeholder="Ask the fox..."
-            type="text"
-          />
-          <button aria-label="Send message to the fox" type="submit">Send</button>
+
+
+        <form
+            aria-label="Ask Ascendra"
+            id="ai-chat-form"
+        >
+
+            <label
+                class="sr-only"
+                for="ai-chat-input"
+            >
+                Ask Ascendra
+            </label>
+
+
+            <input
+                aria-describedby="ai-chat-hint"
+                autocomplete="off"
+                id="ai-chat-input"
+                maxlength="160"
+                placeholder="Ask Ascendra..."
+                type="text"
+            />
+
+
+            <button
+                aria-label="Send a message to Ascendra"
+                type="submit"
+            >
+                Send
+            </button>
+
         </form>
-        <span class="sr-only" id="ai-chat-hint">Ask what the fox can do or tell it to open an Ascendra page.</span>
-      </div>
-     <span aria-hidden="true" id="ai-avatar"></span>
+
+
+        <span
+            class="sr-only"
+            id="ai-chat-hint"
+        >
+            Ask what Ascendra can do or tell it to open an Ascendra page.
+        </span>
+
     </div>
-  </body>
-</html>
+
+
+    <!-- Character gets inserted here by JavaScript -->
+    <span
+        aria-hidden="true"
+        id="ai-avatar"
+    ></span>
+
+</div>
