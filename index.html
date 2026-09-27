@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Ascendra - Tasks, Habits, Goals and Focus</title>
@@ -45,8 +45,8 @@
         <a href="#/signup">Create an Account</a>
       </p>
       <h2 id="version">
-        Version <em data-app-version>2.0</em> —
-        <span data-app-update>Horizon</span>
+        Version <em data-app-version>1.4.0</em> —
+        <span data-app-update>Profile Syncing</span>
       </h2>
       <a class="credits-link" href="#/credits">ⓘ Credits</a>
       <br />
@@ -1462,6 +1462,47 @@
       <main class="roadmap-page">
         <h1>Ascendra Roadmap</h1>
 
+        <section class="roadmap-card" id="profile-syncing">
+          <div class="roadmap-header">
+            <div>
+              <h2>Profile Syncing</h2>
+              <p class="roadmap-subtitle">Access your Ascendra profile across devices</p>
+            </div>
+
+            <span class="roadmap-status">Complete</span>
+          </div>
+
+          <hr />
+
+          <div class="roadmap-progress">
+            <h3>Development Progress</h3>
+            <p><strong>3 of 3 milestones completed</strong></p>
+
+            <div
+              aria-label="Profile syncing development progress: 3 of 3 milestones completed"
+              aria-valuemax="3"
+              aria-valuemin="0"
+              aria-valuenow="3"
+              class="progress-bar"
+              role="progressbar"
+            >
+              <div class="progress-fill"></div>
+            </div>
+
+            <p class="progress-text">All profile syncing milestones completed</p>
+          </div>
+
+          <div class="roadmap-details">
+            <h3>What's included</h3>
+
+            <p>
+              Profile Syncing lets users sign in to the same Ascendra account on multiple devices and keep supported profile,
+              settings, and progress data in sync. Cloud account storage, authentication, and the live frontend integration are now
+              available in Ascendra.
+            </p>
+          </div>
+        </section>
+        <br /><br />
         <section class="roadmap-card" id="horizon">
           <div class="roadmap-header">
             <div>
@@ -1944,7 +1985,25 @@
         </form>
         <span class="sr-only" id="ai-chat-hint">Ask what the fox can do or tell it to open an Ascendra page.</span>
       </div>
-     <span aria-hidden="true" id="ai-avatar"></span>
+      <span aria-hidden="true" id="ai-avatar">
+        <span class="ai-tail"></span>
+        <span class="ai-body"></span>
+        <span class="ai-leg ai-leg-back-left"></span>
+        <span class="ai-leg ai-leg-back-right"></span>
+        <span class="ai-leg ai-leg-front-left"></span>
+        <span class="ai-leg ai-leg-front-right"></span>
+        <span class="ai-head"></span>
+        <span class="ai-ears">
+          <span class="ai-ear ai-ear-left"></span>
+          <span class="ai-ear ai-ear-right"></span>
+        </span>
+        <span class="ai-eyes"></span>
+        <span class="ai-mouth"></span>
+      </span>
+    </div>
+      <div class="sync-status" aria-live="polite" role="status">
+      <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+      <h5 id="sync-status-display">Not synced</h5>
     </div>
   </body>
 </html>
