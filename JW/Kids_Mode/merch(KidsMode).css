@@ -3,32 +3,42 @@ body {
     font-family: sans-serif;
 }
 
+/* This is the css for the go back button. */
 .go_back {
+    /* Controls width and height. */
     width: 100px;
     height: 40px;
 
+    /* Puts it at a fixed position. */
     position: absolute;
 
+    /* How far it is from the top and left edge. */
     top: 10px;
     left: 10px;
 
+    /* Makes the stuff positioned in the center of the box. */
     display: flex;
     align-items: center;
     justify-content: center;
 
+    /* Changes background to white. */
     background-color: white;
 
+    /* Makes it cyan. */
     color: cyan;
 
+    /* Makes the outline disappear. */
     border: none;
     border-radius: 10px;
 
+    /* Adds shadow to the button/ */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 
+    /* Makes the font size more specific. */
     font-size: 16px;
 
+    /* Turns the cursor into a pointer when hovering the button. */
     cursor: pointer;
-
     transition: 0.2s ease;
 }
 
