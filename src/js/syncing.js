@@ -134,24 +134,46 @@ export function setSyncMode(mode) {
 }
 
 export function getSyncToken(accountId) {
+  const key = accountSessionKey(TOKEN_PREFIX, accountId);
+
   try {
-    return sessionStorage.getItem(accountSessionKey(TOKEN_PREFIX, accountId)) || "";
+    return localStorage.getItem(key) || sessionStorage.getItem(key) || "";
   } catch {
-    return "";
+    try {
+      return sessionStorage.getItem(key) || "";
+    } catch {
+      return "";
+    }
   }
 }
 
 export function setSyncToken(accountId, token) {
   const cleanToken = String(token || "").trim();
   if (!cleanToken) throw new Error("A profile-sync token is required.");
-  sessionStorage.setItem(accountSessionKey(TOKEN_PREFIX, accountId), cleanToken);
+
+  const key = accountSessionKey(TOKEN_PREFIX, accountId);
+
+  try {
+    localStorage.setItem(key, cleanToken);
+    sessionStorage.removeItem(key);
+  } catch {
+    sessionStorage.setItem(key, cleanToken);
+  }
 }
 
 export function clearSyncSession(accountId) {
+  const key = accountSessionKey(TOKEN_PREFIX, accountId);
+
   try {
-    sessionStorage.removeItem(accountSessionKey(TOKEN_PREFIX, accountId));
+    localStorage.removeItem(key);
   } catch {
-    // The browser may block session storage. There is nothing else to clear.
+    // localStorage can be unavailable in restricted browser modes.
+  }
+
+  try {
+    sessionStorage.removeItem(key);
+  } catch {
+    // sessionStorage can also be unavailable in restricted browser modes.
   }
 }
 
