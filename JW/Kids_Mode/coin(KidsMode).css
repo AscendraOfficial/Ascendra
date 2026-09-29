@@ -1,0 +1,58 @@
+/* =========================
+   ASCENDRA COIN
+   ========================= */
+
+.ascendra-coin {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+
+    width: 60px;
+    height: 60px;
+
+    border-radius: 50%;
+
+    background: rgb(245, 226, 19);
+    border: 5px solid rgb(250, 177, 20);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.25),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5);
+
+    z-index: 1000;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.coin-letter {
+    font-family: Arial, sans-serif;
+    font-size: 32px;
+    font-weight: 900;
+    font-style: italic;
+
+    color: rgb(240, 182, 24);
+
+    user-select: none;
+}
+
+.ascendra-coin:hover {
+    transform: scale(1.08);
+
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.6);
+}
+
+.ascendra-coin:active {
+    transform: scale(0.95);
+}
