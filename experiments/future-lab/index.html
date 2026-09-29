@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ascendra Future Lab</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="lab">
+      <header class="hero">
+        <p class="eyebrow">Ascendra Future Lab</p>
+        <h1>Experimental Features</h1>
+        <p>Small prototypes for ideas that might become real Ascendra features later.</p>
+      </header>
+
+      <section class="feature-grid">
+        <article class="feature-card">
+          <span class="feature-tag">Prototype 01</span>
+          <h2>Focus Quest</h2>
+          <p>Turn a focus session into a tiny mission instead of just another timer.</p>
+
+          <div class="duration-picker" aria-label="Focus Quest duration">
+            <button class="duration-button selected" data-minutes="10" type="button">10 min</button>
+            <button class="duration-button" data-minutes="25" type="button">25 min</button>
+            <button class="duration-button" data-minutes="45" type="button">45 min</button>
+          </div>
+
+          <div class="timer" aria-live="polite" id="focus-timer">10:00</div>
+          <button class="primary-button" id="focus-toggle" type="button">Start Quest</button>
+          <p class="status-text" id="focus-status">Choose a mission length and start when you're ready.</p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-tag">Prototype 02</span>
+          <h2>Tiny Wins</h2>
+          <p>Keep only three tiny goals in view so a busy day feels less overwhelming.</p>
+
+          <form class="tiny-win-form" id="tiny-win-form">
+            <input id="tiny-win-input" maxlength="60" placeholder="Add a tiny win..." required />
+            <button class="secondary-button" type="submit">Add</button>
+          </form>
+
+          <ul class="tiny-win-list" id="tiny-win-list"></ul>
+          <p class="xp-counter"><strong id="tiny-win-xp">0 XP</strong> earned in this prototype</p>
+        </article>
+
+        <article class="feature-card">
+          <span class="feature-tag">Prototype 03</span>
+          <h2>Energy Check-in</h2>
+          <p>Tell Ascendra how much energy you have and get a gentler suggestion for what to do next.</p>
+
+          <div class="energy-picker">
+            <button class="energy-button" data-energy="low" type="button">Low</button>
+            <button class="energy-button" data-energy="medium" type="button">Medium</button>
+            <button class="energy-button" data-energy="high" type="button">High</button>
+          </div>
+
+          <div class="recommendation" id="energy-recommendation">
+            Pick your energy level to get a suggestion.
+          </div>
+        </article>
+      </section>
+
+      <footer>
+        Experimental only — this page is not connected to production Ascendra data.
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
