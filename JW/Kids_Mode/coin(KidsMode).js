@@ -29,13 +29,20 @@ function saveCoins() {
 
 function updateCoinDisplay() {
 
+    // Update every coin balance displayed on the page
+    document.querySelectorAll(".coin-balance").forEach(element => {
+        element.textContent = ascendraCoins;
+    });
+
+    // Update coin tooltip if the coin exists
     const coin = document.querySelector(".ascendra-coin");
 
-    if (!coin) return;
-
-    coin.setAttribute("title", `${ascendraCoins} Ascendra Coins`);
-
-    coin.dataset.coins = ascendraCoins;
+    if (coin) {
+        coin.setAttribute(
+            "title",
+            `${ascendraCoins} Ascendra Coins`
+        );
+    }
 }
 
 
@@ -70,7 +77,10 @@ function removeCoins(amount) {
         return;
     }
 
-    ascendraCoins = Math.max(0, ascendraCoins - amount);
+    ascendraCoins = Math.max(
+        0,
+        ascendraCoins - amount
+    );
 
     saveCoins();
     updateCoinDisplay();
