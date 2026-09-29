@@ -4,6 +4,7 @@ just better if I can access this code in the code branch if I want to.
 
 What I am working on:
 •Kids Mode merchandise to buy for character
+•Linking a coin system
 
 What can you help with:                                                   ! = need extra help
 •commit all of my code so that we both have easy access to it
