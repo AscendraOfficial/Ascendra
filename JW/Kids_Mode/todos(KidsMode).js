@@ -1,101 +1,111 @@
 const addBtn = document.getElementById("add-btn");
-    const popup = document.getElementById("popup");
-    const saveBtn = document.getElementById("save-btn");
-    const cancelBtn = document.getElementById("cancel-btn");
+const popup = document.getElementById("popup");
+const saveBtn = document.getElementById("save-btn");
+const cancelBtn = document.getElementById("cancel-btn");
 
-    const taskInput = document.getElementById("task-input");
-    const dateInput = document.getElementById("date-input");
-    const todoList = document.getElementById("todo-list");
+const taskInput = document.getElementById("task-input");
+const dateInput = document.getElementById("date-input");
+const todoList = document.getElementById("todo-list");
 
-    let todos = JSON.parse(localStorage.getItem("todos")) || [];
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
-    function saveTodos() {
-        localStorage.setItem("todos", JSON.stringify(todos));
+function saveTodos() {
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function showTodos() {
+    todoList.innerHTML = "";
+
+    if (todos.length === 0) {
+        todoList.innerHTML = "<p>No tasks yet</p>";
+        return;
     }
 
-    function showTodos() {
-        todoList.innerHTML = "";
+    todos.forEach(todo => {
+        const card = document.createElement("div");
+        card.classList.add("todo-card");
 
-        if (todos.length === 0) {
-            todoList.innerHTML = "<p>No tasks yet</p>";
-            return;
+        if (todo.completed) {
+            card.classList.add("completed");
         }
 
-        todos.forEach(todo => {
-            const card = document.createElement("div");
-            card.classList.add("todo-card");
+        card.innerHTML = `
+            <div class="todo-info">
+                <div class="todo-title">
+                    ${todo.completed ? "✅" : "⬜"} ${todo.task}
+                </div>
+                <div class="todo-date">Due: ${todo.date}</div>
+            </div>
 
-            if (todo.completed) {
-                card.classList.add("completed");
+            <button class="complete-btn">
+                ${todo.completed ? "Undo" : "Done"}
+            </button>
+
+            <button class="delete-btn">🗑️</button>
+        `;
+
+        const completeBtn = card.querySelector(".complete-btn");
+        const deleteBtn = card.querySelector(".delete-btn");
+
+        completeBtn.onclick = () => {
+
+            // Only award coins when completing the task
+            if (!todo.completed) {
+                addCoins(5);
+
+                alert("Task completed! ✅\n+5 Ascendra Coins 🪙");
             }
 
-            card.innerHTML = `
-                <div class="todo-info">
-                    <div class="todo-title">
-                        ${todo.completed ? "✅" : "⬜"} ${todo.task}
-                    </div>
-                    <div class="todo-date">Due: ${todo.date}</div>
-                </div>
+            // Toggle completed status
+            todo.completed = !todo.completed;
 
-                <button class="complete-btn">
-                    ${todo.completed ? "Undo" : "Done"}
-                </button>
+            saveTodos();
+            showTodos();
+        };
 
-                <button class="delete-btn">🗑️</button>
-            `;
+        deleteBtn.onclick = () => {
+            todos = todos.filter(t => t.id !== todo.id);
+            saveTodos();
+            showTodos();
+        };
 
-            const completeBtn = card.querySelector(".complete-btn");
-            const deleteBtn = card.querySelector(".delete-btn");
+        todoList.appendChild(card);
+    });
+}
 
-            completeBtn.onclick = () => {
-                todo.completed = !todo.completed;
-                saveTodos();
-                showTodos();
-            };
+addBtn.onclick = () => {
+    popup.style.display = "block";
+    taskInput.focus();
+};
 
-            deleteBtn.onclick = () => {
-                todos = todos.filter(t => t.id !== todo.id);
-                saveTodos();
-                showTodos();
-            };
+cancelBtn.onclick = () => {
+    popup.style.display = "none";
+    taskInput.value = "";
+    dateInput.value = "";
+};
 
-            todoList.appendChild(card);
-        });
+saveBtn.onclick = () => {
+    const task = taskInput.value.trim();
+    const date = dateInput.value;
+
+    if (task === "" || date === "") {
+        alert("Add a task and due date first!");
+        return;
     }
 
-    addBtn.onclick = () => {
-        popup.style.display = "block";
-        taskInput.focus();
-    };
+    todos.push({
+        id: Date.now(),
+        task: task,
+        date: date,
+        completed: false
+    });
 
-    cancelBtn.onclick = () => {
-        popup.style.display = "none";
-        taskInput.value = "";
-        dateInput.value = "";
-    };
-
-    saveBtn.onclick = () => {
-        const task = taskInput.value.trim();
-        const date = dateInput.value;
-
-        if (task === "" || date === "") {
-            alert("Add a task and due date first!");
-            return;
-        }
-
-        todos.push({
-            id: Date.now(),
-            task: task,
-            date: date,
-            completed: false
-        });
-
-        saveTodos();
-        showTodos();
-
-        popup.style.display = "none";
-        taskInput.value = "";
-        dateInput.value = "";
-    };
-
+    saveTodos();
     showTodos();
+
+    popup.style.display = "none";
+    taskInput.value = "";
+    dateInput.value = "";
+};
+
+showTodos();
