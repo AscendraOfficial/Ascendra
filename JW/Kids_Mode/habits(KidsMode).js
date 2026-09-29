@@ -34,13 +34,31 @@ function showHabits() {
         `;
 
         habitCard.querySelector(".check-btn").onclick = () => {
-            if (habit.type === "bad") {
-                alert("Nice! You avoided the bad habit ✅");
-            } else {
-                alert("Nice! You did the good habit ✅");
-            }
-        };
 
+            const today = new Date().toISOString().split("T")[0];
+        
+            // Prevent earning coins more than once per day
+            if (habit.lastCompleted === today) {
+                alert("You've already completed this habit today! ✅");
+                return;
+            }
+        
+            habit.lastCompleted = today;
+        
+            saveHabits();
+        
+            // Award 5 Ascendra coins
+            addCoins(5);
+        
+            if (habit.type === "bad") {
+                alert("Nice! You avoided the bad habit ✅\n+5 Ascendra Coins 🪙");
+            } else {
+                alert("Nice! You did the good habit ✅\n+5 Ascendra Coins 🪙");
+            }
+        
+            showHabits();
+        };
+        
         habitCard.querySelector(".x-btn").onclick = () => {
             if (habit.type === "bad") {
                 alert("You did the bad habit today ❌");
