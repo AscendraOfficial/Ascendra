@@ -199,19 +199,29 @@ h1.about-header {
     margin-bottom: 40px;
 }
 
+/* Controls everything in the creator section that is in an <i> tag */
 .creator-section i {
+    /* Makes font size more specific */
     font-size: 3rem;
+    /* Adds 15px of margin to the bottom of the section */
     margin-bottom: 15px;
 }
 
+/* Controls everything in the class about-footer (very bottom of the page) */
 .about-footer {
+    /* Adds a dark navy backgound */
     background: rgb(5,10,35);
+    /* Makes the text white */
     color: white;
+    /* Aligns the text to the center */
     text-align: center;
+    /* Adds 30px of padding to the top and bottom and adds 20px of padding to left and right */
     padding: 30px 20px;
 }
 
+/* This controls the links in the footer */
 .footer-links {
+    /*  */
     margin-top: 15px;
 }
 
