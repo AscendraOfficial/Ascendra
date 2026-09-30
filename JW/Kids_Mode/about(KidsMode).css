@@ -221,10 +221,11 @@ h1.about-header {
 
 /* This controls the links in the footer */
 .footer-links {
-    /*  */
+    /* Puts 15px of margin above the links */
     margin-top: 15px;
 }
 
+/* Controls the <a> tag in the footer */
 .footer-links a {
     color: white;
     margin: 0 15px;
