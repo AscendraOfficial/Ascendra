@@ -10164,6 +10164,7 @@ body.dark-mode .habit-qr-info summary {
   }
 }
 
+
 /* Global profile sync status */
 .sync-status {
   position: fixed;
@@ -10215,4 +10216,3 @@ body.dark-mode .habit-qr-info summary {
     display: none !important;
   }
 }
-
