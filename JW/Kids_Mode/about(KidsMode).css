@@ -171,20 +171,31 @@ h1.about-header {
     margin-bottom: 15px;
 }
 
+/* This controls all of the <h3> tags in feature-card */
 .feature-card h3 {
+   /* Adds 10px of margin on the top and bottom */
     margin: 10px 0;
 }
 
+/* This controls all of the <p> tags in feature-card */
 .feature-card p {
+    /* Makes line height more specific */
     line-height: 1.5;
 }
 
+/* Controls everything in the class creator-section (bottom of the page) */
 .creator-section {
+    /* Adds a banckground */
     background: linear-gradient(135deg, rgb(0,123,255), rgb(0,170,255));
+    /* Changes text color to white */
     color: white;
+    /* Aligns the text to the center */
     text-align: center;
+    /* Gives the text breathing room in the box */
     padding: 40px;
+    /* Makes the corners rounded */
     border-radius: 18px;
+    /* Adds 40px of margin to the bottom */
     margin-bottom: 40px;
 }
 
