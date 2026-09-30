@@ -1,7 +1,12 @@
+/* Controls all visible elements on the page */
 body {
+    /* Removes all margin */
     margin: 0;
+    /* Adds 30px of padding on each side */
     padding: 30px;
+    /* Adds 120px of padding to specifically the bottom */
     padding-bottom: 120px;
+    /*  */
     font-family: Arial, sans-serif;
     background: #f6f3ff;
     color: #222;
