@@ -868,32 +868,17 @@ async function connectLocalAccountToCloud(password) {
       relinked = true;
     }
 
-    // The cloud copy is authoritative when reconnecting an existing account.
-    // Pull it first so a fresh/older device cannot overwrite newer cloud data.
-    const pulled = await pullCloudProfile({
-      apiUrl: API_URL,
-      identity: syncIdentity,
-    });
-
-    const accountRecord = findStoredAccount(syncIdentity.username);
-    if (accountRecord) {
-      const updatedAccount = {
-        ...accountRecord.account,
-        name: pulled.identityUpdate.name,
-        surname: pulled.identityUpdate.surname,
-      };
-      saveStoredAccount(updatedAccount);
+    if (getSyncMode() === SYNC_MODES.AUTO) {
+      await autoSyncProfile({
+        apiUrl: API_URL,
+        identity: syncIdentity,
+      });
+    } else {
+      await manualSyncProfile({
+        apiUrl: API_URL,
+        identity: syncIdentity,
+      });
     }
-
-    setActiveIdentity(
-      {
-        ...syncIdentity,
-        loggedInUser: syncIdentity.username,
-        name: pulled.identityUpdate.name,
-        surname: pulled.identityUpdate.surname,
-      },
-      { previousUsername: identity.username },
-    );
 
     return { connected: true, created: false, relinked };
   } catch (error) {
@@ -3427,12 +3412,6 @@ const ROUTE_INITIALIZERS = {
     function saveTodos() {
       setUserItem("todos", JSON.stringify(todos));
       announceProgressionReward(syncProgressionFromActivity());
-      autoSyncProfile({
-        apiUrl: API_URL,
-        identity: getProfileSyncIdentity(),
-      }).catch((syncError) => {
-        console.warn("Tasks saved locally, but cloud sync did not finish.", syncError);
-      });
     }
 
     function formatPriority(priority) {
@@ -3632,12 +3611,6 @@ const ROUTE_INITIALIZERS = {
     function saveTodos() {
       setUserItem("todos", JSON.stringify(todos));
       announceProgressionReward(syncProgressionFromActivity());
-      autoSyncProfile({
-        apiUrl: API_URL,
-        identity: getProfileSyncIdentity(),
-      }).catch((syncError) => {
-        console.warn("Tasks saved locally, but cloud sync did not finish.", syncError);
-      });
     }
 
     function updateDueDateFields() {
@@ -3947,12 +3920,6 @@ const ROUTE_INITIALIZERS = {
     function saveHabits() {
       setUserItem("habits", JSON.stringify(habits));
       announceProgressionReward(syncProgressionFromActivity());
-      autoSyncProfile({
-        apiUrl: API_URL,
-        identity: getProfileSyncIdentity(),
-      }).catch((syncError) => {
-        console.warn("Habits saved locally, but cloud sync did not finish.", syncError);
-      });
     }
 
     function getToday() {
