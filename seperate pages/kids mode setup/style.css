@@ -1,0 +1,120 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  font-family: Arial, sans-serif;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #f4f1ff;
+}
+
+.setup-container {
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.setup-header h1 {
+  margin-bottom: 5px;
+}
+
+.setup-header p {
+  margin-top: 0;
+  color: #666;
+}
+
+.setup-card {
+  margin-top: 30px;
+  padding: 40px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.setup-step {
+  display: none;
+}
+
+.setup-step.active {
+  display: block;
+}
+
+input {
+  width: 100%;
+
+  padding: 14px;
+
+  margin: 15px 0;
+
+  border: 2px solid #ddd;
+  border-radius: 10px;
+
+  font-size: 16px;
+}
+
+button {
+  padding: 12px 22px;
+
+  border: none;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  font-size: 16px;
+}
+
+.next-button,
+#finishButton {
+  background: #7557ff;
+  color: white;
+}
+
+.shirt-options {
+  display: grid;
+
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 10px;
+
+  margin: 25px 0;
+}
+
+.shirt-option {
+  background: #eee;
+}
+
+.shirt-option.selected {
+  outline: 3px solid #7557ff;
+}
+
+.progress {
+  display: flex;
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+.progress-dot {
+  width: 12px;
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: #ccc;
+}
+
+.progress-dot.active {
+  background: #7557ff;
+}
