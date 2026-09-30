@@ -42,16 +42,25 @@ h1.about-header {
     line-height: 1.6;
 }
 
+/* Controls the back button (top left corner) */
 .back-button {
+    /* Makes button on the same line as other content (no seperate lines) */
     display: inline-block;
+    /* Adds margin to the bottom */
     margin-bottom: 25px;
+    /* Makes the button white */
     color: white;
+    /* Removes all text decoration */
     text-decoration: none;
+    /* Makes the text bold */
     font-weight: bold;
+    /* Makes font size more specific */
     font-size: 1rem;
 }
 
+/* Controls the state of the back button when hovering over it. */
 .back-button:hover {
+    /* Underlines the text */
     text-decoration: underline;
 }
 
