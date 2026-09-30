@@ -155,13 +155,19 @@ h1.about-header {
     transition: 0.25s;
 }
 
+/* Controls the card when mouse is hovering over it */
 .feature-card:hover {
+    /* slightly moves the box up */
     transform: translateY(-6px);
 }
 
+/* Controls everything that is in an <i> tag and is in the feature-card class */
 .feature-card i {
+    /* Makes font size more specific */
     font-size: 2.5rem;
+    /* Makes text bright blue */
     color: rgb(0, 123, 255);
+    /* Adds 15px of margin to the bottom of the i tags */
     margin-bottom: 15px;
 }
 
