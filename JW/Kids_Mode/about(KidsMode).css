@@ -64,9 +64,13 @@ h1.about-header {
     text-decoration: underline;
 }
 
+/* Controls the box containing 'What is Ascendra?' */
 .about-container {
+    /* Keeps the width of the container 90% of the screen */
     width: 90%;
+    /* Makes the maximum width 1100px */
     max-width: 1100px;
+    /* Makes top and bottom 40px and makes it centered horizontally */
     margin: 40px auto;
 }
 
