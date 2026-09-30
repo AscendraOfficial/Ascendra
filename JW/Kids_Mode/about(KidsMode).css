@@ -1,26 +1,44 @@
+/* The body function controls everything in the <body> tag. */
 body {
+    /* No margin on the side */
     margin: 0;
+    /* Changes font, include backup font. */
     font-family: Arial, Helvetica, sans-serif;
+    /* Background changed to extremely light grey. */
     background: rgb(240, 248, 255);
+    /* Changes text color. */
     color: rgb(5, 10, 35);
 }
 
+/*  Controls the header */
 .about-header {
+    /* Makes the text aligned to the center */
     text-align: center;
+    /* Gives the content breathing room */
     padding: 50px 20px;
+    /* Gives a background with a gradient */
     background: linear-gradient(135deg, rgb(0, 123, 255), rgb(0, 170, 255));
+    /* Makes the text white. */
     color: white;
 }
 
-.about-header h1 {
+/* Controls the h1 in about-header */
+h1.about-header {
+    /* No margin */
     margin: 0;
+    /* Makes font size more specific. */
     font-size: 3rem;
 }
 
+/* Edits the description of the header. */
 .header-description {
+    /* Makes the maximum width of the text 700px. */
     max-width: 700px;
+    /* Adds 15px of margin. */
     margin: 15px auto 0;
+    /* Makes font size more specific. */
     font-size: 1.1rem;
+    /* Makes the line more specific. */
     line-height: 1.6;
 }
 
