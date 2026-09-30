@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <title>Ascendra - Tasks, Habits, Goals and Focus</title>
@@ -45,8 +45,8 @@
         <a href="#/signup">Create an Account</a>
       </p>
       <h2 id="version">
-        Version <em data-app-version>1.4.0</em> —
-        <span data-app-update>Profile Syncing</span>
+        Version <em data-app-version>2.0</em> —
+        <span data-app-update>Horizon</span>
       </h2>
       <a class="credits-link" href="#/credits">ⓘ Credits</a>
       <br />
@@ -569,6 +569,9 @@
                 <input aria-describedby="ascendra-ai-setting-description" checked id="ascendra-ai-enabled" type="checkbox" />
               </label>
             </div>
+            <div class="kidsModeSetup">
+              <h5>Set up kids mode <a href="seperate%20pages/kids%20mode%20setup/index.html">here</a></h5>
+            </div>
           </section>
 
           <section class="card danger">
@@ -821,8 +824,8 @@
               <details class="habit-qr-info">
                 <summary aria-label="How the printable QR habit tracker works">i</summary>
                 <p>
-                  Print a blank tracker and mark completed habits with a bold X. Scan its QR code, photograph the full
-                  table, and review Ascendra's detected results. Nothing is saved until you confirm the import.
+                  Print a blank tracker and mark completed habits with a bold X. Scan its QR code, photograph the full table, and review
+                  Ascendra's detected results. Nothing is saved until you confirm the import.
                 </p>
               </details>
             </div>
@@ -1462,28 +1465,6 @@
       <main class="roadmap-page">
         <h1>Ascendra Roadmap</h1>
 
-        <section class="roadmap-card" id="kids-mode">
-          <div class="roadmap-header">
-            <div>
-              <h2>Kids Mode</h2>
-              <p class="roadmap-subtitle">A kid-friendly Ascendra experience</p>
-            </div>
-
-            <span class="roadmap-status">In Development</span>
-          </div>
-
-          <hr />
-
-          <div class="roadmap-details">
-            <h3>What's happening</h3>
-
-            <p>
-              Kids Mode is currently in development. We're working on a simpler, kid-friendly Ascendra experience designed to make
-              productivity tools easier and more fun for younger users.
-            </p>
-          </div>
-        </section>
-        <br /><br />
         <section class="roadmap-card" id="profile-syncing">
           <div class="roadmap-header">
             <div>
@@ -1491,14 +1472,14 @@
               <p class="roadmap-subtitle">Access your Ascendra profile across devices</p>
             </div>
 
-            <span class="roadmap-status-progress">Fixing Bugs</span>
+            <span class="roadmap-status-progress">In Progress</span>
           </div>
 
           <hr />
 
           <div class="roadmap-progress">
             <h3>Development Progress</h3>
-            <p><strong>2 of 3 milestones completed</strong></p>
+            <p><strong>Cloud backend is live; frontend integration is in progress</strong></p>
 
             <div
               aria-label="Profile syncing development progress: 2 of 3 milestones completed"
@@ -1511,16 +1492,16 @@
               <div class="progress-fill-sync"></div>
             </div>
 
-            <p class="progress-text">1 milestone remaining — fixing syncing bugs</p>
+            <p class="progress-text">Cross-device login and profile syncing are being connected to the live app</p>
           </div>
 
           <div class="roadmap-details">
             <h3>What's included</h3>
 
             <p>
-              Profile Syncing lets users sign in to the same Ascendra account on multiple devices and keep supported profile,
-              settings, and progress data in sync. Cloud account storage, authentication, and the live frontend integration are now
-              available in Ascendra. We're currently fixing the remaining cross-device syncing bugs.
+              Profile Syncing will let users sign in to the same Ascendra account on multiple devices and keep supported profile,
+              settings, and progress data in sync. The cloud account backend and Supabase storage are live, while frontend integration
+              and cross-device testing are still in progress.
             </p>
           </div>
         </section>
@@ -1963,7 +1944,14 @@
     </div>
 
     <!-- Habit Import Preview Dialog -->
-    <div aria-hidden="true" aria-labelledby="habit-import-title" aria-modal="true" class="habit-import-dialog" id="habit-import-dialog" role="dialog">
+    <div
+      aria-hidden="true"
+      aria-labelledby="habit-import-title"
+      aria-modal="true"
+      class="habit-import-dialog"
+      id="habit-import-dialog"
+      role="dialog"
+    >
       <section class="habit-import-card" tabindex="-1">
         <button aria-label="Close habit import preview" class="habit-import-close" id="close-habit-import" type="button">×</button>
         <p class="habit-import-eyebrow">QR HABIT IMPORT</p>
@@ -2023,7 +2011,7 @@
         <span class="ai-mouth"></span>
       </span>
     </div>
-      <div class="sync-status" aria-live="polite" role="status">
+    <div class="sync-status" aria-live="polite" role="status">
       <i class="fa-solid fa-cloud" aria-hidden="true"></i>
       <h5 id="sync-status-display">Not synced</h5>
     </div>
