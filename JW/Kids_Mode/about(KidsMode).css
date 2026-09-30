@@ -227,27 +227,40 @@ h1.about-header {
 
 /* Controls the <a> tag in the footer */
 .footer-links a {
+    /* Makes the color white */
     color: white;
+    /* Adds 15px of margin in between each other */
     margin: 0 15px;
+    /* Removes all text decoration */
     text-decoration: none;
 }
 
+/* Controls the links when mouse is hovering over it */
 .footer-links a:hover {
+    /* Underlines the links */
     text-decoration: underline;
 }
 
+/* This controls everything when the screen is 768px or smaller */
 @media (max-width: 768px) {
 
+    /* Controls the things that are in the class about-section */
     .about-section {
+        /* Makes content vertical */
         flex-direction: column;
+        /* Aligns the text to the center */
         text-align: center;
     }
 
+    /* Edits the class section-icon */
     .section-icon {
+        /* Centers the icon */
         margin: auto;
     }
 
+    /* Controls the h1 in the class about-header */
     .about-header h1 {
+        /* Makes font size more specific */
         font-size: 2.2rem;
     }
 
