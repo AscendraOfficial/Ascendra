@@ -104,35 +104,54 @@ h1.about-header {
     min-width: 60px;
 }
 
+/* Changes the h2 in section-content */
 .section-content h2 {
+    /* Removes all margin above the h2 */
     margin-top: 0;
 }
 
+/* Changes the p in section-content */
 .section-content p {
     line-height: 1.7;
 }
 
+/* Controls everything in the class features-section */
 .features-section {
+    /* Adds 40px of margin at the bottom */
     margin-bottom: 40px;
 }
 
+/* controls the h2 in features-section */
 .features-section h2 {
+    /* Aligns the text to the center */
     text-align: center;
+    /* Adds 30px of margin */
     margin-bottom: 30px;
 }
 
+/* Controls everything in features-grid */
 .features-grid {
+    /* Turns everything into a grid */
     display: grid;
+    /* Determines how wide the columns are and how many fit. */
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    /* Makes 25px of space between each grid */
     gap: 25px;
 }
 
+/* Controls the actual cards in the grid */
 .feature-card {
+    /* Adds a white background */
     background: white;
+    /* Adds 25px of space between the text and the edge of the card */
     padding: 25px;
+    /* Makes the corners slightly rounded */
     border-radius: 18px;
+    /* Aligns the text to the center */
     text-align: center;
+    /* Adds the shadow of each card */
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    /* Gives a slight delay of how fast the shadow appears */
     transition: 0.25s;
 }
 
