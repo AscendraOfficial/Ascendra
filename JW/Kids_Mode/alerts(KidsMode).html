@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ascendra - Alerts</title>
+    
+    <link rel="stylesheet" href="alerts(KidsMode).css">
+    <link rel="stylesheet" href="coin(KidsMode).css">
+    
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="alerts-page">
+
+        <header class="alerts-header">
+
+            <div class="header-icon">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+
+            <div>
+                <h1>Alerts</h1>
+                <p>For convenience and notifications</p>
+            </div>
+
+        </header>
+
+        <section class="alert-summary">
+
+            <div class="summary-icon">
+                <i class="fa-solid fa-bolt"></i>
+            </div>
+
+            <div>
+                <span class="summary-label">ALERT STATUS</span>
+
+                <h2 id="alertSummary">
+                    Checking your alerts...
+                </h2>
+            </div>
+
+        </section>
+
+        <main id="alertList">
+        </main>
+
+    </div>
+
+
+    <nav class="navbar">
+
+        <button onclick="window.location.href='home.html'">
+            <i class="fa-solid fa-mug-saucer"></i>
+            <span>Home</span>
+        </button>
+
+        <button class="current">
+            <i class="fa-solid fa-bell"></i>
+            <span>Alerts</span>
+        </button>
+
+        <button onclick="window.location.href='todos(KidsMode).html'">
+            <i class="fa-solid fa-list-check"></i>
+            <span>To-Dos</span>
+        </button>
+
+        <button onclick="window.location.href='habits(KidsMode).html'">
+            <i class="fa-solid fa-thumbs-up"></i>
+            <span>Habits</span>
+        </button>
+
+        <button onclick="window.location.href='breathing(KidsMode).html'">
+            <i class="fa-solid fa-wind"></i>
+            <span>Breathing</span>
+        </button>
+
+        <button onclick="window.location.href='calendar(KidsMode).html'">
+            <i class="fa-solid fa-calendar"></i>
+            <span>Calendar</span>
+        </button>
+
+        <button onclick="window.location.href='journal(KidsMode).html'">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Journal</span>
+        </button>
+
+        <button onclick="window.location.href='merchandise(KidsMode).html'">
+            <i class="fa-solid fa-shirt"></i>
+            <span>Merchandise</span>
+        </button>
+        
+        <button onclick="window.location.href='menu(KidsMode).html'">
+            <i class="fa-solid fa-bars-staggered"></i>
+            <span>Menu</span>
+        </button>
+
+    </nav>
+
+     <div class="coin-display">
+
+        <div class="ascendra-coin">
+            <span class="coin-letter">A</span>
+        </div>
+
+        <span class="coin-balance">0</span>
+
+    </div>
+
+    <script src="coin(KidsMode).js"></script>
+    <script src="global-settings(KidsMode).js"></script>
+    <script src="alerts(KidsMode).js"></script>
+    
+</body>
+</html>
