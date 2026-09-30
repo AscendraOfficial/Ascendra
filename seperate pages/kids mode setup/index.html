@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Kids Mode Setup | Ascendra</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <main class="setup-container">
+      <header class="setup-header">
+        <h1>Welcome to Kids Mode!</h1>
+        <p>Let's get everything ready for you.</p>
+      </header>
+
+      <section class="setup-card">
+        <div class="setup-step active" data-step="1">
+          <h2>What's your name?</h2>
+
+          <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off" />
+
+          <button class="next-button">Next</button>
+        </div>
+
+        <div class="setup-step" data-step="2">
+          <h2>Choose your shirt</h2>
+
+          <div class="shirt-options">
+            <button class="shirt-option" data-shirt="orange">Orange</button>
+
+            <button class="shirt-option" data-shirt="green">Green</button>
+
+            <button class="shirt-option" data-shirt="purple">Purple</button>
+
+            <button class="shirt-option" data-shirt="blue">Blue</button>
+          </div>
+
+          <button class="next-button">Next</button>
+        </div>
+
+        <div class="setup-step" data-step="3">
+          <h2>You're ready!</h2>
+
+          <p id="readyMessage">Your Kids Mode profile is ready.</p>
+
+          <button id="finishButton">Start Kids Mode</button>
+        </div>
+      </section>
+
+      <div class="progress">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
