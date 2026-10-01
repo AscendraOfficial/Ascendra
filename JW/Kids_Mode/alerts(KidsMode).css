@@ -34,15 +34,25 @@ body {
     margin-bottom: 30px;
 }
 
+/* Edits the font awesome belll icon beside the header */
 .header-icon {
+    /* Makes the icon 60px wide */
     width: 60px;
+    /* Makes the icon 60px tall */
     height: 60px;
+    /* Makes the border rounded */
     border-radius: 15px;
+    /* Makes the icon on the same line as other elements */
     display: flex;
+    /* Centers the element vertically */
     align-items: center;
+    /* Centers the element vertically */
     justify-content: center;
+    /* Gives a very light grey background */
     background: #eeeeee;
+    /* Gives the element a dark grey colour */
     color: #444;
+    /* Makes the size of font 25px */
     font-size: 25px;
 }
 
