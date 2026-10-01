@@ -64,8 +64,11 @@ body {
     font-size: 2.2rem;
 }
 
+/* Controls the <p> tags in the class alerts-header */
 .alerts-header p {
+    /* Adds 5px of margin to the top of the element */
     margin: 5px 0 0;
+    /* gives the element a medium-dark grey */
     color: #666;
 }
 
