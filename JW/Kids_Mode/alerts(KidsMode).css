@@ -90,126 +90,155 @@ body {
     border-left: 5px solid #777;
 }
 
+/* Controls the <h3> tags in the class alert-card */
 .alert-card h3 {
+    /* Removes margin on the top */
     margin-top: 0;
+    /* Adds 10px of margin to the bottom */
     margin-bottom: 10px;
+    /* Makes font size more specific */
     font-size: 1.2rem;
 }
 
+/* Controls the <p> tag in the class alert-card */
 .alert-card p {
+    /* Adds 6px of margin to the top and bottom */
     margin: 6px 0;
+    /* Sets colour into a dark grey */
     color: #555;
 }
 
-/* Bottom navigation */
 
-.navbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
 
+
+    /* Turns the coin into a Flexbox container */
     display: flex;
-    justify-content: center;
-    gap: 10px;
 
-    padding: 12px 10px;
-    background: white;
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.08);
-
-    z-index: 1000;
-}
-
-.navbar button {
-    border: none;
-    background: transparent;
-    padding: 8px 12px;
-    cursor: pointer;
-    color: #555;
-}
-
-.navbar button i {
-    font-size: 18px;
-    margin-bottom: 4px;
-}
-
-.navbar button.current {
-    color: #444;
-    font-weight: bold;
-}
-
-/* Ascendra coin */
-
-.coin-display {
-    position: fixed;
-    right: 25px;
-    bottom: 90px;
-
-    display: flex;
+    /* Vertically centers the A */
     align-items: center;
-    gap: 8px;
 
-    z-index: 1001;
-}
-
-.ascendra-coin {
-    width: 50px;
-    height: 50px;
-
-    border-radius: 50%;
-
-    background: linear-gradient(
-        145deg,
-        #f5e213,
-        #f0b618
-    );
-
-    display: flex;
-    align-items: center;
+    /* Horizontally centers the A */
     justify-content: center;
 
+
+    /* Adds a subtle shadow underneath the coin */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+
+/* =========================================================
+   COIN LETTER
+   Controls the A displayed inside the coin
+   ========================================================= */
+
 .coin-letter {
+
+    /* Makes the A 24px in size */
     font-size: 24px;
+
+    /* Makes the A bold */
     font-weight: bold;
+
+    /* Makes the A a darker gold colour */
     color: #8a6500;
 }
 
+
+/* =========================================================
+   COIN BALANCE
+   Controls the number displayed beside the coin
+   ========================================================= */
+
 .coin-balance {
+
+    /* Makes the balance number 18px */
     font-size: 18px;
+
+    /* Makes the balance number bold */
     font-weight: bold;
+
+    /* Makes the number dark grey */
     color: #333;
 
+
+    /* Gives the balance a white background */
     background: white;
+
+    /* Adds 5px vertical and 10px horizontal space inside */
     padding: 5px 10px;
+
+    /* Rounds the corners of the balance box */
     border-radius: 10px;
 
+
+    /* Adds a subtle shadow around the balance box */
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Mobile */
+
+/* =========================================================
+   MOBILE RESPONSIVE DESIGN
+   These rules apply when the screen is 768px wide or less
+   ========================================================= */
 
 @media (max-width: 768px) {
 
+
+    /* -----------------------------------------------------
+       MOBILE BODY
+       ----------------------------------------------------- */
+
     body {
+
+        /* Reduces the page padding from 30px to 20px */
         padding: 20px;
+
+        /* Adds extra bottom space for the mobile navbar */
         padding-bottom: 130px;
     }
 
+
+    /* -----------------------------------------------------
+       MOBILE ALERTS HEADER
+       ----------------------------------------------------- */
+
     .alerts-header {
+
+        /* Changes the Flexbox direction from horizontal
+           to vertical */
         flex-direction: column;
+
+        /* Centers the text horizontally */
         text-align: center;
     }
 
+
+    /* -----------------------------------------------------
+       MOBILE NAVBAR
+       ----------------------------------------------------- */
+
     .navbar {
+
+        /* Allows the navbar to scroll horizontally if
+           the buttons don't all fit on the screen */
         overflow-x: auto;
+
+        /* Starts the buttons from the left instead of
+           centering them */
         justify-content: flex-start;
     }
 
+
+    /* -----------------------------------------------------
+       MOBILE ASCENDRA COIN
+       ----------------------------------------------------- */
+
     .coin-display {
+
+        /* Moves the coin 15px from the right edge */
         right: 15px;
+
+        /* Moves the coin slightly closer to the navbar */
         bottom: 85px;
     }
 
