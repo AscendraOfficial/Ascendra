@@ -74,12 +74,19 @@ body {
 
 /* Alert cards */
 
+/* Controls the cards that contains the alerts */
 .alert-card {
+    /* Adds a white background */
     background: white;
+    /* Adds 20px of space between the card border and the content */
     padding: 22px;
+    /* Adds 18px of margin to the bottom of each card */
     margin-bottom: 18px;
+    /* Adds rounded corners */
     border-radius: 15px;
+    /* Adds shadow to the cards */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    /* Adds a blue border to the left o the card */
     border-left: 5px solid #777;
 }
 
