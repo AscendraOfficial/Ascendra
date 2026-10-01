@@ -1,325 +1,484 @@
-.ascendra-page[data-route="breathing"] * {
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+/* =========================================================
+   WHOLE PAGE
+   Controls the overall Breathing page
+   ========================================================= */
+
+* {
+    /* Makes width and height calculations easier */
+    box-sizing: border-box;
 }
 
-.ascendra-page[data-route="breathing"] {
-  --bg: #f6f3ff;
-  --card: white;
-  --text: #222;
-  --muted: #666;
+body {
+
+    /* Removes the browser's default margin */
+    margin: 0;
+
+    /* Uses Arial throughout the page */
+    font-family: Arial, sans-serif;
+
+    /* Sets the page background to a very light grey */
+    background: #f5f7fa;
+
+    /* Makes the main text dark grey */
+    color: #222;
+
+    /* Centers the text on the page */
+    text-align: center;
+
+    /* Adds space at the bottom so the navbar
+       doesn't cover page content */
+    padding-bottom: 120px;
 }
 
-.ascendra-page[data-route="breathing"] {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
+
+/* =========================================================
+   MAIN CONTENT
+   Controls the main Breathing Exercises area
+   ========================================================= */
+
+main {
+
+    /* Makes the content maximum 1000px wide,
+       while allowing it to shrink on smaller screens */
+    width: min(1000px, 92%);
+
+    /* Centers the main content horizontally */
+    margin: 40px auto;
 }
 
-.ascendra-page[data-route="breathing"] .page {
-  display: flex;
-  min-height: 100vh;
+
+/* =========================================================
+   MAIN TITLE
+   Controls "Breathing Exercises"
+   ========================================================= */
+
+h1 {
+
+    /* Makes the title 42px */
+    font-size: 42px;
+
+    /* Makes the title blue */
+    color: rgb(37, 99, 235);
+
+    /* Adds 5px of space below the title */
+    margin-bottom: 5px;
 }
 
-.ascendra-page[data-route="breathing"] .sidebar {
-  width: 250px;
-  background: white;
-  padding: 30px 22px;
-  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.07);
+
+/* =========================================================
+   SUBTITLE
+   Controls "Choose a breathing exercise"
+   ========================================================= */
+
+.subtitle {
+
+    /* Makes the subtitle grey */
+    color: gray;
+
+    /* Adds 30px of space below the subtitle */
+    margin-bottom: 30px;
 }
 
-.ascendra-page[data-route="breathing"] .sidebar h1 {
-  color: var(--accent);
-  margin-bottom: 5px;
+
+/* =========================================================
+   EXERCISE MENU
+   Controls the three breathing exercise buttons
+   ========================================================= */
+
+.menu {
+
+    /* Uses CSS Grid to arrange the buttons */
+    display: grid;
+
+    /* Creates 3 equal columns */
+    grid-template-columns: repeat(3, 1fr);
+
+    /* Adds 18px of space between buttons */
+    gap: 18px;
+
+    /* Adds 35px of space below the menu */
+    margin-bottom: 35px;
 }
 
-.ascendra-page[data-route="breathing"] .sidebar p {
-  color: var(--muted);
-  margin-bottom: 35px;
+
+/* =========================================================
+   EXERCISE MENU BUTTONS
+   Controls Box, Calm and 4-7-8 buttons
+   ========================================================= */
+
+.menu button {
+
+    /* Makes the button background white */
+    background: white;
+
+    /* Gives the button a transparent border */
+    border: 2px solid transparent;
+
+    /* Gives the buttons rounded corners */
+    border-radius: 20px;
+
+    /* Adds 25px of space inside the buttons */
+    padding: 25px;
+
+    /* Makes the main button text 20px */
+    font-size: 20px;
+
+    /* Makes the button text bold */
+    font-weight: bold;
+
+    /* Changes the cursor to a pointer */
+    cursor: pointer;
+
+    /* Adds a subtle shadow below each button */
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
 }
 
-.ascendra-page[data-route="breathing"] .sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+
+/* =========================================================
+   EXERCISE BUTTON HOVER
+   Changes the border when the mouse hovers over a button
+   ========================================================= */
+
+.menu button:hover {
+
+    /* Makes the border blue */
+    border-color: rgb(37, 99, 235);
 }
 
-.ascendra-page[data-route="breathing"] .sidebar a {
-  text-decoration: none;
-  color: #333;
-  padding: 13px 15px;
-  border-radius: 14px;
-  transition: 0.2s;
+
+/* =========================================================
+   EXERCISE BUTTON SUBTEXT
+   Controls the 4-4-4-4, 5-5 and 4-7-8 text
+   ========================================================= */
+
+.menu span {
+
+    /* Makes the subtext blue */
+    color: rgb(37, 99, 235);
+
+    /* Makes the subtext 15px */
+    font-size: 15px;
 }
 
-.ascendra-page[data-route="breathing"] .sidebar a:hover,
-.ascendra-page[data-route="breathing"] .sidebar a.active {
-  background: var(--accent);
-  color: white;
-  transform: translateX(4px);
+
+/* =========================================================
+   BREATHING BOX
+   Controls the main breathing exercise container
+   ========================================================= */
+
+.breathing-box {
+
+    /* Makes the box background white */
+    background: white;
+
+    /* Gives the box rounded corners */
+    border-radius: 25px;
+
+    /* Adds 35px of space inside */
+    padding: 35px;
+
+    /* Adds a subtle shadow */
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
 }
 
-.ascendra-page[data-route="breathing"] .content {
-  flex: 1;
-  padding: 40px;
-  max-width: 950px;
+
+/* =========================================================
+   BREATHING CIRCLE
+   Controls the large breathing animation circle
+   ========================================================= */
+
+#circle {
+
+    /* Makes the circle 220px wide */
+    width: 220px;
+
+    /* Makes the circle 220px tall */
+    height: 220px;
+
+    /* Centers the circle horizontally */
+    margin: 35px auto;
+
+    /* Makes the square into a circle */
+    border-radius: 50%;
+
+    /* Creates a blue radial gradient */
+    background: radial-gradient(
+        circle,
+        rgb(29, 101, 190),
+        rgb(30, 64, 175)
+    );
+
+    /* Makes the text inside the circle white */
+    color: white;
+
+
+    /* Turns the circle into a Flexbox container */
+    display: flex;
+
+    /* Places the phase text and countdown vertically */
+    flex-direction: column;
+
+    /* Centers the content horizontally */
+    align-items: center;
+
+    /* Centers the content vertically */
+    justify-content: center;
+
+
+    /* Starts the circle at its normal size */
+    transform: scale(1);
+
+    /* Makes size changes animate over 1 second */
+    transition: transform 1s linear;
+
+    /* Adds a blue glow around the circle */
+    box-shadow: 0 0 35px rgba(37, 99, 235, 0.5);
 }
 
-.ascendra-page[data-route="breathing"] header {
-  margin-bottom: 25px;
+
+/* =========================================================
+   BREATHING PHASE TEXT
+   Controls "Ready", "Breathe In", "Hold", etc.
+   ========================================================= */
+
+#phaseText {
+
+    /* Removes the default margin */
+    margin: 0;
+
+    /* Makes the phase text 22px */
+    font-size: 22px;
 }
 
-.ascendra-page[data-route="breathing"] header h2 {
-  font-size: 36px;
-  margin: 0;
+
+/* =========================================================
+   COUNTDOWN
+   Controls the countdown number inside the circle
+   ========================================================= */
+
+#countdown {
+
+    /* Adds 10px of space above the countdown */
+    margin: 10px 0 0;
+
+    /* Makes the countdown 48px */
+    font-size: 48px;
+
+    /* Makes the countdown bold */
+    font-weight: bold;
 }
 
-.ascendra-page[data-route="breathing"] header p {
-  color: var(--muted);
+
+/* =========================================================
+   START AND STOP BUTTONS
+   Controls both breathing control buttons
+   ========================================================= */
+
+#startBtn,
+#stopBtn {
+
+    /* Removes the default button border */
+    border: none;
+
+    /* Adds 12px vertical and 24px horizontal padding */
+    padding: 12px 24px;
+
+    /* Adds 8px of space around each button */
+    margin: 8px;
+
+    /* Creates pill-shaped buttons */
+    border-radius: 999px;
+
+    /* Makes the text 16px */
+    font-size: 16px;
+
+    /* Shows a pointer when hovering */
+    cursor: pointer;
 }
 
-.ascendra-page[data-route="breathing"] .card {
-  background: var(--card);
-  padding: 25px;
-  border-radius: 22px;
-  margin-bottom: 25px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+
+/* =========================================================
+   START BUTTON
+   Controls the Start button
+   ========================================================= */
+
+#startBtn {
+
+    /* Makes the Start button blue */
+    background: rgb(37, 99, 235);
+
+    /* Makes the text white */
+    color: white;
 }
 
-.ascendra-page[data-route="breathing"] .card h3 {
-  margin-top: 0;
-  color: var(--accent);
+
+/* =========================================================
+   STOP BUTTON
+   Controls the Stop button
+   ========================================================= */
+
+#stopBtn {
+
+    /* Makes the Stop button light grey */
+    background: #e5e7eb;
 }
 
-.ascendra-page[data-route="breathing"] label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
+
+/* =========================================================
+   BOTTOM NAVIGATION
+   Controls the navigation bar
+   ========================================================= */
+
+.navbar {
+
+    /* Keeps the navbar fixed on the screen */
+    position: fixed;
+
+    /* Places it 20px above the bottom */
+    bottom: 20px;
+
+    /* Places the left edge at the centre of the screen */
+    left: 50%;
+
+    /* Moves the navbar left by half its width
+       to properly centre it */
+    transform: translateX(-50%);
+
+
+    /* Uses Flexbox for the navigation buttons */
+    display: flex;
+
+    /* Makes the navbar 600px wide */
+    width: 600px;
+
+    /* Makes the navbar pill-shaped */
+    border-radius: 999px;
+
+    /* Prevents buttons from overflowing outside
+       the rounded navbar */
+    overflow: hidden;
+
+    /* Makes the navbar light grey */
+    background-color: rgb(240, 240, 240);
+
+    /* Adds a subtle shadow */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-.ascendra-page[data-route="breathing"] select {
-  width: 100%;
-  padding: 13px;
-  border-radius: 13px;
-  border: 2px solid #ddd;
-  font-size: 15px;
-  margin-bottom: 15px;
+
+/* =========================================================
+   NAVIGATION BUTTONS
+   Controls each button in the navbar
+   ========================================================= */
+
+.navbar button {
+
+    /* Makes each button take an equal amount of space */
+    flex: 1;
+
+    /* Removes the default border */
+    border: none;
+
+    /* Makes the button background transparent */
+    background: transparent;
+
+    /* Adds vertical padding */
+    padding: 15px 0;
+
+    /* Makes the text 16px */
+    font-size: 16px;
+
+    /* Changes the cursor to a pointer */
+    cursor: pointer;
+
+    /* Smoothly changes the background colour */
+    transition: background-color 0.2s;
 }
 
-.ascendra-page[data-route="breathing"] select:focus {
-  outline: none;
-  border-color: var(--accent);
+
+/* =========================================================
+   NAVIGATION BUTTON HOVER
+   ========================================================= */
+
+.navbar button:hover {
+
+    /* Makes the button light grey when hovered */
+    background-color: rgb(215, 215, 215);
 }
 
-.ascendra-page[data-route="breathing"] .toggle-row,
-.ascendra-page[data-route="breathing"] .danger-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  border-top: 1px solid #eee;
-  padding: 18px 0;
+
+/* =========================================================
+   CURRENT NAVIGATION BUTTON
+   Highlights the Breathing button
+   ========================================================= */
+
+.navbar .current {
+
+    /* Makes the current button blue */
+    background-color: rgb(37, 99, 235);
+
+    /* Makes the text white */
+    color: white;
+
+    /* Gives the current button rounded corners */
+    border-radius: 25px;
 }
 
-.ascendra-page[data-route="breathing"] .toggle-row h4,
-.ascendra-page[data-route="breathing"] .danger-item h4 {
-  margin: 0 0 5px;
-}
 
-.ascendra-page[data-route="breathing"] .toggle-row p,
-.ascendra-page[data-route="breathing"] .danger-item p {
-  margin: 0;
-  color: var(--muted);
-}
+/* =========================================================
+   ASCENDRA COIN
+   These classes match your HTML coin section.
+   Your separate coin(KidsMode).css may also control these.
+   ========================================================= */
 
-.ascendra-page[data-route="breathing"] input[type="checkbox"] {
-  width: 48px;
-  height: 25px;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
+/*
+.coin-display
+.ascendra-coin
+.coin-letter
+.coin-balance
 
-.ascendra-page[data-route="breathing"] .danger {
-  border: 2px solid #ef4444;
-  background: #fff7f7;
-}
+These are intentionally NOT styled here because you already
+load coin(KidsMode).css separately in your HTML.
+*/
 
-.ascendra-page[data-route="breathing"] .danger h3 {
-  color: #dc2626;
-}
 
-.ascendra-page[data-route="breathing"] .danger button {
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 11px 18px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.ascendra-page[data-route="breathing"] .danger button:hover {
-  background: #b91c1c;
-  transform: scale(1.04);
-}
+/* =========================================================
+   MOBILE RESPONSIVE DESIGN
+   Applies when the screen is 750px wide or smaller
+   ========================================================= */
 
 @media (max-width: 750px) {
-  .ascendra-page[data-route="breathing"] .page {
-    flex-direction: column;
-  }
 
-  .ascendra-page[data-route="breathing"] .content {
-    padding: 25px;
-  }
+    /* Makes the exercise menu one column on smaller screens */
+    .menu {
+        grid-template-columns: 1fr;
+    }
 
-  .ascendra-page[data-route="breathing"] .toggle-row,
-  .ascendra-page[data-route="breathing"] .danger-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-.ascendra-page[data-route="breathing"] * {
-  box-sizing: border-box;
-}
+    /* Reduces the main content spacing */
+    main {
+        width: 92%;
+        margin: 25px auto;
+    }
 
-.ascendra-page[data-route="breathing"] {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fa;
-  color: #222;
-  text-align: center;
-  padding-bottom: 120px;
-}
+    /* Makes the title slightly smaller on mobile */
+    h1 {
+        font-size: 34px;
+    }
 
-.ascendra-page[data-route="breathing"] main {
-  width: min(1000px, 92%);
-  margin: 40px auto;
-}
+    /* Makes the navbar fit smaller screens */
+    .navbar {
+        width: 95%;
+    }
 
-.ascendra-page[data-route="breathing"] h1 {
-  font-size: 42px;
-  color: rgb(37, 99, 235);
-  margin-bottom: 5px;
-}
+    /* Allows the navigation buttons to become smaller */
+    .navbar button {
+        font-size: 13px;
+        padding: 12px 4px;
+    }
 
-.ascendra-page[data-route="breathing"] .subtitle {
-  color: gray;
-  margin-bottom: 30px;
-}
-
-.ascendra-page[data-route="breathing"] .menu {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 35px;
-}
-
-.ascendra-page[data-route="breathing"] .menu button {
-  background: white;
-  border: 2px solid transparent;
-  border-radius: 20px;
-  padding: 25px;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
-}
-
-.ascendra-page[data-route="breathing"] .menu button:hover {
-  border-color: rgb(37, 99, 235);
-}
-
-.ascendra-page[data-route="breathing"] .menu span {
-  color: rgb(37, 99, 235);
-  font-size: 15px;
-}
-
-.ascendra-page[data-route="breathing"] .breathing-box {
-  background: white;
-  border-radius: 25px;
-  padding: 35px;
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
-}
-
-.ascendra-page[data-route="breathing"] #circle {
-  width: 220px;
-  height: 220px;
-  margin: 35px auto;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(29, 101, 190), rgb(30, 64, 175));
-  color: white;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  transform: scale(1);
-  transition: transform 1s linear;
-  box-shadow: 0 0 35px rgba(37, 99, 235, 0.5);
-}
-
-.ascendra-page[data-route="breathing"] #phaseText {
-  margin: 0;
-  font-size: 22px;
-}
-
-.ascendra-page[data-route="breathing"] #countdown {
-  margin: 10px 0 0;
-  font-size: 48px;
-  font-weight: bold;
-}
-
-.ascendra-page[data-route="breathing"] #startBtn,
-.ascendra-page[data-route="breathing"] #stopBtn {
-  border: none;
-  padding: 12px 24px;
-  margin: 8px;
-  border-radius: 999px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.ascendra-page[data-route="breathing"] #startBtn {
-  background: rgb(37, 99, 235);
-  color: white;
-}
-
-.ascendra-page[data-route="breathing"] #stopBtn {
-  background: #e5e7eb;
-}
-
-.ascendra-page[data-route="breathing"] .navbar {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  display: flex;
-  width: 600px;
-
-  border-radius: 999px;
-  overflow: hidden;
-  background-color: rgb(240, 240, 240);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.ascendra-page[data-route="breathing"] .navbar button {
-  flex: 1;
-  border: none;
-  background: transparent;
-  padding: 15px 0;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.ascendra-page[data-route="breathing"] .navbar button:hover {
-  background-color: rgb(215, 215, 215);
-}
-
-.ascendra-page[data-route="breathing"] .navbar .current {
-  background-color: rgb(37, 99, 235);
-  color: white;
-  border-radius: 25px;
+    /* Makes the breathing circle slightly smaller */
+    #circle {
+        width: 190px;
+        height: 190px;
+    }
 }
