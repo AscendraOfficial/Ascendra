@@ -6,14 +6,19 @@ body {
     padding: 30px;
     /* Adds 120px of padding to specifically the bottom */
     padding-bottom: 120px;
-    /*  */
+    /* Turns the pages font in to Arial (backup included) */
     font-family: Arial, sans-serif;
+    /* Makes the background a very light lavender */
     background: #f6f3ff;
+    /* Makes everything a very dark grey */
     color: #222;
 }
 
+/* Controls everything in the class alerts-page */
 .alerts-page {
+    /* Makes the maximum width 900px */
     max-width: 900px;
+    /* Centers the element */
     margin: auto;
 }
 
