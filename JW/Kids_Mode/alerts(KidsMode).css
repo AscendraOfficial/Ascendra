@@ -22,10 +22,15 @@ body {
     margin: auto;
 }
 
+/* Controls the class alerts-header */
 .alerts-header {
+    /* Elements will be placed side by side */
     display: flex;
+    /* Puts element in the vertical middle of the page */
     align-items: center;
+    /* Adds 20px of space betweeen each element */
     gap: 20px;
+    /* Adds 30px of margin to the bottom of the element */
     margin-bottom: 30px;
 }
 
