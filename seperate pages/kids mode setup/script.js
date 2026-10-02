@@ -1,5 +1,4 @@
 let currentStep = 1;
-
 let selectedShirt = null;
 
 const steps = document.querySelectorAll(".setup-step");
@@ -55,11 +54,21 @@ shirtOptions.forEach((shirt) => {
   });
 });
 
-document.getElementById("finishButton").addEventListener("click", () => {
+document.querySelector(".next-button-final").addEventListener("click", () => {
   const name = document.getElementById("nameInput").value.trim();
+  const nameDisplay = document.getElementById("name");
+
+  nameDisplay.textContent = name;
+
+  currentStep = 3;
+  showStep(currentStep);
+});
+
+document.getElementById("finishButton").addEventListener("click", () => {
+  const nameInput = document.getElementById("nameInput").value.trim();
 
   const kidsModeProfile = {
-    name: name,
+    name: nameInput,
     shirt: selectedShirt,
   };
 
@@ -67,6 +76,5 @@ document.getElementById("finishButton").addEventListener("click", () => {
 
   console.log("Kids Mode setup complete!", kidsModeProfile);
 
-  // Change this to your actual Kids Mode page later.
   window.location.href = "index.html";
 });

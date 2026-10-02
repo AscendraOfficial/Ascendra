@@ -20,7 +20,12 @@
         <div class="setup-step active" data-step="1">
           <h2>What's your name?</h2>
 
-          <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off" />
+          <input
+            type="text"
+            id="nameInput"
+            placeholder="Enter your name"
+            autocomplete="off"
+          />
 
           <button class="next-button">Next</button>
         </div>
@@ -38,13 +43,11 @@
             <button class="shirt-option" data-shirt="blue">Blue</button>
           </div>
 
-          <button class="next-button">Next</button>
+          <button class="next-button-final">Next</button>
         </div>
 
         <div class="setup-step" data-step="3">
-          <h2>You're ready!</h2>
-
-          <p id="readyMessage">Your Kids Mode profile is ready.</p>
+          <p id="readyMessage">Welcome, <span id="name"></span>!</p>
 
           <button id="finishButton">Start Kids Mode</button>
         </div>
