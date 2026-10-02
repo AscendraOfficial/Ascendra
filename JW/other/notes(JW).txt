@@ -14,7 +14,7 @@ if it is not drawn with js, as long as I can position it someway <-- ill import 
 !•find a way to not prevent people from cheating there to-dos 
 
 What Declan is working on:
-• Syncing across devices ✅
+• Syncing across devices ✅ <— meh I’m not fully done, still a ton of bugs
 • Making his own version of kids mode
 • Drawing merchandise for kids mode
 
