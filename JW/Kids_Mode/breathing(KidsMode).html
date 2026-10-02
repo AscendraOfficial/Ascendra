@@ -1,107 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
+    <!-- Sets the character encoding -->
     <meta charset="UTF-8">
+
+    <!-- Makes the page responsive on different screen sizes -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Title displayed in the browser tab -->
     <title>Ascendra - Breathing</title>
+
+    <!-- Loads the general Kids Mode settings -->
     <link rel="stylesheet" href="settings(KidsMode).css">
 
+    <!-- Loads the Ascendra coin styling -->
     <link rel="stylesheet" href="coin(KidsMode).css">
+
+    <!-- Loads the Breathing page styling -->
     <link rel="stylesheet" href="breathing(KidsMode).css">
+
+    <!-- Loads Font Awesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 </head>
 
+
 <body>
+
+
+    <!-- ========================================== -->
+    <!-- MAIN BREATHING PAGE                        -->
+    <!-- ========================================== -->
+
     <main>
+
+        <!-- Main page title -->
         <h1>Breathing Exercises</h1>
+
+        <!-- Description underneath the title -->
         <p class="subtitle">Choose a breathing exercise</p>
-        
-        <!-- Choose your breathing exercise. -->
+
+
+        <!-- ========================================== -->
+        <!-- BREATHING EXERCISE SELECTION               -->
+        <!-- ========================================== -->
+
+        <!-- Contains the available breathing exercises -->
         <section class="menu" id="exerciseMenu">
-            <!-- box breathing (4-4-4-4) -->
-            <button onclick="chooseExercise('box')">Box Breathing<br><span>4-4-4-4</span></button>
-            <!--  calm breathing(5-5) -->
-            <button onclick="chooseExercise('calm')">Calm Breathing<br><span>5-5</span></button>
+
+
+            <!-- Box breathing (4-4-4-4) -->
+            <button onclick="chooseExercise('box')">
+                Box Breathing<br>
+                <span>4-4-4-4</span>
+            </button>
+
+
+            <!-- Calm breathing (5-5) -->
+            <button onclick="chooseExercise('calm')">
+                Calm Breathing<br>
+                <span>5-5</span>
+            </button>
+
+
             <!-- 4-7-8 breathing (4-7-8) -->
-            <button onclick="chooseExercise('relax')">4-7-8 Breathing<br><span>4-7-8</span></button>
+            <button onclick="chooseExercise('relax')">
+                4-7-8 Breathing<br>
+                <span>4-7-8</span>
+            </button>
+
+
         </section>
 
-        <!-- Neutral setting (changes according to user decision) -->
+
+        <!-- ========================================== -->
+        <!-- ACTIVE BREATHING EXERCISE                  -->
+        <!-- ========================================== -->
+
+        <!-- Displays the currently selected breathing exercise -->
         <section class="breathing-box">
+
+
+            <!-- Name of the current exercise -->
             <h2 id="exerciseTitle">Box Breathing</h2>
-            <p id="instructions">Breathe in, hold, exhale, and hold again.</p>
-            <!-- countdown (changes accordingly) -->
+
+
+            <!-- Instructions for the current exercise -->
+            <p id="instructions">
+                Breathe in, hold, exhale, and hold again.
+            </p>
+
+
+            <!-- ========================================== -->
+            <!-- BREATHING COUNTDOWN CIRCLE                 -->
+            <!-- ========================================== -->
+
+            <!-- Visual circle used during the breathing exercise -->
             <div id="circle">
+
+
+                <!-- Displays the current breathing phase -->
                 <h3 id="phaseText">Ready</h3>
+
+
+                <!-- Displays the countdown number -->
                 <p id="countdown">0</p>
+
+
             </div>
 
-            <button id="startBtn" onclick="startBreathing()">Start</button>
-            <button id="stopBtn" onclick="stopBreathing()">Stop</button>
+
+            <!-- Starts the breathing exercise -->
+            <button id="startBtn" onclick="startBreathing()">
+                Start
+            </button>
+
+
+            <!-- Stops the breathing exercise -->
+            <button id="stopBtn" onclick="stopBreathing()">
+                Stop
+            </button>
+
+
         </section>
+
+
     </main>
 
-    <!-- navbar -->
+
+    <!-- ========================================== -->
+    <!-- NAVIGATION BAR                             -->
+    <!-- ========================================== -->
+
+    <!-- Navigation bar for moving between pages -->
     <nav class="navbar">
+
+
+        <!-- HOME BUTTON -->
         <button onclick="window.location.href='home.html'">
+
+            <!-- Home icon -->
             <i class="fa-solid fa-mug-saucer"></i>
+
+            <!-- Home label -->
             <span>Home</span>
+
         </button>
 
+
+        <!-- ALERTS BUTTON -->
         <button onclick="window.location.href='alerts(KidsMode).html'">
+
+            <!-- Bell icon -->
             <i class="fa-solid fa-bell"></i>
+
+            <!-- Alerts label -->
             <span>Alerts</span>
+
         </button>
 
+
+        <!-- TO-DOS BUTTON -->
         <button onclick="window.location.href='todos(KidsMode).html'">
+
+            <!-- Checklist icon -->
             <i class="fa-solid fa-list-check"></i>
+
+            <!-- To-Dos label -->
             <span>To-Dos</span>
+
         </button>
 
+
+        <!-- HABITS BUTTON -->
         <button onclick="window.location.href='habits(KidsMode).html'">
+
+            <!-- Thumbs-up icon -->
             <i class="fa-solid fa-thumbs-up"></i>
+
+            <!-- Habits label -->
             <span>Habits</span>
+
         </button>
 
+
+        <!-- BREATHING BUTTON -->
+        <!-- "current" marks Breathing as the page currently being viewed -->
         <button class="current">
+
+            <!-- Wind icon -->
             <i class="fa-solid fa-wind"></i>
+
+            <!-- Breathing label -->
             <span>Breathing</span>
+
         </button>
 
+
+        <!-- CALENDAR BUTTON -->
         <button onclick="window.location.href='calendar(KidsMode).html'">
+
+            <!-- Calendar icon -->
             <i class="fa-solid fa-calendar"></i>
+
+            <!-- Calendar label -->
             <span>Calendar</span>
+
         </button>
 
+
+        <!-- JOURNAL BUTTON -->
         <button onclick="window.location.href='journal(KidsMode).html'">
+
+            <!-- Book icon -->
             <i class="fa-solid fa-book-open"></i>
+
+            <!-- Journal label -->
             <span>Journal</span>
+
         </button>
 
+
+        <!-- MERCHANDISE BUTTON -->
         <button onclick="window.location.href='merchandise(KidsMode).html'">
+
+            <!-- Shirt icon -->
             <i class="fa-solid fa-shirt"></i>
+
+            <!-- Merchandise label -->
             <span>Merchandise</span>
+
         </button>
-        
+
+
+        <!-- MENU BUTTON -->
         <button onclick="window.location.href='menu(KidsMode).html'">
+
+            <!-- Menu icon -->
             <i class="fa-solid fa-bars-staggered"></i>
+
+            <!-- Menu label -->
             <span>Menu</span>
+
         </button>
+
 
     </nav>
 
-     <div class="coin-display">
 
+    <!-- ========================================== -->
+    <!-- ASCENDRA COIN                              -->
+    <!-- ========================================== -->
+
+    <!-- Container for the Ascendra coin -->
+    <div class="coin-display">
+
+
+        <!-- The actual Ascendra coin -->
         <div class="ascendra-coin">
+
+            <!-- Letter displayed on the coin -->
             <span class="coin-letter">A</span>
+
         </div>
 
+
+        <!-- Current coin balance -->
         <span class="coin-balance">0</span>
+
 
     </div>
 
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT FILES                           -->
+    <!-- ========================================== -->
+
+    <!-- Controls the Ascendra coin -->
     <script src="coin(KidsMode).js"></script>
+
+
+    <!-- Controls the breathing exercises -->
     <script src="breathing(KidsMode).js"></script>
+
+
+    <!-- Controls general Kids Mode settings -->
     <script src="global-settings(KidsMode).js"></script>
+
+
 </body>
+
 </html>
