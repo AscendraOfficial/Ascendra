@@ -1,218 +1,514 @@
+/* ==========================================================
+   GENERAL PAGE SETTINGS
+   ========================================================== */
+
+/* Controls the overall appearance and layout of the page */
 body {
+    /* Light grey background */
     background-color: rgb(240, 242, 246);
+
+    /* Removes the browser's default margin */
     margin: 0;
+
+    /* Makes the page at least as tall as the screen */
     min-height: 100vh;
+
+    /* Enables Flexbox layout */
     display: flex;
+
+    /* Uses a simple sans-serif font */
     font-family: sans-serif;
 }
 
-/* ===========================
-   Sidebar
-=========================== */
 
+/* ==========================================================
+   SIDEBAR
+   ========================================================== */
+
+/* Controls the left-hand sidebar */
 .sidebar {
+    /* Sets the sidebar width */
     width: 250px;
+
+    /* Adds space inside the sidebar */
     padding: 30px 20px;
+
+    /* Gives the sidebar a white background */
     background-color: white;
+
+    /* Adds a subtle shadow along the right side */
     box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
 }
 
+
+/* Controls the sidebar heading */
 .sidebar h2 {
+    /* Removes the default top margin */
     margin-top: 0;
+
+    /* Makes the heading purple */
     color: rgb(127, 0, 255);
 }
 
+
+/* Controls the task list inside the sidebar */
 .task-list {
+    /* Aligns the task text to the left */
     text-align: left;
+
+    /* Adds space to the left of the list */
     padding-left: 20px;
+
+    /* Makes the task text dark grey */
     color: rgb(85, 85, 85);
 }
 
-/* ===========================
-   Calendar
-=========================== */
 
+/* ==========================================================
+   CALENDAR
+   ========================================================== */
+
+/* Main container holding the calendar */
 .calendar-container {
+    /* Allows the calendar to take up the remaining space */
     flex-grow: 1;
+
+    /* Adds space around the calendar */
     padding: 25px 55px;
 }
 
+
+/* Controls the title area at the top of the calendar */
 .top-title {
+    /* Places the title and button in a row */
     display: flex;
+
+    /* Pushes the title and button apart */
     justify-content: space-between;
+
+    /* Vertically centers the items */
     align-items: center;
 }
 
+
+/* Controls the main calendar title */
 .top-title h1 {
+    /* Makes the title a dark purple colour */
     color: rgb(31, 22, 46);
 }
 
+
+/* Controls the Add Event button */
 .addEvent {
+    /* Purple background */
     background-color: rgb(143, 63, 216);
+
+    /* White button text */
     color: white;
+
+    /* Removes the default button border */
     border: none;
+
+    /* Creates a very rounded button */
     border-radius: 999px;
+
+    /* Adds space inside the button */
     padding: 13px 25px;
+
+    /* Sets the text size */
     font-size: 16px;
+
+    /* Makes the text bold */
     font-weight: bold;
+
+    /* Shows a pointer when hovering */
     cursor: pointer;
 }
 
+
+/* Controls the main white calendar card */
 .calendar-card {
+    /* White background */
     background-color: white;
+
+    /* Creates rounded corners */
     border-radius: 32px;
+
+    /* Adds space inside the card */
     padding: 30px 40px;
+
+    /* Adds a subtle shadow around the card */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
 }
 
+
+/* Controls the calendar's month/header area */
 .calendar-header {
+    /* Places the header elements in a row */
     display: flex;
+
+    /* Pushes the header elements apart */
     justify-content: space-between;
+
+    /* Vertically centers the elements */
     align-items: center;
+
+    /* Dark purple text */
     color: rgb(31, 22, 46);
+
+    /* Adds space below the header */
     margin-bottom: 25px;
 }
 
+
+/* Controls icons/buttons inside the calendar header */
 .calendar-header span {
+    /* Makes the icons larger */
     font-size: 35px;
+
+    /* Shows a pointer when hovering */
     cursor: pointer;
 }
 
+
+/* Controls the calendar header's heading */
 .calendar-header h2 {
+    /* Removes the default margin */
     margin: 0;
 }
 
+
+/* ==========================================================
+   CALENDAR TABLE
+   ========================================================== */
+
+/* Controls the entire calendar table */
 table {
+    /* Makes the table use the full available width */
     width: 100%;
+
+    /* Removes gaps between table cells */
     border-collapse: collapse;
+
+    /* Gives the table a white background */
     background-color: white;
 }
 
+
+/* Controls the weekday headings */
 th {
+    /* Adds space inside each heading cell */
     padding: 15px;
+
+    /* Purple-grey text */
     color: rgb(123, 92, 155);
+
+    /* Makes the weekday names bold */
     font-weight: bold;
 }
 
+
+/* Controls individual calendar date cells */
 td {
+    /* Adds space inside each date cell */
     padding: 18px 10px;
+
+    /* Centers the date */
     text-align: center;
+
+    /* Sets the date text size */
     font-size: 17px;
+
+    /* Makes the date text semi-bold */
     font-weight: 600;
+
+    /* Dark purple date text */
     color: rgb(31, 22, 46);
+
+    /* Shows a pointer when hovering over a date */
     cursor: pointer;
+
+    /* Removes cell borders */
     border: none;
+
+    /* Each day takes approximately 14% of the table width */
     width: 14%;
+
+    /* Gives each calendar cell a fixed height */
     height: 90px;
+
+    /* Aligns content toward the top of the cell */
     vertical-align: top;
 }
 
+
+/* Changes the appearance when hovering over a date */
 td:hover {
+    /* Light grey hover background */
     background-color: rgb(215, 215, 215);
+
+    /* Purple text when hovering */
     color: rgb(143, 63, 216);
+
+    /* Rounds the hovered area */
     border-radius: 50px;
 }
 
+
+/* ==========================================================
+   TODAY'S DATE
+   ========================================================== */
+
+/* Highlights today's date */
 .today {
+    /* Purple background */
     background-color: rgb(143, 63, 216);
+
+    /* White date text */
     color: white;
+
+    /* Creates a very rounded shape */
     border-radius: 999px;
+
+    /* Adds a purple shadow underneath */
     box-shadow: 0 5px 12px rgba(143, 63, 216, 0.4);
 }
 
+
+/* Controls empty calendar cells */
 .empty-day {
+    /* Makes the text invisible */
     color: transparent;
 }
 
-/* ===========================
-   Branding
-=========================== */
 
+/* ==========================================================
+   ASCENDRA BRANDING
+   ========================================================== */
+
+/* Controls the appearance of the Ascendra logo */
 .ascendraLogo {
+    /* Uses Brush Script MT or a cursive fallback font */
     font-family: "Brush Script MT", cursive;
 }
 
-/* ===========================
-   Bottom Navigation
-=========================== */
 
+/* ==========================================================
+   BOTTOM NAVIGATION
+   ========================================================== */
+
+/* Controls the navigation bar at the bottom of the screen */
 .navbar {
+    /* Keeps the navbar fixed on the screen */
     position: fixed;
+
+    /* Places it 20px above the bottom */
     bottom: 20px;
+
+    /* Starts positioning from the centre of the screen */
     left: 50%;
+
+    /* Moves the navbar backwards by half its own width */
     transform: translateX(-50%);
 
+    /* Places the navigation buttons in a row */
     display: flex;
+
+    /* Sets the navbar width */
     width: 600px;
 
+    /* Hides anything that extends outside the navbar */
     overflow: hidden;
+
+    /* Creates the large rounded navbar shape */
     border-radius: 999px;
+
+    /* Light grey navbar background */
     background-color: rgb(240, 240, 240);
+
+    /* Adds a subtle shadow */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+
+/* Controls each button inside the navbar */
 .navbar button {
+    /* Gives every button an equal share of the navbar */
     flex: 1;
+
+    /* Adds vertical spacing inside each button */
     padding: 15px 0;
 
+    /* Removes the default button border */
     border: none;
+
+    /* Keeps the navbar background visible */
     background: transparent;
 
+    /* Sets the button text size */
     font-size: 16px;
+
+    /* Shows a pointer when hovering */
     cursor: pointer;
+
+    /* Smoothly changes the background when hovered */
     transition: background-color 0.2s;
 }
 
+
+/* Changes the button background when the mouse hovers over it */
 .navbar button:hover {
+    /* Light grey hover effect */
     background-color: rgb(215, 215, 215);
 }
 
+
+/* ==========================================================
+   CURRENT NAVIGATION PAGE
+   ========================================================== */
+
+/* Highlights the page the user is currently viewing */
 .navbar .current {
+    /* Blue background */
     background-color: rgb(37, 99, 235);
+
+    /* White text */
     color: white;
+
+    /* Rounded corners */
     border-radius: 25px;
 }
 
 
+/* ==========================================================
+   POPUP
+   ========================================================== */
+
+/* Controls the event popup window */
 .popup {
+    /* Hidden until JavaScript displays it */
     display: none;
+
+    /* Keeps the popup fixed relative to the screen */
     position: fixed;
+
+    /* Places the popup halfway down the screen */
     top: 50%;
+
+    /* Places the popup halfway across the screen */
     left: 50%;
+
+    /* Moves the popup back by half its own size */
     transform: translate(-50%, -50%);
-    
+
+    /* White popup background */
     background: white;
+
+    /* Adds space inside the popup */
     padding: 25px;
+
+    /* Rounds the popup corners */
     border-radius: 20px;
+
+    /* Creates a strong shadow around the popup */
     box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+
+    /* Places the popup above other page elements */
     z-index: 1000;
 }
 
+
+/* ==========================================================
+   POPUP INPUT
+   ========================================================== */
+
+/* Controls text/input fields inside the popup */
 .popup input {
+    /* Places each input on its own line */
     display: block;
+
+    /* Sets the input width */
     width: 250px;
+
+    /* Adds vertical spacing between inputs */
     margin: 12px 0;
+
+    /* Adds space inside the input */
     padding: 12px;
+
+    /* Rounds the input corners */
     border-radius: 10px;
+
+    /* Adds a light grey border */
     border: 1px solid #ccc;
 }
 
+
+/* ==========================================================
+   TODAY'S DATE - SECOND DEFINITION
+   ========================================================== */
+
+/*
+   This is another definition of .today.
+
+   Because this appears later in the CSS,
+   its border-radius replaces the earlier
+   border-radius: 999px.
+
+   The final border-radius used by the browser
+   is therefore 50px.
+*/
 .today {
+    /* Purple background */
     background-color: rgb(143, 63, 216);
+
+    /* White text */
     color: white;
+
+    /* Final border radius for today's date */
     border-radius: 50px;
 }
+
+
+/* ==========================================================
+   CALENDAR EVENTS
+   ========================================================== */
+
+/* Controls events displayed inside calendar dates */
 .calendar-event {
+    /* Adds a small gap above the event */
     margin-top: 5px;
+
+    /* Adds space inside the event box */
     padding: 4px 6px;
+
+    /* Purple event background */
     background-color: rgb(143, 63, 216);
+
+    /* White event text */
     color: white;
+
+    /* Rounds the event box corners */
     border-radius: 8px;
+
+    /* Small event text */
     font-size: 12px;
+
+    /* Controls the spacing between lines */
     line-height: 1.2;
+
+    /* Allows event text to wrap normally */
     white-space: normal;
+
+    /* Allows long words to break onto another line */
     overflow-wrap: break-word;
+
+    /* Also allows long words to break */
     word-break: break-word;
+
+    /* Prevents the event from exceeding its calendar cell */
     max-width: 100%;
+
+    /* Makes the event take its own line */
     display: block;
 }
