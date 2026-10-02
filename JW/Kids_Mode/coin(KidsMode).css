@@ -1,80 +1,160 @@
-/* =========================
+/* ==========================================================
    ASCENDRA COIN
-   ========================= */
+   Controls the appearance, position, and interaction
+   of the Ascendra Coin.
+   ========================================================== */
 
+
+/* ==========================================================
+   COIN CIRCLE
+   ========================================================== */
+
+/* Main circular Ascendra Coin */
 .ascendra-coin {
+    /* Keeps the coin fixed in the same position on the screen */
     position: fixed;
+
+    /* Distance from the bottom-right corner */
     bottom: 20px;
     right: 20px;
 
+    /* Size of the coin */
     width: 60px;
     height: 60px;
 
+    /* Makes the square element into a perfect circle */
     border-radius: 50%;
 
+    /* Main yellow colour of the coin */
     background: rgb(245, 226, 19);
+
+    /* Orange/gold border around the coin */
     border: 5px solid rgb(250, 177, 20);
 
+    /* Centres the "A" horizontally and vertically */
     display: flex;
     align-items: center;
     justify-content: center;
 
+    /* Includes the border inside the 60px width and height */
     box-sizing: border-box;
 
+    /* Adds depth and a subtle inner highlight */
     box-shadow:
         0 4px 8px rgba(0, 0, 0, 0.25),
         inset 0 2px 3px rgba(255, 255, 255, 0.5);
 
+    /* Keeps the coin above other page elements */
     z-index: 1000;
 
+    /* Shows a clickable cursor when hovering over the coin */
     cursor: pointer;
 
+    /* Smoothly animates the hover and press effects */
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
 
+
+/* ==========================================================
+   COIN LETTER
+   ========================================================== */
+
+/* The "A" displayed in the centre of the coin */
 .coin-letter {
+    /* Font used for the letter */
     font-family: Arial, sans-serif;
+
+    /* Size of the "A" */
     font-size: 32px;
+
+    /* Makes the letter very bold */
     font-weight: 900;
+
+    /* Tilts the "A" to give it a stylised appearance */
     font-style: italic;
 
+    /* Gold/orange colour of the letter */
     color: rgb(240, 182, 24);
 
+    /* Prevents the user from selecting the letter */
     user-select: none;
 }
 
+
+/* ==========================================================
+   COIN HOVER EFFECT
+   ========================================================== */
+
+/* Runs when the mouse is placed over the coin */
 .ascendra-coin:hover {
+    /* Makes the coin slightly larger */
     transform: scale(1.08);
 
+    /* Makes the shadow slightly stronger */
     box-shadow:
         0 6px 12px rgba(0, 0, 0, 0.3),
         inset 0 2px 4px rgba(255, 255, 255, 0.6);
 }
 
+
+/* ==========================================================
+   COIN PRESS EFFECT
+   ========================================================== */
+
+/* Runs while the user is pressing/clicking the coin */
 .ascendra-coin:active {
+    /* Makes the coin slightly smaller to simulate pressing it */
     transform: scale(0.95);
 }
 
+
+/* ==========================================================
+   COIN DISPLAY
+   ========================================================== */
+
+/* Container holding the coin and its balance */
 .coin-display {
+    /* Keeps the entire coin display fixed on the screen */
     position: fixed;
+
+    /* Positions the display in the bottom-right corner */
     bottom: 20px;
     right: 20px;
 
+    /* Places the coin and balance next to each other */
     display: flex;
+
+    /* Vertically centres the coin and balance */
     align-items: center;
+
+    /* Adds 8px of space between the coin and balance */
     gap: 8px;
 
+    /* Keeps the display above other page elements */
     z-index: 1000;
 }
 
+
+/* ==========================================================
+   COIN BALANCE
+   ========================================================== */
+
+/* Displays the user's current Ascendra Coin balance */
 .coin-balance {
+    /* Font used for the balance number */
     font-family: Arial, sans-serif;
+
+    /* Size of the balance number */
     font-size: 18px;
+
+    /* Makes the balance number bold */
     font-weight: 800;
 
+    /* Dark gold/brown colour for the balance */
     color: rgb(120, 80, 0);
 
+    /* Prevents the user from selecting the balance number */
     user-select: none;
 }
