@@ -10,14 +10,14 @@ What can you help with:                                                   ! = ne
 •commit all of my code so that we both have easy access to it
 !!!•draw some clothes, avatars and other things with javascript; make sure
 you store the code in a variable so that I can use it later. PS: I don't care
-if it is not drawn with js, as long as I can position it someway <-- ill import a png and make the directory a constant so you can call it anytime,
+if it is not drawn with js, as long as I can position it someway
 !•find a way to not prevent people from cheating there to-dos 
 
 **Alerts**
-Why did you add an MIT license—one it literally says a username, two it’s from 2012, 3 that means ppl can copy our code, 4 we already have a license that actually says our names on it
+Why did you add an MIT license—one it literally says a username, two it’s from 2012, 3 that means ppl can copy our code, 4 we already have a license that actually says our names on it <-- can you fix it? I'm guessing whatever method I used it is outdated and insecure
 
 What Declan is working on:
-• Syncing across devices ✅ <— meh I’m not fully done, still a ton of bugs
+• Syncing across devices
 • Making his own version of kids mode
 • Drawing merchandise for kids mode
 
