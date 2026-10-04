@@ -22,6 +22,7 @@ const PROFILE_KEYS = Object.freeze({
 
 const MODE_KEY = "ascendra:profile-sync-mode";
 const TOKEN_PREFIX = "ascendra:profile-sync-token:";
+const SESSION_TOKEN_PREFIX = "ascendra:profile-sync-session-token:";
 const VERSION_PREFIX = "ascendra:profile-sync-version:";
 const LAST_SYNC_PREFIX = "ascendra:profile-sync-last:";
 const USER_DATA_PREFIX = "ascendra:data:";
@@ -134,8 +135,26 @@ export function setSyncMode(mode) {
 }
 
 export function getSyncToken(accountId) {
+  const persistentKey = accountSessionKey(TOKEN_PREFIX, accountId);
+  const sessionKey = accountSessionKey(SESSION_TOKEN_PREFIX, accountId);
+
   try {
-    return sessionStorage.getItem(accountSessionKey(TOKEN_PREFIX, accountId)) || "";
+    const sessionToken = sessionStorage.getItem(sessionKey);
+    if (sessionToken) return sessionToken;
+  } catch {
+    // Fall back to persistent storage below.
+  }
+
+  try {
+    const persistentToken = localStorage.getItem(persistentKey) || "";
+    if (persistentToken) {
+      try {
+        sessionStorage.setItem(sessionKey, persistentToken);
+      } catch {
+        // Session storage can be unavailable without breaking persistent sync.
+      }
+    }
+    return persistentToken;
   } catch {
     return "";
   }
@@ -144,14 +163,32 @@ export function getSyncToken(accountId) {
 export function setSyncToken(accountId, token) {
   const cleanToken = String(token || "").trim();
   if (!cleanToken) throw new Error("A profile-sync token is required.");
-  sessionStorage.setItem(accountSessionKey(TOKEN_PREFIX, accountId), cleanToken);
+
+  const persistentKey = accountSessionKey(TOKEN_PREFIX, accountId);
+  const sessionKey = accountSessionKey(SESSION_TOKEN_PREFIX, accountId);
+
+  localStorage.setItem(persistentKey, cleanToken);
+  try {
+    sessionStorage.setItem(sessionKey, cleanToken);
+  } catch {
+    // Persistent storage is enough to keep profile sync working.
+  }
 }
 
 export function clearSyncSession(accountId) {
+  const persistentKey = accountSessionKey(TOKEN_PREFIX, accountId);
+  const sessionKey = accountSessionKey(SESSION_TOKEN_PREFIX, accountId);
+
   try {
-    sessionStorage.removeItem(accountSessionKey(TOKEN_PREFIX, accountId));
+    sessionStorage.removeItem(sessionKey);
   } catch {
-    // The browser may block session storage. There is nothing else to clear.
+    // Ignore unavailable session storage.
+  }
+
+  try {
+    localStorage.removeItem(persistentKey);
+  } catch {
+    // Ignore unavailable local storage during logout.
   }
 }
 
@@ -506,7 +543,11 @@ function getActiveSyncAccountId() {
 
 function initializeSyncStatus() {
   const accountId = getActiveSyncAccountId();
-  setManualSyncStatus(Boolean(accountId && getLastSyncedAt(accountId)));
+  const hasActiveCloudSession = Boolean(accountId && getSyncToken(accountId));
+
+  // A previous sync timestamp only proves that sync worked in the past.
+  // Never show "Synced" unless this device still has an authenticated cloud session.
+  setManualSyncStatus(hasActiveCloudSession && Boolean(getLastSyncedAt(accountId)));
 }
 
 if (document.readyState === "loading") {
