@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Kids Mode Setup | Ascendra</title>
+    <title>Kids Mode Setup</title>
 
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -12,26 +12,33 @@
   <body>
     <main class="setup-container">
       <header class="setup-header">
-        <h1>Welcome to Kids Mode!</h1>
-        <p>Let's get everything ready for you.</p>
+        <h1>Kids Mode Setup</h1>
+        <p>Let's set up your Ascendra character!</p>
       </header>
 
       <section class="setup-card">
-        <div class="setup-step active" data-step="1">
-          <h2>What's your name?</h2>
+        <!-- STEP 1 -->
 
-          <input
-            type="text"
-            id="nameInput"
-            placeholder="Enter your name"
-            autocomplete="off"
-          />
+        <div class="setup-step active" id="step1">
+          <h2>What's your character's name?</h2>
 
-          <button class="next-button">Next</button>
+          <input type="text" id="characterName" placeholder="Enter a name" />
+
+          <button class="next-button" id="step1Next">Next</button>
         </div>
 
-        <div class="setup-step" data-step="2">
-          <h2>Choose your shirt</h2>
+        <!-- STEP 2 -->
+
+        <div class="setup-step" id="step2">
+          <h2>Choose a shirt</h2>
+
+          <div class="character-preview">
+            <img id="leftSleeve" alt="Left sleeve" />
+
+            <img id="shirtImage" alt="Shirt" />
+
+            <img id="rightSleeve" alt="Right sleeve" />
+          </div>
 
           <div class="shirt-options">
             <button class="shirt-option" data-shirt="orange">Orange</button>
@@ -43,23 +50,17 @@
             <button class="shirt-option" data-shirt="blue">Blue</button>
           </div>
 
-          <button class="next-button-final">Next</button>
+          <button id="finishButton">Finish</button>
         </div>
 
-        <div class="setup-step" data-step="3">
-          <p id="readyMessage">Welcome, <span id="name"></span>!</p>
+        <!-- PROGRESS -->
 
-          <img id="shirtImage" src="" />
+        <div class="progress">
+          <div class="progress-dot active" id="dot1"></div>
 
-          <button id="finishButton">Start Kids Mode</button>
+          <div class="progress-dot" id="dot2"></div>
         </div>
       </section>
-
-      <div class="progress">
-        <div class="progress-dot active"></div>
-        <div class="progress-dot"></div>
-        <div class="progress-dot"></div>
-      </div>
     </main>
 
     <script src="script.js"></script>

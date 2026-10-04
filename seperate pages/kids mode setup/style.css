@@ -18,6 +18,7 @@ body {
 .setup-container {
   width: 90%;
   max-width: 600px;
+
   text-align: center;
 }
 
@@ -27,11 +28,13 @@ body {
 
 .setup-header p {
   margin-top: 0;
+
   color: #666;
 }
 
 .setup-card {
   margin-top: 30px;
+
   padding: 40px;
 
   background: white;
@@ -76,6 +79,7 @@ button {
 .next-button,
 #finishButton {
   background: #7557ff;
+
   color: white;
 }
 
@@ -99,6 +103,7 @@ button {
 
 .progress {
   display: flex;
+
   justify-content: center;
 
   gap: 10px;
@@ -119,6 +124,49 @@ button {
   background: #7557ff;
 }
 
+/* CHARACTER */
+
+.character-preview {
+  position: relative;
+
+  width: 250px;
+  height: 250px;
+
+  margin: 20px auto;
+}
+
+/* MAIN SHIRT */
+
 #shirtImage {
-  max-width: 200px;
+  position: absolute;
+
+  width: 180px;
+  height: auto;
+
+  top: 60px;
+  left: 35px;
+}
+
+/* LEFT SLEEVE */
+
+#leftSleeve {
+  position: absolute;
+
+  width: 70px;
+  height: auto;
+
+  top: 80px;
+  left: 0;
+}
+
+/* RIGHT SLEEVE */
+
+#rightSleeve {
+  position: absolute;
+
+  width: 70px;
+  height: auto;
+
+  top: 80px;
+  right: 0;
 }

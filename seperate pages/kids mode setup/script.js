@@ -1,187 +1,112 @@
-let currentStep = 1;
-let selectedShirt = null;
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
 
-const steps = document.querySelectorAll(".setup-step");
-const dots = document.querySelectorAll(".progress-dot");
-const nextButtons = document.querySelectorAll(".next-button");
-const shirtOptions = document.querySelectorAll(".shirt-option");
-const finalNextButton = document.querySelector(".next-button-final");
+const dot1 = document.getElementById("dot1");
+const dot2 = document.getElementById("dot2");
+
+const characterName = document.getElementById("characterName");
+
+const step1Next = document.getElementById("step1Next");
 const finishButton = document.getElementById("finishButton");
 
-// Orange shirt
-const orangeMainShirt =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Orange%20shirt/shirt.png";
+const shirtImage = document.getElementById("shirtImage");
+const leftSleeve = document.getElementById("leftSleeve");
+const rightSleeve = document.getElementById("rightSleeve");
 
-const orangeRightSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Orange%20shirt/right_sleeve.png";
+const shirtButtons = document.querySelectorAll(".shirt-option");
 
-const orangeLeftSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Orange%20shirt/left_sleeve.png";
+let selectedShirt = "orange";
 
-const orangeShirt = {
-  mainShirt: orangeMainShirt,
-
-  sleeves: {
-    rightSleeve: orangeRightSleeve,
-    leftSleeve: orangeLeftSleeve,
-  },
-};
-
-// Green shirt
-const greenMainShirt =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Green%20shirt/shirt.png";
-
-const greenRightSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Green%20shirt/right_sleeve.png";
-
-const greenLeftSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Green%20shirt/left_sleeve.png";
-
-const greenShirt = {
-  mainShirt: greenMainShirt,
-
-  sleeves: {
-    rightSleeve: greenRightSleeve,
-    leftSleeve: greenLeftSleeve,
-  },
-};
-
-// Purple shirt
-const purpleMainShirt =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Purple%20shirt/shirt.png";
-
-const purpleRightSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Purple%20shirt/right_sleeve.png";
-
-const purpleLeftSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Purple%20shirt/left_sleeve.png";
-
-const purpleShirt = {
-  mainShirt: purpleMainShirt,
-
-  sleeves: {
-    rightSleeve: purpleRightSleeve,
-    leftSleeve: purpleLeftSleeve,
-  },
-};
-
-// Blue shirt
-const blueMainShirt =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Blue%20shirt/shirt.png";
-
-const blueRightSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Blue%20shirt/right_sleeve.png";
-
-const blueLeftSleeve =
-  "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Blue%20shirt/left_sleeve.png";
-
-const blueShirt = {
-  mainShirt: blueMainShirt,
-
-  sleeves: {
-    rightSleeve: blueRightSleeve,
-    leftSleeve: blueLeftSleeve,
-  },
-};
-
-// All shirts
 const shirts = {
-  orange: orangeShirt,
-  green: greenShirt,
-  purple: purpleShirt,
-  blue: blueShirt,
+  orange: {
+    main: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Orange%20shirt/shirt.png",
+
+    left: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Orange%20shirt/left_sleeve.png",
+
+    right:
+      "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Orange%20shirt/right_sleeve.png",
+  },
+
+  green: {
+    main: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Green%20shirt/shirt.png",
+
+    left: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Green%20shirt/left_sleeve.png",
+
+    right:
+      "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Green%20shirt/right_sleeve.png",
+  },
+
+  purple: {
+    main: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Purple%20shirt/shirt.png",
+
+    left: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Purple%20shirt/left_sleeve.png",
+
+    right:
+      "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Purple%20shirt/right_sleeve.png",
+  },
+
+  blue: {
+    main: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Blue%20shirt/shirt.png",
+
+    left: "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Blue%20shirt/left_sleeve.png",
+
+    right:
+      "../../assets/images/Kids%20mode/Shirts/Plain%20colour%20shirts/Blue%20shirt/right_sleeve.png",
+  },
 };
 
-function showStep(stepNumber) {
-  steps.forEach((step) => {
-    step.classList.remove("active");
+function showShirt(shirtColour) {
+  selectedShirt = shirtColour;
+
+  const shirt = shirts[shirtColour];
+
+  shirtImage.src = shirt.main;
+
+  leftSleeve.src = shirt.left;
+
+  rightSleeve.src = shirt.right;
+
+  shirtButtons.forEach(function (button) {
+    button.classList.remove("selected");
+
+    if (button.dataset.shirt === shirtColour) {
+      button.classList.add("selected");
+    }
   });
-
-  dots.forEach((dot) => {
-    dot.classList.remove("active");
-  });
-
-  const step = document.querySelector(`[data-step="${stepNumber}"]`);
-
-  if (step) {
-    step.classList.add("active");
-  }
-
-  if (dots[stepNumber - 1]) {
-    dots[stepNumber - 1].classList.add("active");
-  }
 }
 
-nextButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const name = document.getElementById("nameInput").value.trim();
+step1Next.addEventListener("click", function () {
+  if (characterName.value.trim() === "") {
+    alert("Enter a character name first!");
 
-    if (name === "") {
-      alert("Enter your name first!");
-      return;
-    }
-
-    currentStep = 2;
-
-    showStep(currentStep);
-  });
-});
-
-shirtOptions.forEach((shirt) => {
-  shirt.addEventListener("click", () => {
-    shirtOptions.forEach((option) => {
-      option.classList.remove("selected");
-    });
-
-    shirt.classList.add("selected");
-
-    selectedShirt = shirt.dataset.shirt;
-
-    console.log("Selected shirt:", selectedShirt);
-  });
-});
-
-finalNextButton.addEventListener("click", () => {
-  if (selectedShirt === null) {
-    alert("Choose a shirt first!");
     return;
   }
 
-  const name = document.getElementById("nameInput").value.trim();
-  const nameDisplay = document.getElementById("name");
+  step1.classList.remove("active");
 
-  const currentShirtFilePath = shirts[selectedShirt];
+  step2.classList.add("active");
 
-  nameDisplay.textContent = name;
+  dot1.classList.remove("active");
 
-  console.log("Shirt:", selectedShirt);
-  console.log("Main shirt:", currentShirtFilePath.mainShirt);
-  console.log("Left sleeve:", currentShirtFilePath.sleeves.leftSleeve);
-  console.log("Right sleeve:", currentShirtFilePath.sleeves.rightSleeve);
-
-  const shirtImage = document.getElementById("shirtImage");
-
-  shirtImage.setAttribute("src", currentShirtFilePath.mainShirt);
-
-  currentStep = 3;
-
-  showStep(currentStep);
+  dot2.classList.add("active");
 });
 
-finishButton.addEventListener("click", () => {
-  const nameInput = document.getElementById("nameInput").value.trim();
+shirtButtons.forEach(function (button) {
+  button.addEventListener("click", function () {
+    showShirt(button.dataset.shirt);
+  });
+});
 
-  const currentShirtFilePath = shirts[selectedShirt];
+finishButton.addEventListener("click", function () {
+  const character = {
+    name: characterName.value.trim(),
 
-  const kidsModeProfile = {
-    name: nameInput,
     shirt: selectedShirt,
-    shirtFiles: currentShirtFilePath,
   };
 
-  localStorage.setItem("kidsModeProfile", JSON.stringify(kidsModeProfile));
+  localStorage.setItem("ascendraKidsModeCharacter", JSON.stringify(character));
 
-  console.log("Kids Mode setup complete!", kidsModeProfile);
-
-  window.location.href = "index.html";
+  alert("Kids Mode setup complete!");
 });
+
+showShirt("orange");
