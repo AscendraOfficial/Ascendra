@@ -18,6 +18,8 @@ const PROFILE_KEYS = Object.freeze({
   progression: "ascendraProgression",
   streak: "ascendra-streak",
   tasks_completed: "ascendra-tasks-completed",
+  todos: "todos",
+  habits: "habits",
 });
 
 const MODE_KEY = "ascendra:profile-sync-mode";
@@ -235,6 +237,8 @@ export function buildProfileSnapshot(identity) {
   const progression = parseStoredValue(readUserItem(PROFILE_KEYS.progression), {});
   const streak = parseStoredValue(readUserItem(PROFILE_KEYS.streak), 0);
   const tasksCompleted = Number(parseStoredValue(readUserItem(PROFILE_KEYS.tasks_completed), 0));
+  const todos = parseStoredValue(readUserItem(PROFILE_KEYS.todos), []);
+  const habits = parseStoredValue(readUserItem(PROFILE_KEYS.habits), []);
 
   return {
     name: String(identity?.name || ""),
@@ -252,6 +256,8 @@ export function buildProfileSnapshot(identity) {
         : {},
     streak: streak ?? 0,
     tasks_completed: Number.isFinite(tasksCompleted) ? tasksCompleted : 0,
+    todos: Array.isArray(todos) ? todos : [],
+    habits: Array.isArray(habits) ? habits : [],
   };
 }
 
@@ -289,6 +295,14 @@ export function applyProfileSnapshot(profile, identity) {
 
   if (Number.isFinite(Number(profile.tasks_completed))) {
     setUserValue(username, PROFILE_KEYS.tasks_completed, Number(profile.tasks_completed));
+  }
+
+  if (Array.isArray(profile.todos)) {
+    setUserValue(username, PROFILE_KEYS.todos, profile.todos);
+  }
+
+  if (Array.isArray(profile.habits)) {
+    setUserValue(username, PROFILE_KEYS.habits, profile.habits);
   }
 
   return {
