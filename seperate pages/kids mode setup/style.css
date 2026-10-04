@@ -118,3 +118,7 @@ button {
 .progress-dot.active {
   background: #7557ff;
 }
+
+#shirtImage {
+  max-width: 200px;
+}
