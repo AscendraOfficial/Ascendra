@@ -4,6 +4,13 @@ these are just a few of the enhancements the creators are working
 hard to turn to life.
 
 ## Kids Mode
+
 ### features
 - **Merchandise**: Create your own unique character with clothes you
 can buy at the Ascendra shop.
+
+- **Coins**: Motivate yourself more with Ascendra coins, a newly added
+coin system to spend on the new Ascendra shop.
+
+- **Parental Control**: Let your parents see what your doing to make sure
+you are on the right track.
