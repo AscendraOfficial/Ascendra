@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- ====================================================== -->
+    <!-- PAGE INFORMATION                                       -->
+    <!-- ====================================================== -->
+
+    <!-- Sets the character encoding -->
+    <meta charset="utf-8">
+
+    <!-- Title displayed in the browser tab -->
+    <title>Ascendra - My Calendar</title>
+
+
+    <!-- ====================================================== -->
+    <!-- EXTERNAL STYLESHEETS                                   -->
+    <!-- ====================================================== -->
+
+    <!-- Loads Font Awesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Loads Flatpickr's calendar/date-picker styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Loads the styling specifically for the Calendar page -->
+    <link rel="stylesheet" href="calendar(KidsMode).css">
+
+    <!-- Loads the Ascendra coin styling -->
+    <link rel="stylesheet" href="coin(KidsMode).css">
+
+    <!-- Loads general Kids Mode settings -->
+    <link rel="stylesheet" href="settings(KidsMode).css">
+
+
+    <!-- ====================================================== -->
+    <!-- WEBSITE ICON                                           -->
+    <!-- ====================================================== -->
+
+    <!-- Sets the icon displayed in the browser tab -->
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+
+</head>
+
+
+<body>
+
+
+    <!-- ====================================================== -->
+    <!-- CALENDAR PAGE                                          -->
+    <!-- ====================================================== -->
+
+    <!-- Main container holding the calendar -->
+    <div class="calendar-container">
+
+
+        <!-- ================================================== -->
+        <!-- PAGE TITLE AND ADD EVENT BUTTON                    -->
+        <!-- ================================================== -->
+
+        <!-- Contains the Calendar title and Add Event button -->
+        <div class="top-title">
+
+            <!-- Main page heading -->
+            <h1>Calendar</h1>
+
+            <!-- Button used to create a new calendar event -->
+            <button class="addEvent">+ Add Event</button>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- CALENDAR CARD                                      -->
+        <!-- ================================================== -->
+
+        <!-- White card containing the calendar -->
+        <div class="calendar-card">
+
+
+            <!-- ============================================== -->
+            <!-- CALENDAR HEADER                                -->
+            <!-- ============================================== -->
+
+            <!-- Contains previous month, current month, and next month controls -->
+            <div class="calendar-header">
+
+                <!-- Button to move to the previous month -->
+                <span id="prevMonth">‹</span>
+
+                <!-- JavaScript inserts the current month and year here -->
+                <h2></h2>
+
+                <!-- Button to move to the next month -->
+                <span id="nextMonth">›</span>
+
+            </div>
+
+
+            <!-- ============================================== -->
+            <!-- CALENDAR TABLE                                 -->
+            <!-- ============================================== -->
+
+            <!-- Table used to display the days of the month -->
+            <table>
+
+
+                <!-- Days of the week -->
+                <thead>
+
+                    <tr>
+
+                        <!-- Sunday -->
+                        <th>Sun</th>
+
+                        <!-- Monday -->
+                        <th>Mon</th>
+
+                        <!-- Tuesday -->
+                        <th>Tue</th>
+
+                        <!-- Wednesday -->
+                        <th>Wed</th>
+
+                        <!-- Thursday -->
+                        <th>Thu</th>
+
+                        <!-- Friday -->
+                        <th>Fri</th>
+
+                        <!-- Saturday -->
+                        <th>Sat</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <!-- ================================================== -->
+                <!-- CALENDAR DAYS                                      -->
+                <!-- ================================================== -->
+
+                <!--
+                    JavaScript creates the individual calendar days
+                    and places them inside this <tbody>.
+                -->
+                <tbody id="calendarBody"></tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- ADD EVENT POPUP                                    -->
+        <!-- ================================================== -->
+
+        <!--
+            This popup is hidden initially.
+            It appears when the user presses "+ Add Event".
+        -->
+        <div id="eventPopup" class="popup">
+
+
+            <!-- Popup title -->
+            <h2>New Event</h2>
+
+
+            <!-- ============================================== -->
+            <!-- EVENT NAME                                     -->
+            <!-- ============================================== -->
+
+            <!--
+                Allows the user to enter the name of the event.
+            -->
+            <input
+                id="eventTitle"
+                type="text"
+                placeholder="Event name"
+            >
+
+
+            <!-- ============================================== -->
+            <!-- EVENT DATE                                     -->
+            <!-- ============================================== -->
+
+            <!--
+                Allows the user to choose the date of the event.
+                Flatpickr is used to provide the date picker.
+            -->
+            <input
+                id="eventDate"
+                type="text"
+                placeholder="Choose date"
+            >
+
+
+            <!-- Saves the new event -->
+            <button id="saveEvent">Save</button>
+
+
+            <!-- Closes the event popup -->
+            <button id="closePopup">Close</button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================================== -->
+    <!-- BOTTOM NAVIGATION BAR                                 -->
+    <!-- ====================================================== -->
+
+    <!-- Navigation bar used to move between Ascendra pages -->
+    <div class="navbar">
+
+
+        <!-- ================================================== -->
+        <!-- HOME                                               -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Home page -->
+        <button onclick="window.location.href='home.html'">
+
+            <!-- Home icon -->
+            <i class="fa-solid fa-mug-saucer"></i>
+
+            <!-- Home label -->
+            <span>Home</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- ALERTS                                             -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Alerts page -->
+        <button onclick="window.location.href='alerts(KidsMode).html'">
+
+            <!-- Bell icon -->
+            <i class="fa-solid fa-bell"></i>
+
+            <!-- Alerts label -->
+            <span>Alerts</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- TO-DOS                                             -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the To-Dos page -->
+        <button onclick="window.location.href='todos(KidsMode).html'">
+
+            <!-- Checklist icon -->
+            <i class="fa-solid fa-list-check"></i>
+
+            <!-- To-Dos label -->
+            <span>To-Dos</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- HABITS                                             -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Habits page -->
+        <button onclick="window.location.href='habits(KidsMode).html'">
+
+            <!-- Thumbs-up icon -->
+            <i class="fa-solid fa-thumbs-up"></i>
+
+            <!-- Habits label -->
+            <span>Habits</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- BREATHING                                          -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Breathing page -->
+        <button onclick="window.location.href='breathing(KidsMode).html'">
+
+            <!-- Wind icon -->
+            <i class="fa-solid fa-wind"></i>
+
+            <!-- Breathing label -->
+            <span>Breathing</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- CURRENT PAGE: CALENDAR                             -->
+        <!-- ================================================== -->
+
+        <!--
+            The "current" class tells the CSS that
+            Calendar is the page currently being viewed.
+        -->
+        <button class="current">
+
+            <!-- Calendar icon -->
+            <i class="fa-solid fa-calendar"></i>
+
+            <!-- Calendar label -->
+            <span>Calendar</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- JOURNAL                                            -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Journal page -->
+        <button onclick="window.location.href='journal(KidsMode).html'">
+
+            <!-- Book icon -->
+            <i class="fa-solid fa-book-open"></i>
+
+            <!-- Journal label -->
+            <span>Journal</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- MERCHANDISE                                        -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Merchandise page -->
+        <button onclick="window.location.href='merchandise(KidsMode).html'">
+
+            <!-- Shirt icon -->
+            <i class="fa-solid fa-shirt"></i>
+
+            <!-- Merchandise label -->
+            <span>Merchandise</span>
+
+        </button>
+
+
+        <!-- ================================================== -->
+        <!-- MENU                                               -->
+        <!-- ================================================== -->
+
+        <!-- Navigates to the Menu page -->
+        <button onclick="window.location.href='menu(KidsMode).html'">
+
+            <!-- Menu icon -->
+            <i class="fa-solid fa-bars-staggered"></i>
+
+            <!-- Menu label -->
+            <span>Menu</span>
+
+        </button>
+
+
+    </div>
+
+
+    <!-- ====================================================== -->
+    <!-- ASCENDRA COIN                                         -->
+    <!-- ====================================================== -->
+
+    <!-- Container holding the Ascendra coin and balance -->
+    <div class="coin-display">
+
+
+        <!-- The visual Ascendra coin -->
+        <div class="ascendra-coin">
+
+            <!-- Letter displayed on the coin -->
+            <span class="coin-letter">A</span>
+
+        </div>
+
+
+        <!-- Displays the current coin balance -->
+        <span class="coin-balance">0</span>
+
+
+    </div>
+
+
+    <!-- ====================================================== -->
+    <!-- JAVASCRIPT FILES                                      -->
+    <!-- ====================================================== -->
+
+    <!-- Controls the Ascendra coin -->
+    <script src="coin(KidsMode).js"></script>
+
+
+    <!--
+        Loads the Flatpickr JavaScript library.
+        Flatpickr provides the date picker used when
+        choosing an event date.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Controls the Calendar functionality -->
+    <script src="calendar(KidsMode).js"></script>
+
+
+    <!-- Controls general Kids Mode settings -->
+    <script src="global-settings(KidsMode).js"></script>
+
+
+</body>
+
+</html>
