@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ascendra - Home</title>
+    <link rel="stylesheet" href="settings(KidsMode).css">
+    <link rel="stylesheet" href="coin(KidsMode).css">
+    
+    <link rel="stylesheet" href="home(KidsMode).css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+        <main class="home">
+    <section class="hero">
+        <div id="shootingStars"></div>
+        <!-- Good (morning / afternoon) (name of user) -->
+        <h1 id="greeting"></h1>
+        <!-- celebrity quote -->
+        <p id="dateText"></p>
+    </section>
+    
+    <section class="widget-grid">
+        <div class="widget">
+            <h2>Today's Progress</h2>
+            <!-- Progress bar of the days todos and habits. -->
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
+            <!-- neutral percentage; will change accordingly -->
+            <p id="progressText">0% complete</p>
+        </div>
+    
+        <div class="widget">
+            <h2>Today's To-Dos</h2>
+            <!-- todos to the day -->
+            <ul id="todoList"></ul>
+        </div>
+    
+        <div class="widget">
+            <h2>Today's Calendar</h2>
+            <!-- calendar events of the day -->
+            <ul id="calendarList"></ul>
+        </div>
+    
+        <div class="widget">
+            <h2>Habits</h2>
+            <!-- everyday habits -->
+            <ul id="habitList"></ul>
+        </div>
+    </section>
+        </main>
+        <!-- navigation bar -->
+        <nav class="navbar">
+            <button class="current"><i class="fa-solid fa-mug-saucer"></i><br>Home</button>
+            <button onclick="goTo('alerts(KidsMode).html')"><i class="fa-regular fa-bell"></i><br>Alerts</button>
+            <button onclick="goTo('todos(KidsMode).html')"><i class="fa-solid fa-list-check"></i><br>To-Dos</button>
+            <button onclick="goTo('habits(KidsMode).html')"><i class="fa-regular fa-thumbs-up"></i><br>Habits</button>
+            <button onclick="goTo('breathing(KidsMode).html')"><i class="fa-solid fa-wind"></i><br>Breathing</button>
+            <button onclick="goTo('calendar(KidsMode).html')"><i class="fa-regular fa-calendar"></i><br>Calendar</button>
+            <button onclick="goTo('journal(KidsMode).html')"><i class="fa-solid fa-book-open"></i><br>Journal</button>
+            <button onclick="goTo('merchandise(KidsMode).html')"><i class="fa-solid fa-shirt"></i><br>Merchandise</button>
+            <button onclick="goTo('menu(KidsMode).html')"><i class="fa-solid fa-bars-staggered"></i><br>Menu</button>
+        </nav>
+    
+     <div class="coin-display">
+
+        <div class="ascendra-coin">
+            <span class="coin-letter">A</span>
+        </div>
+
+        <span class="coin-balance">0</span>
+
+    </div>
+
+    <script src="coin(KidsMode).js"></script>
+    <script src="home(KidsMode).js"></script>
+    <script src="global-settings(KidsMode).js"></script>
+</body>
+</html>
