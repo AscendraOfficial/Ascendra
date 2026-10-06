@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ascendra - To-Dos</title>
+    <link rel="stylesheet" href="settings(KidsMode).css">
+    <link rel="stylesheet" href="todos(KidsMode).css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="coin(KidsMode).css">
+</head>
+<body>
+
+    <h1 id="todo_list">To-Dos</h1>
+    <h5 id="subtitle3">For better task management</h5>
+
+    <button id="add-btn"><strong>+ Add Task</strong></button>
+
+    <div id="todo-list"></div>
+
+    <!-- Popup -->
+    <div id="popup" class="popup">
+        <div class="popup-box">
+            <h2>Add Task</h2>
+
+            <input id="task-input" type="text" placeholder="Task name">
+            <input id="date-input" type="date">
+
+            <br><br>
+
+            <button id="save-btn">Save</button>
+            <button id="cancel-btn">Cancel</button>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <button onclick="window.location.href='home(KidsMode).html'"><i class="fa-solid fa-mug-saucer"></i><br>Home</button>
+        <button onclick="window.location.href='alerts(KidsMode).html'"><i class="fa-regular fa-bell"></i><br>Alerts</button>
+        <button class="current"><i class="fa-solid fa-list-check"></i><br>To-Dos</button>
+        <button onclick="window.location.href='habits(KidsMode).html'"><i class="fa-regular fa-thumbs-up"></i><br>Habits</button>
+        <button onclick="window.location.href='breathing(KidsMode).html'"><i class="fa-solid fa-wind"></i><br>Breathing</button>
+        <button onclick="window.location.href='calendar(KidsMode).html'"><i class="fa-regular fa-calendar"></i><br>Calendar</button>
+        <button onclick="window.location.href='journal(KidsMode).html'"><i class="fa-solid fa-book-open"></i><br>Journal</button>
+        <button onclick="window.location.href='merchandise(KidsMode).html'"><i class="fa-solid fa-shirt"></i><br>Merchandise</button>
+        <button onclick="window.location.href='menu(KidsMode).html'"><i class="fa-solid fa-bars-staggered"></i><br>Menu</button>
+    </div>
+    
+    <div class="coin-display">
+
+        <div class="ascendra-coin">
+            <span class="coin-letter">A</span>
+        </div>
+		
+        <span class="coin-balance">0</span>
+
+    </div>
+
+    <script src="global-settings(KidsMode).js"></script>
+    <script src="coin(KidsMode).js"></script>
+    <script src="todos(KidsMode).js"></script>
+
+</body>
+</html>
