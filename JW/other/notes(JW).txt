@@ -4,8 +4,8 @@ just better if I can access this code in the code branch if I want to.
 
 
 What I am working on:
-• Linking a coin system ✅ --> 100% complete <---------->
-• Kids Mode merchandise to buy for character --> 20% complete <--        >
+• Linking a coin system ✅ 
+• Kids Mode merchandise to buy for character 
 
 
 What can you help with:                                                   ! = need extra help
@@ -25,9 +25,9 @@ I used it is outdated and insecure. Also, where did I even add it, I don't reall
 Note: Tinker with things that are in your section as you wish.
 
 What Declan is working on:
-• Syncing across devices --> 80% complete <--------  >
-• Making his own version of kids mode --> 10% complete <-         >
-• Drawing merchandise for kids mode. --> 40% complete <----      >
+• Syncing across devices 
+• Making his own version of kids mode 
+• Drawing merchandise for kids mode. 
 
 
 Suggestions:
