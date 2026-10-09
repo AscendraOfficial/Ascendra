@@ -2,6 +2,7 @@ Feel free to look at my code! Please don't edit it until you ask me.
 If you want, commit the code of kids mode in the code branch, it's 
 just better if I can access this code in the code branch if I want to.
 
+--------------------------------------------------------------------------------
 
 What I am working on:
 • Linking a coin system ✅ 
@@ -9,18 +10,13 @@ What I am working on:
 
 
 What can you help with:                                                   ! = need extra help
-•commit all of my code so that we both have easy access to it
+•commit all of my code so that we both have easy access to it ✅
 !!!•draw some clothes, avatars and other things with javascript; make sure
 you store the code in a variable so that I can use it later. PS: I don't care
 if it is not drawn with js, as long as I can position it someway
 !•find a way to not prevent people from cheating there to-dos
 
-
-**Alerts**
-Why did you add an MIT license—one it literally says a username, two it’s from 2012, 3 that means people can copy our
-code, 4 we already have a license that actually says our names on it <-- can you fix it? I'm guessing whatever method
-I used it is outdated and insecure. Also, where did I even add it, I don't really tinker with the back end.
-
+--------------------------------------------------------------------------------
 
 Note: Tinker with things that are in your section as you wish.
 
@@ -29,6 +25,7 @@ What Declan is working on:
 • Making his own version of kids mode 
 • Drawing merchandise for kids mode. 
 
+--------------------------------------------------------------------------------
 
 Suggestions:
 • The next update should be a major update including Kids Mode or Ascendra+
@@ -36,8 +33,9 @@ PS: If you do Ascendra+, give us free access to it.
 
 • We should do some merging. Should we make a separate branch for merging?
 
+--------------------------------------------------------------------------------
 
 Questions and answers:
-Jayden:What should be a feature in Ascendra plus
+Jayden: What should be a feature in Ascendra plus?
 
 
