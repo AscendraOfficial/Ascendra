@@ -8,6 +8,7 @@ What I am working on:
 • Linking a coin system ✅ 
 • Kids Mode merchandise to buy for character 
 • Making index.html kids mode version
+• Adding regular Ascendra to my branch
 
 What can you help with:                                                   ! = need extra help
 •commit all of my code so that we both have easy access to it ✅
