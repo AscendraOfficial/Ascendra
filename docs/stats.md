@@ -2,7 +2,7 @@
 
 - **Lines: 22 590**
 
-## Ascenmdra %
+## Ascendra %
 - **JavaScript:** 35.9%
 -  **CSS:**  35.9%
 -  **HTML:** 14%
