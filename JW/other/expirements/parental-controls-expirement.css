@@ -9,7 +9,7 @@ body {
     width: 100px;
     height: 40px;
 
-    position: sticky;
+    position: absolute;
 
     /* How far it is from the top and left edge. */
     top: 10px;
