@@ -9,8 +9,7 @@ body {
     width: 100px;
     height: 40px;
 
-    /* Puts it at a fixed position. */
-    position: absolute;
+    position: sticky;
 
     /* How far it is from the top and left edge. */
     top: 10px;
