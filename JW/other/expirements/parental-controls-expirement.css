@@ -42,3 +42,12 @@ body {
     transition: 0.2s ease;
 }
 
+#parental_controls {
+    color: purple;
+    
+    font-weight: bold;
+    
+    text-decoration: underline wavy blue 4px;
+    text-underline-offset: -1px;
+    text-shadow: 2px 2px 4px grey;
+}
