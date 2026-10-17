@@ -42,7 +42,7 @@ body {
     transition: 0.2s ease;
 }
 
-#parental_controls {
+#parental-controls-heading {
     color: purple;
     
     font-weight: bold;
@@ -51,3 +51,5 @@ body {
     text-underline-offset: -1px;
     text-shadow: 2px 2px 4px grey;
 }
+
+
