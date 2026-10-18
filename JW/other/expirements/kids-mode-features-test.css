@@ -1,1 +1,24 @@
+body {
+  font-family: sans-serif;  
+  text-align: center;
+}
 
+#kids-mode-features-title {
+     background: linear-gradient(
+        to right,
+        red,
+        orange,
+        yellow,
+        green,
+        blue,
+        indigo,
+        violet
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+#kids-mode-features-subtitle {
+    color: rgb(200, 162, 255);
+}
