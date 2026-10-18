@@ -24,7 +24,7 @@ body {
 }
 
 .info-card {
-    max-width: 450px;
+    width: 75%;
     background-color: white;
     border: 1px solid #ddd6e8;
     border-radius: 12px;
