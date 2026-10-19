@@ -93,6 +93,7 @@ button:active {
     margin-bottom: 0;
 }
 
+/* Proceed button */
 #proceed-btn {
     position: fixed;
     bottom: 10px;
