@@ -92,3 +92,9 @@ button:active {
     line-height: 1.6;
     margin-bottom: 0;
 }
+
+#proceed-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
