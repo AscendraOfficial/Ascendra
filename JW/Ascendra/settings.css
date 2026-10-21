@@ -164,6 +164,24 @@ input[type="checkbox"] {
     transform: scale(1.04);
 }
 
+/* Newly added Kids Mode button!! */
+#kidsModeBtn {
+    background: white;
+    color: var(--accent);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+#kidsModeBtn:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+    transform: translateY(-2px);
+}
+
 @media (max-width: 750px) {
     .page {
         flex-direction: column;
