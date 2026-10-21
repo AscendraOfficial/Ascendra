@@ -1,1 +1,107 @@
+body {
+  font-family: sans-serif;  
+  text-align: center;
+}
 
+button {
+    background-color: #6495ED;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+button:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+}
+
+h3 i {
+    color: #8B5CF6;
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+#kids-mode-features-title {
+     background: linear-gradient(
+        to right,
+        red,
+        orange,
+        yellow,
+        green,
+        blue,
+        indigo,
+        violet
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+#kids-mode-features-subtitle {
+    color: rgb(200, 162, 255);
+}
+
+.info-card {
+    width: 75%;
+    background-color: white;
+    border: 1px solid #ddd6e8;
+    border-radius: 12px;
+    overflow: hidden;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    margin: 20px;
+}
+
+/* Coloured bar at the top */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    background-color: #A7C7E7;
+    color: #35204A;
+    padding: 16px 20px;
+}
+
+/* Icon */
+.card-icon {
+    font-size: 28px;
+}
+
+/* Header text */
+.card-header h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+/* Main text area */
+.card-body {
+    padding: 20px;
+    color: #333;
+}
+
+.card-body h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.card-body p {
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+/* Proceed button */
+#proceed-btn {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
