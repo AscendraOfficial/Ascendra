@@ -1,10 +1,14 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+}
+
 /* This is the css for the go back button. */
 .go_back {
     /* Controls width and height. */
     width: 100px;
     height: 40px;
 
-    /* Puts it at a fixed position. */
     position: absolute;
 
     /* How far it is from the top and left edge. */
@@ -35,4 +39,39 @@
     /* Turns the cursor into a pointer when hovering the button. */
     cursor: pointer;
     transition: 0.2s ease;
+}
+
+#parental-controls-heading {
+    color: purple;
+    
+    font-weight: bold;
+    
+    text-decoration: underline wavy blue 4px;
+    text-underline-offset: -1px;
+    text-shadow: 2px 2px 4px grey;
+}
+
+#parental-controls-sub-paragraph {
+    color: rgb(135, 206, 235);
+}
+
+button {
+    background-color: #6495ED;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+button:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
 }
