@@ -2,8 +2,8 @@ name: Ascendra feedback issue replies
 
 on:
   schedule:
-    # Every 30 minutes (UTC; no timezone conversion needed).
-    - cron: '*/30 * * * *'
+    # Every 10 minutes (UTC; no timezone conversion needed).
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:
