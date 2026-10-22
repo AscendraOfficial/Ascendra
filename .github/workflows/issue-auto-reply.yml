@@ -1,4 +1,4 @@
-name: Ascendra daily issue acknowledgments
+name: Ascendra feedback issue replies
 
 on:
   schedule:
@@ -10,10 +10,10 @@ permissions:
   issues: write
 
 jobs:
-  acknowledge:
+  reply:
     runs-on: ubuntu-latest
     steps:
-      - name: Acknowledge new issues once
+      - name: Reply to new feedback comments on issue 16
         uses: actions/github-script@v7
         with:
           script: |
@@ -21,40 +21,38 @@ jobs:
             const edmontonHour = Number(new Intl.DateTimeFormat('en-CA', {
               timeZone: 'America/Edmonton', hour: '2-digit', hourCycle: 'h23'
             }).format(now));
-            // Scheduled runs only at 4 AM Edmonton; manual runs are allowed for testing.
             if (context.eventName === 'schedule' && edmontonHour !== 4) return;
 
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+            const issue_number = 16;
             const bot = 'github-actions[bot]';
-            const cutoff = Date.now() - 30 * 60 * 60 * 1000;
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner, repo, state: 'open', sort: 'created', direction: 'desc', per_page: 100
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100
             });
-            let posted = 0;
-            for (const issue of issues) {
-              if (issue.pull_request) continue;
-              if (new Date(issue.created_at).getTime() < cutoff) break;
-              const comments = await github.paginate(github.rest.issues.listComments, {
-                owner, repo, issue_number: issue.number, per_page: 100
-              });
-              if (comments.some(c => c.user?.login === bot &&
-                  c.body?.includes('<!-- ascendra-auto-ack -->'))) continue;
-
+            const replied = new Set();
+            for (const comment of comments) {
+              const matches = comment.body?.match(/<!-- ascendra-feedback-reply:(\d+) -->/);
+              if (comment.user?.login === bot && matches) replied.add(Number(matches[1]));
+            }
+            let count = 0;
+            for (const comment of comments) {
+              if (comment.user?.type === 'Bot' || replied.has(comment.id)) continue;
+              if (count >= 10) break;
               const body = [
-                '<!-- ascendra-auto-ack -->',
-                'Thanks for opening this issue and helping improve Ascendra! 💜',
+                `<!-- ascendra-feedback-reply:${comment.id} -->`,
+                `Thanks for your feedback, @${comment.user.login}! 💜`,
                 '',
-                'The team will review it when available. If this is a bug, please include',
-                'the steps to reproduce it, what you expected, what happened instead,',
-                'and your browser/device (without sharing passwords or private data).',
+                'The Ascendra team will review your comment when available.',
+                'If you are reporting a bug, please include steps to reproduce it,',
+                'what you expected, and your browser/device. Please do not share passwords',
+                'or private information.',
                 '',
-                '*This is an automatic acknowledgment, not a confirmation that a fix is ready.*'
+                '*Automated acknowledgment — this does not mean the issue is fixed.*'
               ].join('\n');
               await github.rest.issues.createComment({
-                owner, repo, issue_number: issue.number, body
+                owner, repo, issue_number, body
               });
-              posted++;
-              if (posted >= 10) break; // Prevent unexpected mass commenting.
+              count++;
             }
-            core.info(`Posted ${posted} acknowledgments.`);
+            core.info(`Replied to ${count} feedback comments on issue #16.`);
