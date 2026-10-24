@@ -10,7 +10,7 @@ This is the base coding language of Ascendra. Ascendra uses HTML5, the most mode
 type of HTML. Our general HTML structure looks a bit like this:
 ```html
 <!DOCTYPE html>
-<html lang="en"
+<html lang="en">
 <head>
     <!-- We use standard english characters -->
     <meta charset="UTF-8">
