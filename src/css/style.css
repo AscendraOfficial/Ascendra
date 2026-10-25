@@ -10216,3 +10216,43 @@ body.dark-mode .habit-qr-info summary {
   }
 }
 
+
+/* Compact welcome layout for iPhone-sized screens */
+@media screen and (max-width: 480px) {
+  .ascendra-page[data-route="welcome"] {
+    justify-content: flex-start;
+    padding: calc(80px + env(safe-area-inset-top)) 12px 36px;
+    gap: 0;
+  }
+  .ascendra-page[data-route="welcome"] #title {
+    font-size: clamp(1.9rem, 8vw, 2.5rem);
+    line-height: 1.16;
+    margin: 0 0 12px;
+    padding: 0 4px;
+    overflow-wrap: normal;
+  }
+  .ascendra-page[data-route="welcome"] h2:not(#version) {
+    font-size: clamp(1.15rem, 5vw, 1.45rem);
+    line-height: 1.35;
+    margin: 6px 8px 14px;
+  }
+  .ascendra-page[data-route="welcome"] #subtitle1 {
+    font-size: 0.95rem;
+    margin: 0 0 18px;
+    padding: 0 8px;
+  }
+  .ascendra-page[data-route="welcome"] #main_paragraph {
+    width: 100%;
+    padding: 20px 16px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0 0 16px;
+  }
+  .ascendra-page[data-route="welcome"] #main_paragraph .ascendra {
+    font-size: 1.15rem;
+  }
+  .ascendra-page[data-route="welcome"] #version {
+    font-size: 1.1rem;
+    margin-top: 12px;
+  }
+}
