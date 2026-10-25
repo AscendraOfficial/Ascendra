@@ -22,6 +22,9 @@
     width: 60px;
     height: 60px;
 
+    /* Adds margin */
+    margin: 10px;
+   
     /* Makes the square element into a perfect circle */
     border-radius: 50%;
 
