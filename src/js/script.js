@@ -1,6 +1,21 @@
 "use strict";
 import { STORAGE_KEYS } from "./data/storageKeys.js";
 import { responses, manualResponses } from "./ascendraAI/responses.js";
+import {
+  SYNC_MODES,
+  applyProfileSnapshot,
+  autoSyncProfile,
+  clearSyncSession,
+  getLastSyncedAt,
+  getSyncMode,
+  loginCloudAccount,
+  markSynced,
+  manualSyncProfile,
+  pullCloudProfile,
+  registerCloudAccount,
+  renameCloudUsername,
+  setSyncMode,
+} from "./syncing.js";
 const app = document.getElementById("app");
 const backButton = document.getElementById("spaBackButton");
 const initializedCleanups = new Map();
@@ -15,6 +30,10 @@ const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "plac
 const HABIT_IMPORT_DAY_KEYS = Object.freeze(["mon", "tue", "wed", "thu", "fri", "sat", "sun"]);
 const HABIT_IMPORT_MAX_LENGTH = 10000;
 const HABIT_IMPORT_MAX_HABITS = 30;
+
+console.log(
+  "If you have any questions, feedback, or issues with Ascendra, please visit https://github.com/AscendraOfficial/Ascendra/issues/16",
+);
 
 function getStartOfWeek(date = new Date(), offsetWeeks = 0) {
   const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -785,7 +804,219 @@ function getLoggedInUsername() {
     .toLowerCase();
 }
 
+function getProfileSyncIdentity() {
+  const username = String(getActiveIdentityItem("username") || getActiveIdentityItem("loggedInUser") || "").trim();
+
+  return {
+    accountId: String(getActiveIdentityItem("accountId") || "").trim(),
+    username,
+    name: String(getActiveIdentityItem("name") || ""),
+    surname: String(getActiveIdentityItem("surname") || ""),
+  };
+}
+
+async function connectLocalAccountToCloud(password) {
+  const identity = getProfileSyncIdentity();
+
+  if (!identity.accountId || !identity.username) {
+    return { connected: false, reason: "missing-identity" };
+  }
+
+  try {
+    const cloud = await loginCloudAccount({
+      apiUrl: API_URL,
+      username: identity.username,
+      password,
+    });
+
+    let syncIdentity = identity;
+    let relinked = false;
+
+    if (cloud.account_id !== identity.accountId) {
+      const accountRecord = findStoredAccount(identity.username);
+
+      if (!accountRecord) {
+        throw new Error("Ascendra could not reconnect this device to the cloud account.");
+      }
+
+      const updatedAccount = {
+        ...accountRecord.account,
+        username: String(cloud.username || identity.username).trim(),
+        accountId: cloud.account_id,
+      };
+
+      saveStoredAccount(updatedAccount);
+
+      if (accountRecord.key !== accountStorageKey(updatedAccount.username)) {
+        localStorage.removeItem(accountRecord.key);
+      }
+
+      syncIdentity = {
+        ...identity,
+        accountId: cloud.account_id,
+        username: updatedAccount.username,
+      };
+
+      setActiveIdentity(
+        {
+          ...syncIdentity,
+          loggedInUser: updatedAccount.username,
+        },
+        { previousUsername: identity.username },
+      );
+
+      relinked = true;
+    }
+
+    // The cloud copy is authoritative when reconnecting an existing account.
+    // Pull it first so a fresh/older device cannot overwrite newer cloud data.
+    const pulled = await pullCloudProfile({
+      apiUrl: API_URL,
+      identity: syncIdentity,
+    });
+
+    const accountRecord = findStoredAccount(syncIdentity.username);
+    if (accountRecord) {
+      const updatedAccount = {
+        ...accountRecord.account,
+        name: pulled.identityUpdate.name,
+        surname: pulled.identityUpdate.surname,
+      };
+      saveStoredAccount(updatedAccount);
+    }
+
+    setActiveIdentity(
+      {
+        ...syncIdentity,
+        loggedInUser: syncIdentity.username,
+        name: pulled.identityUpdate.name,
+        surname: pulled.identityUpdate.surname,
+      },
+      { previousUsername: identity.username },
+    );
+
+    return { connected: true, created: false, relinked };
+  } catch (error) {
+    if (error?.code !== "profile_sync_login_denied") {
+      throw error;
+    }
+
+    const cloud = await registerCloudAccount({
+      apiUrl: API_URL,
+      identity,
+      password,
+    });
+
+    if (cloud.account_id !== identity.accountId) {
+      throw new Error("Ascendra could not verify the new cloud account.");
+    }
+
+    return { connected: true, created: true, relinked: false };
+  }
+}
+
+async function restoreCloudAccountToThisDevice(username, password) {
+  const cloud = await loginCloudAccount({
+    apiUrl: API_URL,
+    username,
+    password,
+  });
+
+  const cloudUsername = String(cloud.username || username).trim();
+  const profile = cloud.profile && typeof cloud.profile === "object" ? cloud.profile : {};
+  const credentials = await createPasswordCredentials(password);
+
+  const account = {
+    version: 3,
+    name: String(profile.name || ""),
+    surname: String(profile.surname || ""),
+    username: cloudUsername,
+    accountId: cloud.account_id,
+    credentials,
+  };
+
+  saveStoredAccount(account);
+
+  const identity = {
+    loggedInUser: cloudUsername,
+    username: cloudUsername,
+    accountId: cloud.account_id,
+    name: account.name,
+    surname: account.surname,
+  };
+
+  setActiveIdentity(identity);
+
+  const identityUpdate = applyProfileSnapshot(profile, identity);
+  const finalIdentity = {
+    ...identity,
+    name: identityUpdate.name,
+    surname: identityUpdate.surname,
+  };
+
+  if (finalIdentity.name !== identity.name || finalIdentity.surname !== identity.surname) {
+    account.name = finalIdentity.name;
+    account.surname = finalIdentity.surname;
+    saveStoredAccount(account);
+    setActiveIdentity(finalIdentity);
+  }
+
+  markSynced(cloud.account_id, cloud.profile_version, cloud.updated_at || new Date().toISOString());
+
+  return finalIdentity;
+}
+
 initializeTabIdentity();
+
+window.ascendraSync = Object.freeze({
+  getMode: getSyncMode,
+  setMode: setSyncMode,
+  getLastSynced() {
+    const accountId = getActiveIdentityItem("accountId");
+    return accountId ? getLastSyncedAt(accountId) : "";
+  },
+  async syncNow() {
+    const identity = getProfileSyncIdentity();
+    if (!identity.accountId || !identity.username) {
+      throw new Error("Log in before syncing your profile.");
+    }
+
+    return manualSyncProfile({
+      apiUrl: API_URL,
+      identity,
+    });
+  },
+  async pullNow() {
+    const identity = getProfileSyncIdentity();
+    if (!identity.accountId || !identity.username) {
+      throw new Error("Log in before syncing your profile.");
+    }
+
+    const result = await pullCloudProfile({
+      apiUrl: API_URL,
+      identity,
+    });
+
+    const accountRecord = findStoredAccount(identity.username);
+    if (accountRecord) {
+      const updatedAccount = {
+        ...accountRecord.account,
+        name: result.identityUpdate.name,
+        surname: result.identityUpdate.surname,
+      };
+      saveStoredAccount(updatedAccount);
+    }
+
+    setActiveIdentity({
+      ...identity,
+      loggedInUser: identity.username,
+      name: result.identityUpdate.name,
+      surname: result.identityUpdate.surname,
+    });
+
+    return result;
+  },
+});
 
 function userStorageKey(key, username = getLoggedInUsername()) {
   const cleanUsername = String(username || "")
@@ -2683,6 +2914,33 @@ const ROUTE_INITIALIZERS = {
 
       submitButton.disabled = true;
       try {
+        if (!record) {
+          try {
+            const restoredIdentity = await restoreCloudAccountToThisDevice(username, password);
+
+            if (!loginActive) return;
+
+            alert("Welcome back, " + (restoredIdentity.name || restoredIdentity.username) + "!");
+            loginForm.reset();
+            navigate("home");
+            return;
+          } catch (cloudError) {
+            if (!loginActive) return;
+
+            console.warn("Cloud login was unavailable or denied:", cloudError);
+
+            if (cloudError?.code === "profile_sync_unavailable" || cloudError?.status >= 500) {
+              alert("This account is not saved on this device, and cloud login is unavailable right now.");
+            } else {
+              alert("Wrong username or password!");
+            }
+
+            passwordInput.value = "";
+            passwordInput.focus();
+            return;
+          }
+        }
+
         let savedUser = record?.account || null;
         let passwordMatches = false;
         let needsMigration = false;
@@ -2738,6 +2996,13 @@ const ROUTE_INITIALIZERS = {
           accountId: savedUser.accountId,
         });
         localStorage.removeItem("password");
+
+        try {
+          await connectLocalAccountToCloud(password);
+        } catch (syncError) {
+          console.warn("Ascendra logged in locally, but cloud sync could not connect.", syncError);
+        }
+
         alert("Welcome back, " + (savedUser.name || savedUsername) + "!");
         loginForm.reset();
         navigate("home");
@@ -2824,7 +3089,16 @@ const ROUTE_INITIALIZERS = {
         });
         localStorage.removeItem("password");
 
-        alert("Account created!");
+        let cloudConnected = true;
+
+        try {
+          await connectLocalAccountToCloud(password);
+        } catch (syncError) {
+          cloudConnected = false;
+          console.warn("Account created locally, but profile sync could not be enabled yet.", syncError);
+        }
+
+        alert(cloudConnected ? "Account created and synced!" : "Account created on this device, but cloud sync could not connect yet.");
         signupForm.reset();
         navigate("home");
       } catch (error) {
@@ -3124,6 +3398,12 @@ const ROUTE_INITIALIZERS = {
     function saveTodos() {
       setUserItem("todos", JSON.stringify(todos));
       announceProgressionReward(syncProgressionFromActivity());
+      autoSyncProfile({
+        apiUrl: API_URL,
+        identity: getProfileSyncIdentity(),
+      }).catch((syncError) => {
+        console.warn("Tasks saved locally, but cloud sync did not finish.", syncError);
+      });
     }
 
     function formatPriority(priority) {
@@ -3323,6 +3603,12 @@ const ROUTE_INITIALIZERS = {
     function saveTodos() {
       setUserItem("todos", JSON.stringify(todos));
       announceProgressionReward(syncProgressionFromActivity());
+      autoSyncProfile({
+        apiUrl: API_URL,
+        identity: getProfileSyncIdentity(),
+      }).catch((syncError) => {
+        console.warn("Tasks saved locally, but cloud sync did not finish.", syncError);
+      });
     }
 
     function updateDueDateFields() {
@@ -3632,6 +3918,12 @@ const ROUTE_INITIALIZERS = {
     function saveHabits() {
       setUserItem("habits", JSON.stringify(habits));
       announceProgressionReward(syncProgressionFromActivity());
+      autoSyncProfile({
+        apiUrl: API_URL,
+        identity: getProfileSyncIdentity(),
+      }).catch((syncError) => {
+        console.warn("Habits saved locally, but cloud sync did not finish.", syncError);
+      });
     }
 
     function getToday() {
@@ -4263,6 +4555,9 @@ const ROUTE_INITIALIZERS = {
 
     // Holds the journal entries downloaded from the backend.
     let journalEntries = [];
+    let journalBackendNotice = "";
+    let journalActive = true;
+    const journalRequests = new Set();
 
     const monthNames = [
       "January",
@@ -4278,6 +4573,7 @@ const ROUTE_INITIALIZERS = {
       "November",
       "December",
     ];
+    const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
     const monthTitle = document.getElementById("monthTitle");
     const dateGrid = document.getElementById("dateGrid");
@@ -4294,6 +4590,29 @@ const ROUTE_INITIALIZERS = {
 
     const saveEntry = document.getElementById("saveEntry");
     const statusMessage = document.getElementById("statusMessage");
+
+    function setJournalStatus(message = "", state = "") {
+      statusMessage.textContent = message;
+
+      if (state) {
+        statusMessage.dataset.state = state;
+      } else {
+        delete statusMessage.dataset.state;
+      }
+    }
+
+    async function journalRequest(url, options = {}) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      journalRequests.add(controller);
+
+      try {
+        return await fetch(url, { ...options, signal: controller.signal });
+      } finally {
+        clearTimeout(timeoutId);
+        journalRequests.delete(controller);
+      }
+    }
 
     function getCurrentUserId() {
       return getActiveIdentityItem("accountId");
@@ -4336,8 +4655,7 @@ const ROUTE_INITIALIZERS = {
         return journalEntries;
       }
 
-      const query = new URLSearchParams({ user_id: currentUserId });
-      const response = await fetch(`${API_URL}/journal?${query}`);
+      const response = await journalRequest(`${API_URL}/journal?user_id=${encodeURIComponent(currentUserId)}`);
 
       if (!response.ok) {
         throw new Error(`Journal request failed: ${response.status}`);
@@ -4345,7 +4663,7 @@ const ROUTE_INITIALIZERS = {
 
       const data = await response.json();
 
-      journalEntries = Array.isArray(data) ? data : [];
+      journalEntries = Array.isArray(data) ? data.filter((entry) => entry && typeof entry === "object") : [];
 
       // Normalize backend field names so frontend code can rely on `userId`
       journalEntries = journalEntries.map((e) => {
@@ -4363,26 +4681,9 @@ const ROUTE_INITIALIZERS = {
       return journalEntries.find((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey) || null;
     }
 
-    async function loadEntry(day) {
+    function loadEntry(day) {
       selectedDay = day;
-
-      let entry = null;
-
-      try {
-        await loadJournalEntries();
-        entry = findEntry(day) || readUserJson(getEntryKey(day), null);
-
-        if (statusMessage.textContent === "Backend unavailable. Loaded the local backup.") {
-          statusMessage.textContent = "";
-        }
-      } catch (error) {
-        console.error("Could not load the journal backend:", error);
-
-        // Temporary backup while the backend is still being tested.
-        entry = readUserJson(getEntryKey(day), null);
-
-        statusMessage.textContent = "Backend unavailable. Loaded the local backup.";
-      }
+      const entry = findEntry(day) || readUserJson(getEntryKey(day), null);
 
       entryTitle.textContent = `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
@@ -4392,7 +4693,8 @@ const ROUTE_INITIALIZERS = {
       learnText.value = entry?.learn || "";
       goalText.value = entry?.goal || "";
 
-      const canEdit = isTodayDate(day);
+      const hasAccount = Boolean(getCurrentUserId());
+      const canEdit = hasAccount && isTodayDate(day);
 
       mood.disabled = !canEdit;
       dayText.disabled = !canEdit;
@@ -4402,10 +4704,14 @@ const ROUTE_INITIALIZERS = {
 
       saveEntry.style.display = canEdit ? "block" : "none";
 
-      if (!canEdit) {
-        statusMessage.textContent = isFutureDate(day) ? "Future entries cannot be edited." : "Past entries are read-only.";
-      } else if (statusMessage.textContent !== "Backend unavailable. Loaded the local backup.") {
-        statusMessage.textContent = "";
+      if (!hasAccount) {
+        setJournalStatus("Log in to write and sync journal entries.", "error");
+      } else if (!canEdit) {
+        setJournalStatus(isFutureDate(day) ? "Future entries cannot be edited." : "Past entries are read-only.", "info");
+      } else if (journalBackendNotice) {
+        setJournalStatus(journalBackendNotice, "warning");
+      } else {
+        setJournalStatus();
       }
     }
 
@@ -4414,14 +4720,30 @@ const ROUTE_INITIALIZERS = {
       monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
       const currentUserId = getCurrentUserId();
+
+      weekdayNames.forEach((weekday) => {
+        const label = document.createElement("span");
+        label.className = "calendar-weekday";
+        label.textContent = weekday;
+        dateGrid.appendChild(label);
+      });
+
+      const firstWeekday = new Date(currentYear, currentMonth, 1).getDay();
+      for (let spacerIndex = 0; spacerIndex < firstWeekday; spacerIndex++) {
+        const spacer = document.createElement("span");
+        spacer.className = "date-grid-spacer";
+        spacer.setAttribute("aria-hidden", "true");
+        dateGrid.appendChild(spacer);
+      }
 
       for (let day = 1; day <= daysInMonth; day++) {
         const button = document.createElement("button");
 
+        button.type = "button";
         button.textContent = day;
         button.classList.add("date-button");
+        button.setAttribute("aria-label", `${monthNames[currentMonth]} ${day}, ${currentYear}${day === selectedDay ? ", selected" : ""}`);
 
         const dateKey = getEntryKey(day);
 
@@ -4444,17 +4766,20 @@ const ROUTE_INITIALIZERS = {
           button.classList.add("future");
           button.disabled = true;
         } else {
-          button.onclick = async () => {
-            await loadEntry(day);
+          button.onclick = () => {
+            loadEntry(day);
             buildDateGrid();
           };
         }
 
         dateGrid.appendChild(button);
       }
+
+      const currentDate = getCurrentDateParts();
+      nextMonth.disabled = currentYear > currentDate.year || (currentYear === currentDate.year && currentMonth >= currentDate.month);
     }
 
-    prevMonth.onclick = async () => {
+    prevMonth.onclick = () => {
       currentMonth--;
 
       if (currentMonth < 0) {
@@ -4464,11 +4789,13 @@ const ROUTE_INITIALIZERS = {
 
       selectedDay = 1;
 
-      await loadEntry(selectedDay);
+      loadEntry(selectedDay);
       buildDateGrid();
     };
 
-    nextMonth.onclick = async () => {
+    nextMonth.onclick = () => {
+      if (nextMonth.disabled) return;
+
       currentMonth++;
 
       if (currentMonth > 11) {
@@ -4478,20 +4805,21 @@ const ROUTE_INITIALIZERS = {
 
       selectedDay = 1;
 
-      await loadEntry(selectedDay);
+      loadEntry(selectedDay);
       buildDateGrid();
     };
 
     saveEntry.onclick = async () => {
       if (!isTodayDate(selectedDay)) {
-        statusMessage.textContent = isFutureDate(selectedDay) ? "Future entries cannot be edited." : "Past entries are read-only.";
+        setJournalStatus(isFutureDate(selectedDay) ? "Future entries cannot be edited." : "Past entries are read-only.", "info");
 
         return;
       }
 
-      const uid = getCurrentUserId() || localStorage.getItem("accountId") || localStorage.getItem(STORAGE_KEYS.ACCOUNT_ID);
+      const uid = getCurrentUserId();
       const entry = {
         user_id: uid,
+        userId: uid,
         date: getEntryKey(selectedDay),
         mood: mood.value,
         day: dayText.value,
@@ -4501,15 +4829,15 @@ const ROUTE_INITIALIZERS = {
       };
 
       if (!entry.user_id) {
-        statusMessage.textContent = "Could not identify the logged-in account.";
+        setJournalStatus("Log in before saving a journal entry.", "error");
         return;
       }
 
       saveEntry.disabled = true;
-      statusMessage.textContent = "Saving...";
+      setJournalStatus("Saving...", "info");
 
       try {
-        const response = await fetch(API_URL + "/journal", {
+        const response = await journalRequest(API_URL + "/journal", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -4534,17 +4862,25 @@ const ROUTE_INITIALIZERS = {
         // Keep this temporarily as a backup.
         setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
 
-        statusMessage.textContent = "Entry saved!";
+        journalBackendNotice = "";
+        setJournalStatus("Entry saved!");
         buildDateGrid();
       } catch (error) {
+        if (error.name === "AbortError" && !journalActive) return;
         console.error("Could not save the journal entry:", error);
 
         // Save locally if the backend fails.
-        setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
-
-        statusMessage.textContent = "Saved locally, but the backend could not be reached.";
+        try {
+          setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
+          journalBackendNotice = "The backend is unavailable. This entry is saved only in this browser.";
+          setJournalStatus(journalBackendNotice, "warning");
+          buildDateGrid();
+        } catch (storageError) {
+          console.error("Could not save the local journal backup:", storageError);
+          setJournalStatus("This entry could not be saved. Please try again.", "error");
+        }
       } finally {
-        saveEntry.disabled = false;
+        if (journalActive) saveEntry.disabled = false;
       }
     };
 
@@ -4554,9 +4890,23 @@ const ROUTE_INITIALIZERS = {
       if (currentDateKey === journalDateKey) return;
 
       journalDateKey = currentDateKey;
+      const currentDate = getCurrentDateParts();
+      currentMonth = currentDate.month;
+      currentYear = currentDate.year;
+      selectedDay = currentDate.day;
 
+      try {
+        await loadJournalEntries();
+        journalBackendNotice = "";
+      } catch (error) {
+        if (error.name === "AbortError" && !journalActive) return;
+        console.error("Could not refresh the journal backend:", error);
+        journalBackendNotice = "The backend is unavailable. Showing entries saved in this browser.";
+      }
+
+      if (!journalActive) return;
+      loadEntry(selectedDay);
       buildDateGrid();
-      await loadEntry(selectedDay);
     }
 
     function handleJournalVisibilityChange() {
@@ -4570,7 +4920,18 @@ const ROUTE_INITIALIZERS = {
     document.addEventListener("visibilitychange", handleJournalVisibilityChange);
 
     async function initializeJournal() {
-      await loadEntry(selectedDay);
+      try {
+        await loadJournalEntries();
+        journalBackendNotice = "";
+      } catch (error) {
+        if (error.name === "AbortError" && !journalActive) return;
+        console.error("Could not load the journal backend:", error);
+        journalEntries = [];
+        journalBackendNotice = "The backend is unavailable. Showing entries saved in this browser.";
+      }
+
+      if (!journalActive) return;
+      loadEntry(selectedDay);
       buildDateGrid();
     }
 
@@ -4583,6 +4944,9 @@ const ROUTE_INITIALIZERS = {
     window.loadEntry = loadEntry;
 
     return () => {
+      journalActive = false;
+      journalRequests.forEach((controller) => controller.abort());
+      journalRequests.clear();
       window.removeEventListener("focus", refreshJournalDateRules);
 
       document.removeEventListener("visibilitychange", handleJournalVisibilityChange);
@@ -5683,7 +6047,7 @@ const ROUTE_INITIALIZERS = {
       }, 3000);
     }
 
-    function handleProfileSave() {
+    async function handleProfileSave() {
       const name = nameInput.value.trim();
       const surname = surnameInput.value.trim();
       const username = cleanUsername(usernameInput.value);
@@ -5776,7 +6140,39 @@ const ROUTE_INITIALIZERS = {
 
         usernameInput.value = username;
 
-        showMessage("Profile saved successfully!", "success");
+        if (accountRecord && updatedAccountId) {
+          const syncIdentity = {
+            accountId: updatedAccountId,
+            username,
+            name,
+            surname,
+          };
+
+          try {
+            if (oldUsername && oldUsername.toLowerCase() !== username.toLowerCase()) {
+              await renameCloudUsername({
+                apiUrl: API_URL,
+                identity: syncIdentity,
+                username,
+              });
+            }
+
+            if (getSyncMode() === SYNC_MODES.AUTO) {
+              await autoSyncProfile({
+                apiUrl: API_URL,
+                identity: syncIdentity,
+              });
+              showMessage("Profile saved and synced!", "success");
+            } else {
+              showMessage("Profile saved successfully!", "success");
+            }
+          } catch (syncError) {
+            console.warn("Profile saved locally, but cloud sync did not finish.", syncError);
+            showMessage("Profile saved locally; sync is pending.", "success");
+          }
+        } else {
+          showMessage("Profile saved successfully!", "success");
+        }
       } catch (error) {
         console.error("Could not safely save the profile:", error);
         showMessage(error.message || "Could not safely save your profile.", "error");
@@ -5788,6 +6184,12 @@ const ROUTE_INITIALIZERS = {
     }
 
     function handleLogout() {
+      const accountId = getActiveIdentityItem("accountId");
+
+      if (accountId) {
+        clearSyncSession(accountId);
+      }
+
       clearActiveIdentity();
       navigate("login");
     }
@@ -5827,6 +6229,15 @@ const ROUTE_INITIALIZERS = {
         try {
           setUserItem("ascendra-profile-picture", reader.result, pictureOwner);
           profilePicture.src = reader.result;
+
+          if (getSyncMode() === SYNC_MODES.AUTO) {
+            autoSyncProfile({
+              apiUrl: API_URL,
+              identity: getProfileSyncIdentity(),
+            }).catch((syncError) => {
+              console.warn("Profile picture saved locally, but cloud sync did not finish.", syncError);
+            });
+          }
 
           showMessage("Profile picture updated!", "success");
         } catch (error) {

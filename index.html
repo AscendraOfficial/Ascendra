@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Ascendra - Tasks, Habits, Goals and Focus</title>
@@ -45,8 +45,8 @@
         <a href="#/signup">Create an Account</a>
       </p>
       <h2 id="version">
-        Version <em data-app-version>2.0</em> —
-        <span data-app-update>Horizon</span>
+        Version <em data-app-version>1.4.0</em> —
+        <span data-app-update>Profile Syncing</span>
       </h2>
       <a class="credits-link" href="#/credits">ⓘ Credits</a>
       <br />
@@ -455,7 +455,7 @@
               <h2 id="monthTitle">Month</h2>
               <button aria-label="Next month" id="nextMonth" type="button">›</button>
             </div>
-            <div class="date-grid" id="dateGrid"></div>
+            <div aria-labelledby="monthTitle" class="date-grid" id="dateGrid" role="group"></div>
           </div>
           <div class="entry-card">
             <h2 id="entryTitle">Today's Entry</h2>
@@ -469,15 +469,15 @@
               <option value="Tired">🥱 Tired</option>
             </select>
             <label for="dayText">How was your day?</label>
-            <textarea id="dayText"></textarea>
+            <textarea id="dayText" maxlength="2000" placeholder="Write about the moments that stood out today."></textarea>
             <label for="gratefulText">What are you grateful for?</label>
-            <textarea id="gratefulText"></textarea>
+            <textarea id="gratefulText" maxlength="2000" placeholder="Name something, big or small, that you appreciated."></textarea>
             <label for="learnText">What did you learn today?</label>
-            <textarea id="learnText"></textarea>
+            <textarea id="learnText" maxlength="2000" placeholder="Capture an idea, lesson, or discovery."></textarea>
             <label for="goalText">Goal for tomorrow</label>
-            <textarea id="goalText"></textarea>
+            <textarea id="goalText" maxlength="2000" placeholder="Choose one helpful next step for tomorrow."></textarea>
             <button id="saveEntry" type="button">Save Entry</button>
-            <p aria-live="polite" id="statusMessage"></p>
+            <p aria-live="polite" id="statusMessage" role="status"></p>
           </div>
         </div>
       </div>
@@ -1462,6 +1462,69 @@
       <main class="roadmap-page">
         <h1>Ascendra Roadmap</h1>
 
+        <section class="roadmap-card" id="kids-mode">
+          <div class="roadmap-header">
+            <div>
+              <h2>Kids Mode</h2>
+              <p class="roadmap-subtitle">A kid-friendly Ascendra experience</p>
+            </div>
+
+            <span class="roadmap-status">In Development</span>
+          </div>
+
+          <hr />
+
+          <div class="roadmap-details">
+            <h3>What's happening</h3>
+
+            <p>
+              Kids Mode is currently in development. We're working on a simpler, kid-friendly Ascendra experience designed to make
+              productivity tools easier and more fun for younger users.
+            </p>
+          </div>
+        </section>
+        <br /><br />
+        <section class="roadmap-card" id="profile-syncing">
+          <div class="roadmap-header">
+            <div>
+              <h2>Profile Syncing</h2>
+              <p class="roadmap-subtitle">Access your Ascendra profile across devices</p>
+            </div>
+
+            <span class="roadmap-status-progress">Fixing Bugs</span>
+          </div>
+
+          <hr />
+
+          <div class="roadmap-progress">
+            <h3>Development Progress</h3>
+            <p><strong>2 of 3 milestones completed</strong></p>
+
+            <div
+              aria-label="Profile syncing development progress: 2 of 3 milestones completed"
+              aria-valuemax="3"
+              aria-valuemin="0"
+              aria-valuenow="2"
+              class="progress-bar"
+              role="progressbar"
+            >
+              <div class="progress-fill-sync"></div>
+            </div>
+
+            <p class="progress-text">1 milestone remaining — fixing syncing bugs</p>
+          </div>
+
+          <div class="roadmap-details">
+            <h3>What's included</h3>
+
+            <p>
+              Profile Syncing lets users sign in to the same Ascendra account on multiple devices and keep supported profile,
+              settings, and progress data in sync. Cloud account storage, authentication, and the live frontend integration are now
+              available in Ascendra. We're currently fixing the remaining cross-device syncing bugs.
+            </p>
+          </div>
+        </section>
+        <br /><br />
         <section class="roadmap-card" id="horizon">
           <div class="roadmap-header">
             <div>
@@ -1959,6 +2022,10 @@
         <span class="ai-eyes"></span>
         <span class="ai-mouth"></span>
       </span>
+    </div>
+      <div class="sync-status" aria-live="polite" role="status">
+      <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+      <h5 id="sync-status-display">Not synced</h5>
     </div>
   </body>
 </html>

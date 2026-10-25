@@ -1,7 +1,7 @@
 const APP_CONFIG = {
   name: "Ascendra",
-  version: "1.2.3-beta",
-  update: "Horizon",
+  version: "1.4.0",
+  update: "Profile Syncing",
   publicUrl: "https://ascendraofficial.github.io/Ascendra/",
 };
 

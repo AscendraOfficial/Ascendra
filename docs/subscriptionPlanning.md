@@ -3,7 +3,7 @@
 ## 🤖 Smarter Ascendra AI
 
 - Longer conversations
-- Personalized advice based on habits, tasks, journal entries, and goals
+- Personalized advice based on habits, tasks, journal entries.
 - Custom AI personalities
 - Weekly AI progress reports
 - AI-generated study plans and routines
