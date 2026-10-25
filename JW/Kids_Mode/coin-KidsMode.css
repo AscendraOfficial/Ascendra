@@ -11,19 +11,9 @@
 
 /* Main circular Ascendra Coin */
 .ascendra-coin {
-    /* Keeps the coin fixed in the same position on the screen */
-    position: fixed;
-
-    /* Distance from the bottom-right corner */
-    bottom: 20px;
-    right: 20px;
-
     /* Size of the coin */
     width: 60px;
     height: 60px;
-
-    /* Adds margin */
-    margin: 10px;
    
     /* Makes the square element into a perfect circle */
     border-radius: 50%;
