@@ -32,3 +32,16 @@ body {
     font-family: sans-serif;
 }
 ```
+
+### JavaScript
+The JW branch **uses modern JavaScript, anything like p5.js would not work**. JW also uses
+the command `'use strict';` this enables a more 'strict' JavaScript browser. It also makes
+code more readable.
+```js
+// put 'use strict'; at the start of each JavaScript file
+'use strict';
+// In strict mode, the functions const, var and let is enabled
+const constExample = 1;
+// var is not recommended, as it is used in older JavaScript, and some browsers won't accept it
+let letExample = 1;
+```
