@@ -48,6 +48,7 @@ let letExample = 1;
 
 ## Projects
 The JW branch has many branch specific projects being worked on. Some of these include:
+
 - Kids Mode
 The JW branch is developing some Kids Mode specific features.
 
@@ -55,3 +56,20 @@ The JW branch is developing some Kids Mode specific features.
 The JW branch makes code from the real branch more organized.
 
 - Special modifications
+In the JW branch, there are many branch specific features that were made.
+
+
+## Result of the code
+Here is the general structure of what my code creates:
+`
+Ascendra -->
+settings -->
+Activate Kids Mode buton -->
+parental controls (Not done) -->
+Kids Mode Features -->
+home-KidsMode.html -->
+merchandise, merch, shop and character-KidsMode.html -->
+✨You are officially in Ascendra Kids Mode!
+`
+
+Note: This will be updated accordingly
