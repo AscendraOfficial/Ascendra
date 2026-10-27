@@ -9,6 +9,7 @@ What I am working on:
 • Adding regular Ascendra to my branch ✅
 • Changing all file names with parenthesis ✅
 • Adding some custom Kids Mode features
+• Making merchandise look better
 
 What can you help with:                                                   ! = need extra help
 •commit all of my code so that we both have easy access to it ✅
@@ -37,6 +38,5 @@ PS: If you do Ascendra elevate, give us free access to it.
 --------------------------------------------------------------------------------
 
 Questions and answers:
-Jayden: What should be a feature in Ascendra plus?
-declan: its called ascendra elevate and there is a whole md file about it
+
 
