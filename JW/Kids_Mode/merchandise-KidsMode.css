@@ -30,48 +30,29 @@ body {
 
 .navbar {
     position: fixed;
-
     bottom: 20px;
     left: 50%;
-
     transform: translateX(-50%);
 
     display: flex;
-
-    width: min(95vw, 900px);
+    width: 600px;
 
     overflow: hidden;
-
     border-radius: 999px;
-
     background-color: rgb(240, 240, 240);
-
-    box-shadow:
-        0 2px 10px rgba(0, 0, 0, 0.2);
-
-    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .navbar button {
     flex: 1;
-
-    min-width: 0;
-
-    padding: 15px 8px;
+    padding: 15px 0;
 
     border: none;
-
     background: transparent;
 
-    color: #222;
-
     font-size: 16px;
-
     cursor: pointer;
-
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
+    transition: background-color 0.2s;
 }
 
 .navbar button:hover {
@@ -80,94 +61,6 @@ body {
 
 .navbar .current {
     background-color: rgb(37, 99, 235);
-
     color: white;
-
     border-radius: 25px;
-}
-
-/* =========================
-   FONT AWESOME ICONS
-========================= */
-
-.navbar button i {
-    margin-bottom: 4px;
-
-    font-size: 16px;
-}
-
-/* =========================
-   RESPONSIVE DESIGN
-========================= */
-
-@media (max-width: 750px) {
-
-    .main-box {
-        width: 90vw;
-
-        padding: 30px 20px;
-    }
-
-    #merchandise {
-        font-size: 32px;
-    }
-
-    .box-navbar a {
-        font-size: 14px;
-
-        padding: 11px 6px;
-    }
-
-    .navbar {
-        width: 95vw;
-
-        bottom: 10px;
-    }
-
-    .navbar button {
-        padding: 12px 4px;
-
-        font-size: 13px;
-    }
-}
-
-@media (max-width: 500px) {
-
-    body {
-        padding-bottom: 90px;
-    }
-
-    .main-box {
-        width: 94vw;
-
-        padding: 25px 15px;
-    }
-
-    #merchandise {
-        font-size: 28px;
-    }
-
-    #merchandise_subtitle {
-        font-size: 15px;
-    }
-
-    .box-navbar {
-        gap: 3px;
-    }
-
-    .box-navbar a {
-        padding: 10px 4px;
-
-        font-size: 12px;
-    }
-
-    .navbar button {
-        padding: 10px 2px;
-
-        font-size: 10px;
-    }
-
-    .navbar button i {
-        font-size: 14px;
-    }
 }
