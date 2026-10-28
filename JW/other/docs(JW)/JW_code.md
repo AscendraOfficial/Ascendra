@@ -2,8 +2,9 @@
 
 ## Coding languages
 Code made in the JW file primarily consists of front end (HTML, CSS, JavaScript).
-**In the JW branch, we use modern coding languages, older coding languages won't
-work in the JW branch.**
+**In the JW branch, we prefer modern web technologies such as HTML, CSS, and JavaScript.
+Other languages can be used when appropriate, depending on the project's needs and
+compatibility.**
 
 ### HTML
 The JW file follows a simple HTML structure. It includes a `<head>` tag including
