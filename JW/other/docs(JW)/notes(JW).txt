@@ -9,13 +9,12 @@ What I am working on:
 • Adding regular Ascendra to my branch ✅
 • Changing all file names with parenthesis ✅
 • Adding some custom Kids Mode features
-• Making merchandise look better
+• Getting the Kids Mode exclusive files ready (pressure for the merchandise shirts is ticking ⏰).
 
 What can you help with:                                                   ! = need extra help
-•commit all of my code so that we both have easy access to it ✅
-!!!•draw some clothes, avatars and other things with javascript; make sure
-you store the code in a variable so that I can use it later. PS: I don't care
-if it is not drawn with js, as long as I can position it someway
+
+-->  !!!•draw some clothes, avatars and other things with modern JavaScript  <--
+
 !•find a way to prevent people from cheating there to-dos
 
 --------------------------------------------------------------------------------
