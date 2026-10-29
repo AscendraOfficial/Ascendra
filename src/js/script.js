@@ -3587,6 +3587,8 @@ const ROUTE_INITIALIZERS = {
 
     const todoList = document.getElementById("todo-list");
     const todoSummary = document.getElementById("todo-summary");
+    const refreshBtn = document.getElementById("refresh-todos-btn");
+    const refreshStatus = document.getElementById("refresh-todos-status");
     const filterButtons = [...document.querySelectorAll(".todo-filter")];
 
     const modal = createModalController(popup, taskInput, {
@@ -3770,6 +3772,26 @@ const ROUTE_INITIALIZERS = {
         todoList.appendChild(card);
       });
     }
+
+    refreshBtn.onclick = async () => {
+      if (!window.confirm("Refresh from cloud? This replaces this device's To-Dos and other synced profile data. Unsynced local changes may be lost. Continue?")) {
+        return;
+      }
+
+      refreshBtn.disabled = true;
+      refreshStatus.textContent = "Refreshing from cloud…";
+      try {
+        await window.ascendraSync.pullNow();
+        todos = getUserArray("todos");
+        showTodos();
+        refreshStatus.textContent = "Cloud data refreshed successfully.";
+      } catch (error) {
+        console.warn("Could not refresh To-Dos from cloud.", error);
+        refreshStatus.textContent = "Refresh failed: " + (error?.message || "Please try again.");
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    };
 
     addBtn.onclick = () => {
       dateInput.min = formatLocalDate();
