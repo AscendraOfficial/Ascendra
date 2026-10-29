@@ -3001,6 +3001,10 @@ const ROUTE_INITIALIZERS = {
           await connectLocalAccountToCloud(password);
         } catch (syncError) {
           console.warn("Ascendra logged in locally, but cloud sync could not connect.", syncError);
+          
+          alert(
+            "You're logged in on this device, but cloud syncing failed. Your changes may not appear on other devices."
+          );
         }
 
         alert("Welcome back, " + (savedUser.name || savedUsername) + "!");
