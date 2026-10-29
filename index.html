@@ -32,6 +32,10 @@
       <i class="fa-solid fa-arrow-left"></i>
     </button>
     <div id="app"></div>
+    <div id="global-cloud-refresh" class="global-cloud-refresh" hidden>
+      <button id="global-cloud-refresh-btn" type="button" aria-describedby="global-cloud-refresh-status" title="Download latest cloud data">🔄 Refresh</button>
+      <span id="global-cloud-refresh-status" role="status" aria-live="polite"></span>
+    </div>
 
     <!-- Welcome Page -->
     <template id="page-welcome">
@@ -208,8 +212,6 @@
       <h5 id="subtitle3">For better task management</h5>
 
       <button id="add-btn"><strong>+ Add Task</strong></button>
-      <button id="refresh-todos-btn" type="button" aria-describedby="refresh-todos-status">🔄 Refresh from Cloud</button>
-      <p id="refresh-todos-status" role="status" aria-live="polite"></p>
 
       <div class="todo-toolbar" aria-label="Filter tasks" role="group">
         <button class="todo-filter active" data-filter="all" type="button">All</button>
