@@ -10256,3 +10256,45 @@ body.dark-mode .habit-qr-info summary {
     margin-top: 12px;
   }
 }
+
+/* Persistent cloud refresh, placed beside the SPA back button. */
+.global-cloud-refresh {
+  position: fixed;
+  top: calc(18px + env(safe-area-inset-top));
+  left: calc(74px + env(safe-area-inset-left));
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100vw - 165px);
+}
+.global-cloud-refresh[hidden] { display: none !important; }
+#global-cloud-refresh-btn {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(120, 82, 190, 0.35);
+  border-radius: 14px;
+  background: var(--card, white);
+  color: var(--text, #301060);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+}
+#global-cloud-refresh-btn:disabled { opacity: 0.65; cursor: wait; }
+#global-cloud-refresh-status {
+  font-size: 0.78rem;
+  color: var(--text, #301060);
+  background: var(--card, white);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 520px) {
+  .global-cloud-refresh {
+    top: calc(12px + env(safe-area-inset-top));
+    left: calc(62px + env(safe-area-inset-left));
+    max-width: calc(100vw - 155px);
+  }
+  #global-cloud-refresh-btn { min-height: 42px; padding: 0 8px; font-size: 0.78rem; }
+}
+@media print { .global-cloud-refresh { display: none !important; } }
