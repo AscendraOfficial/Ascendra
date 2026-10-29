@@ -2615,6 +2615,39 @@ function getRoute() {
 function canonicalRouteHash(route) {
   return "#/" + normalizeRoute(route);
 }
+function updateGlobalCloudRefreshVisibility() {
+  const control = document.getElementById("global-cloud-refresh");
+  if (!control) return;
+  const route = getRoute();
+  const signedIn = Boolean(getProfileSyncIdentity().accountId && getLoggedInUsername());
+  control.hidden = !signedIn || ["welcome", "login", "signup", "loading-screen"].includes(route);
+}
+
+function initializeGlobalCloudRefresh() {
+  const button = document.getElementById("global-cloud-refresh-btn");
+  const status = document.getElementById("global-cloud-refresh-status");
+  if (!button || !status) return;
+
+  button.addEventListener("click", async () => {
+    if (!window.confirm("Download cloud data? This replaces this device's synced profile data, including To-Dos and Habits. Unsynced changes may be lost. Continue?")) return;
+    button.disabled = true;
+    status.textContent = "Refreshing…";
+    try {
+      await window.ascendraSync.pullNow();
+      // Reinitialize the current view so it reads the downloaded local data.
+      renderRoute(getRoute(), { focusRoute: false });
+      status.textContent = "Updated!";
+    } catch (error) {
+      console.warn("Cloud refresh failed.", error);
+      status.textContent = "Refresh failed: " + (error?.message || "Try again.");
+    } finally {
+      button.disabled = false;
+    }
+  });
+  updateGlobalCloudRefreshVisibility();
+}
+initializeGlobalCloudRefresh();
+
 function navigate(route, replace = false) {
   route = normalizeRoute(route);
   const hash = canonicalRouteHash(route);
@@ -2732,6 +2765,7 @@ function renderRoute(route, { focusRoute = true } = {}) {
   app.dataset.route = route;
   document.title = APP_CONFIG.name + " - " + route.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   backButton.hidden = route === "welcome";
+  updateGlobalCloudRefreshVisibility();
   applySavedSettings();
   page.querySelectorAll(".navbar").forEach((navbar) => {
     if (navbar.tagName !== "NAV") {
@@ -3587,8 +3621,6 @@ const ROUTE_INITIALIZERS = {
 
     const todoList = document.getElementById("todo-list");
     const todoSummary = document.getElementById("todo-summary");
-    const refreshBtn = document.getElementById("refresh-todos-btn");
-    const refreshStatus = document.getElementById("refresh-todos-status");
     const filterButtons = [...document.querySelectorAll(".todo-filter")];
 
     const modal = createModalController(popup, taskInput, {
@@ -3772,26 +3804,6 @@ const ROUTE_INITIALIZERS = {
         todoList.appendChild(card);
       });
     }
-
-    refreshBtn.onclick = async () => {
-      if (!window.confirm("Refresh from cloud? This replaces this device's To-Dos and other synced profile data. Unsynced local changes may be lost. Continue?")) {
-        return;
-      }
-
-      refreshBtn.disabled = true;
-      refreshStatus.textContent = "Refreshing from cloud…";
-      try {
-        await window.ascendraSync.pullNow();
-        todos = getUserArray("todos");
-        showTodos();
-        refreshStatus.textContent = "Cloud data refreshed successfully.";
-      } catch (error) {
-        console.warn("Could not refresh To-Dos from cloud.", error);
-        refreshStatus.textContent = "Refresh failed: " + (error?.message || "Please try again.");
-      } finally {
-        refreshBtn.disabled = false;
-      }
-    };
 
     addBtn.onclick = () => {
       dateInput.min = formatLocalDate();
