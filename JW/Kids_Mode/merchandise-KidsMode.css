@@ -8,21 +8,117 @@
 
 body {
     margin: 0;
-
     min-height: 100vh;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     font-family: Arial, sans-serif;
-
     background: white;
-
     color: #222;
 
-    padding-bottom: 100px;
+    /* Keep content at the top and centered horizontally */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+
+    /* Leave room for the fixed bottom navigation */
+    padding: 40px 0 110px;
 }
+
+
+
+/* Container for the three buttons */
+.merchandise-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* Individual buttons */
+#merch-button,
+#shop-button,
+#character-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 220px;
+    box-sizing: border-box;
+
+    padding: 24px;
+    border: none;
+    border-radius: 18px;
+
+    /* Blue-to-purple gradient, left to right */
+    background: linear-gradient(
+        90deg,
+        #2196f3 0%,
+        #7f00ff 100%
+    );
+
+    color: white;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    box-shadow: 0 5px 15px rgba(65, 40, 160, 0.2);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* Button headings */
+.merchandise-button-h2 {
+    margin: 0 0 16px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Button descriptions */
+.merchandise-button-p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+/* Hover effect */
+#merch-button:hover,
+#shop-button:hover,
+#character-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 24px rgba(65, 40, 160, 0.3);
+}
+
+/* Keyboard accessibility */
+#merch-button:focus-visible,
+#shop-button:focus-visible,
+#character-button:focus-visible {
+    outline: 3px solid #222;
+    outline-offset: 4px;
+}
+
+/* Smaller screens: stack buttons vertically */
+@media (max-width: 700px) {
+    .merchandise-container {
+        grid-template-columns: 1fr;
+        width: 90%;
+        gap: 16px;
+    }
+
+    #merch-button,
+    #shop-button,
+    #character-button {
+        min-height: 170px;
+    }
+}
+
 
 /* =========================
    MAIN ASCENDRA NAVIGATION
