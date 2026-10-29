@@ -394,26 +394,8 @@ export async function autoSyncProfile({ apiUrl, identity }) {
     return await pushCloudProfile({ apiUrl, identity });
   } catch (error) {
     if (error?.status === 409 && error?.body?.profile) {
-      const identityUpdate = applyProfileSnapshot(error.body.profile, identity);
-      markSynced(
-        identity.accountId,
-        error.body.profile_version,
-        error.body.updated_at || new Date().toISOString(),
-      );
-
-      window.dispatchEvent(
-        new CustomEvent("ascendra:profile-sync-conflict", {
-          detail: {
-            accountId: identity.accountId,
-            identityUpdate,
-          },
-        }),
-      );
-
-      return {
-        status: "conflict-resolved-from-cloud",
-        identityUpdate,
-      };
+      error.message =
+  "Sync conflict: cloud data changed. Local changes have been preserved.";
     }
 
     window.dispatchEvent(
