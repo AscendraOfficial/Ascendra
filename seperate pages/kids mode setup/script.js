@@ -107,6 +107,7 @@ finishButton.addEventListener("click", function () {
   localStorage.setItem("ascendraKidsModeCharacter", JSON.stringify(character));
 
   alert("Kids Mode setup complete!");
+  window.open("https://ascendraofficial.github.io/Ascendra/#/home", "_blank");
 });
 
 showShirt("orange");
