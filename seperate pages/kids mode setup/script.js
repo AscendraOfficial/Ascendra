@@ -74,7 +74,7 @@ function showShirt(shirtColour) {
     }
   });
 }
-
+console.log(characterName);
 step1Next.addEventListener("click", function () {
   if (characterName.value.trim() === "") {
     alert("Enter a character name first!");
@@ -108,6 +108,7 @@ finishButton.addEventListener("click", function () {
 
   alert("Kids Mode setup complete!");
   window.open("https://ascendraofficial.github.io/Ascendra/#/home", "_blank");
+  console.log(characterName.value);
 });
 
 showShirt("orange");
