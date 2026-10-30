@@ -2663,9 +2663,12 @@ function applySavedSettings() {
   const ascendraAIEnabled = settings.ascendraAIEnabled !== false;
   const companion = document.getElementById("ascendra-ai");
   if (companion) {
-    companion.hidden = !ascendraAIEnabled;
+    // The companion lives outside the page template, so hide it on public pages.
+    const showCompanion = ascendraAIEnabled && !PUBLIC_ROUTES.has(getRoute()) && Boolean(getLoggedInUsername());
+    companion.hidden = !showCompanion;
+    companion.style.display = showCompanion ? "" : "none";
 
-    if (!ascendraAIEnabled) {
+    if (!showCompanion) {
       // Clear temporary movement states so turning the companion back on starts from a stable position.
       companion.classList.remove(
         "is-roaming",
@@ -2694,9 +2697,22 @@ function clearWindowRouteFunction(name, routeFunction) {
   }
 }
 
+// Pages available without an authenticated Ascendra session.
+const PUBLIC_ROUTES = new Set(["welcome", "login", "signup", "privacy", "terms", "about", "credits"]);
+
 function renderRoute(route, { focusRoute = true } = {}) {
   route = normalizeRoute(route);
   if (route !== "login" && invalidateMissingActiveAccount()) return;
+  // Guard the renderer itself so direct URLs, back/forward, and in-app navigation
+  // cannot render a private page without a valid active local account.
+  if (!PUBLIC_ROUTES.has(route)) {
+    const username = getLoggedInUsername();
+    if (!username || !activeAccountMatchesIdentity(username)) {
+      if (username) clearActiveIdentity();
+      navigate("login", true);
+      return;
+    }
+  }
   const template = document.getElementById("page-" + route);
   if (!template) {
     app.innerHTML = '<div class="spa-error" role="main"><h1>Page not found</h1></div>';
