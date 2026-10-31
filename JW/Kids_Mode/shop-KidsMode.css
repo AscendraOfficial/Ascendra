@@ -49,3 +49,68 @@ body {
 #shop-subtitle {
     color: purple;
 }
+
+.shop-scene {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 800 / 600;
+    margin: 20px auto;
+}
+
+/* Canvas */
+#shopStall {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Shop counter */
+.shop-counter {
+    position: absolute;
+    left: 23%;
+    top: 62%;
+    width: 54%;
+    height: 30%;
+    box-sizing: border-box;
+
+    background: #ffffff;
+    border: 3px solid #7f00ff;
+    border-radius: 14px;
+    padding: 12px;
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
+
+/* Counter heading */
+.shop-counter-header {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.shop-counter-header h2 {
+    color: #7f00ff;
+    font-size: 18px;
+    margin: 0 0 4px;
+}
+
+.shop-counter-header p {
+    color: #777777;
+    font-size: 12px;
+    margin: 0 0 10px;
+}
+
+/* Empty inventory area */
+.shop-inventory {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 5px;
+}
