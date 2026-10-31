@@ -4,19 +4,36 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="shop-KidsMode.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <title>Ascendra-shop</title>
+    <title>Ascendra - Shop</title>
 </head>
 <body>
     <button onclick="window.location.href='merchandise-KidsMode.html'" class="go_back">
         <i class="fa-solid fa-arrow-left"></i>
     </button>
     <h1 id="shop-heading">Shop</h1>
-    <h3 id="shop-subtitle">to buy items</h3>
-    <!--
-        I have linked a coin system, once you finish the shirts, we can display them.
-        In shop, you can buy things with the coins you earn from completing todos and
-        habits.
-    -->
+    
+    <div class="shop-scene">
+
+    <!-- Shop stall canvas -->
+    <canvas id="shopStall" width="800" height="600"></canvas>
+
+    <!-- Counter placed over the fox's body -->
+        <div class="shop-counter">
+
+            <div class="shop-counter-header">
+                <h2>Welcome to Ascendra Shop!</h2>
+                <p>Spend your coins on rewards.</p>
+            </div>
+
+        <!-- Empty scrollable inventory area -->
+            <div class="shop-inventory">
+            </div>
+
+        </div>
+
+    </div>
+
+
     <script src="shop-KidsMode.js"></script>
 </body>
 </html>
