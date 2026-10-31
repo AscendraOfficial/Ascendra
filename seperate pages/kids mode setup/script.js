@@ -61,9 +61,7 @@ function showShirt(shirtColour) {
   const shirt = shirts[shirtColour];
 
   shirtImage.src = shirt.main;
-
   leftSleeve.src = shirt.left;
-
   rightSleeve.src = shirt.right;
 
   shirtButtons.forEach(function (button) {
@@ -74,20 +72,20 @@ function showShirt(shirtColour) {
     }
   });
 }
-console.log(characterName);
+
 step1Next.addEventListener("click", function () {
   if (characterName.value.trim() === "") {
     alert("Enter a character name first!");
-
     return;
   }
 
-  step1.classList.remove("active");
+  // Log the character's name
+  console.log("Character name:", characterName.value.trim());
 
+  step1.classList.remove("active");
   step2.classList.add("active");
 
   dot1.classList.remove("active");
-
   dot2.classList.add("active");
 });
 
@@ -100,15 +98,14 @@ shirtButtons.forEach(function (button) {
 finishButton.addEventListener("click", function () {
   const character = {
     name: characterName.value.trim(),
-
     shirt: selectedShirt,
   };
 
   localStorage.setItem("ascendraKidsModeCharacter", JSON.stringify(character));
 
   alert("Kids Mode setup complete!");
+
   window.open("https://ascendraofficial.github.io/Ascendra/#/home", "_blank");
-  console.log(characterName.value);
 });
 
 showShirt("orange");
