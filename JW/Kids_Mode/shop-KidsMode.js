@@ -3,6 +3,10 @@
 const canvas = document.getElementById("shopStall");
 const ctx = canvas.getContext("2d");
 
+if (!canvas || !ctx) {
+    console.error("Shop canvas could not be found.");
+}
+
 canvas.width = 800;
 canvas.height = 600;
 
