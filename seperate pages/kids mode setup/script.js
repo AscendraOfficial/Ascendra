@@ -102,6 +102,8 @@ finishButton.addEventListener("click", function () {
   };
 
   localStorage.setItem("ascendraKidsModeCharacter", JSON.stringify(character));
+  localStorage.setItem("CharacterName", characterName);
+  localStorage.setItem("shirt_color", selectedShirt)
 
   alert("Kids Mode setup complete!");
 
