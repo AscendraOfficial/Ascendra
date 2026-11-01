@@ -76,6 +76,8 @@
     }
     .console-actions { gap: 8px; margin-top: 12px; }
     .console-actions button { font-size: 14px; }
+    .log-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .log-controls select { padding: 10px; background: #241b35; color: white; border: 1px solid #7f62a2; border-radius: 9px; }
   </style>
 </head>
 <body>
@@ -122,11 +124,28 @@
           <button id="refresh-stats" type="button">Refresh analytics</button>
           <button id="clear-log" type="button">Clear console</button>
         </div>
+        <h3>Browser console history (this device)</h3>
+        <p><small>Only short, redacted text messages are saved for up to 24 hours (maximum 120). Object contents and sensitive details are omitted. Logging begins after this update loads on a page.</small></p>
+        <div class="log-controls">
+          <select id="log-filter" aria-label="Log severity">
+            <option value="all">All levels</option>
+            <option value="error">Errors</option>
+            <option value="warn">Warnings</option>
+            <option value="log">Logs</option>
+            <option value="info">Info</option>
+            <option value="debug">Debug</option>
+          </select>
+          <button id="view-browser-logs" type="button">Refresh browser logs</button>
+          <button id="clear-browser-logs" type="button">Delete saved logs</button>
+        </div>
+        <div id="browser-log-output" class="console" role="log" aria-live="polite">No logs loaded yet.</div>
+        <h3>Dashboard diagnostics</h3>
         <div id="console-output" class="console" role="log" aria-live="polite">[ready] Console initialized.\n</div>
       </section>
     </section>
   </main>
 
+  <script src="src/js/diagnostics.js"></script>
   <script>
     // Configuration and element references
     const BACKEND_URL = "https://ascendra-oc22.onrender.com";
@@ -193,6 +212,7 @@
         dashboard.classList.remove("hidden");
         status.textContent = "Unlocked.";
         log("Admin access verified. Console ready.");
+        renderBrowserLogs();
       } catch (error) {
         status.textContent = error.message;
       } finally {
@@ -206,6 +226,23 @@
     for (const name of ["analytics", "console"]) {
       document.getElementById(name + "-tab").addEventListener("click", () => showTab(name));
     }
+
+    // Read saved console messages from this browser only.
+    function renderBrowserLogs() {
+      const output = document.getElementById("browser-log-output");
+      const level = document.getElementById("log-filter").value;
+      const entries = window.AscendraDiagnostics ? window.AscendraDiagnostics.read() : [];
+      const filtered = entries.filter((entry) => level === "all" || entry.level === level);
+      output.textContent = filtered.length
+        ? filtered.map((entry) => "[" + new Date(entry.time).toLocaleString() + "] [" + entry.level + "] " + entry.page + ": " + entry.message).join("\\n")
+        : "No matching saved browser messages on this device.";
+    }
+    document.getElementById("view-browser-logs").addEventListener("click", renderBrowserLogs);
+    document.getElementById("log-filter").addEventListener("change", renderBrowserLogs);
+    document.getElementById("clear-browser-logs").addEventListener("click", () => {
+      if (window.AscendraDiagnostics) window.AscendraDiagnostics.clear();
+      renderBrowserLogs();
+    });
 
     // Console actions
     document.getElementById("clear-log").addEventListener("click", () => {
