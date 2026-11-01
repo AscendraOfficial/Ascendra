@@ -42,6 +42,7 @@ CORS(
         r"/journal": {"origins": allowed_origins},
         r"/journal/claim": {"origins": allowed_origins},
         r"/sync/.*": {"origins": allowed_origins},
+        r"/admin/analytics": {"origins": allowed_origins, "allow_headers": ["X-Ascendra-Admin-Key"]},
     },
     allow_headers=["Content-Type", "Authorization"],
 )
@@ -999,3 +1000,39 @@ def health():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+# Admin-only aggregate account analytics. Configure ASCENDRA_ANALYTICS_ADMIN_KEY
+# as a long random secret on the backend; never place it in frontend source.
+@app.get("/admin/analytics")
+def admin_analytics():
+    admin_key = os.environ.get("ASCENDRA_ANALYTICS_ADMIN_KEY", "").strip()
+    supplied = request.headers.get("X-Ascendra-Admin-Key", "")
+    if not admin_key or not secrets.compare_digest(supplied, admin_key):
+        return json_error("Unauthorized", 401, "unauthorized")
+
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    week_ago = (now - timedelta(days=7)).isoformat()
+    day_ago = (now - timedelta(days=1)).isoformat()
+    try:
+        # Aggregate counts only. No usernames, IDs, or profile contents returned.
+        total_result = supabase.table(PROFILE_SYNC_TABLE).select("account_id", count="exact").limit(0).execute()
+        recent_result = supabase.table(PROFILE_SYNC_TABLE).select("account_id", count="exact").gte("updated_at", week_ago).limit(0).execute()
+        daily_result = supabase.table(PROFILE_SYNC_TABLE).select("account_id", count="exact").gte("updated_at", day_ago).limit(0).execute()
+        response = {
+            "total_accounts": total_result.count or 0,
+            "updated_last_7_days": recent_result.count or 0,
+            "updated_last_24_hours": daily_result.count or 0,
+            "new_signups_last_7_days": None,
+            "note": "Updated accounts are not necessarily active users. Signup counts require a created_at column."
+        }
+        # created_at is optional in existing deployments.
+        try:
+            signups = supabase.table(PROFILE_SYNC_TABLE).select("account_id", count="exact").gte("created_at", week_ago).limit(0).execute()
+            response["new_signups_last_7_days"] = signups.count or 0
+        except Exception:
+            pass
+        return response
+    except Exception:
+        return json_error("Analytics temporarily unavailable", 503, "analytics_unavailable")
