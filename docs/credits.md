@@ -23,6 +23,7 @@
 ## Beta Testers
 
 - Daniel Lim
+- Corvin Dejarme
   
 ## Special Thanks
 
