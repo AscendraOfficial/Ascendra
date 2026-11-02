@@ -52,15 +52,15 @@ The JW branch has many branch specific projects being worked on. Some of these i
 
 - Kids Mode
 
-The JW branch is developing some Kids Mode specific features.
+    The JW branch is developing some Kids Mode specific features.
 
 - Organization
 
-The JW branch makes code from the real branch more organized.
+    The JW branch makes code from the real branch more organized.
 
 - Special modifications
 
-In the JW branch, there are many branch specific features that were made.
+    In the JW branch, there are many branch specific features that were made.
 
 
 ## Result of the code
