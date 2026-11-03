@@ -2704,7 +2704,8 @@ function applySavedSettings() {
   const ascendraAIEnabled = settings.ascendraAIEnabled !== false;
   const companion = document.getElementById("ascendra-ai");
   if (companion) {
-    companion.hidden = !ascendraAIEnabled;
+    // Keep the home page free of the fox without disabling it on other pages.
+    companion.hidden = !ascendraAIEnabled || app.dataset.route === "home";
 
     if (!ascendraAIEnabled) {
       // Clear temporary movement states so turning the companion back on starts from a stable position.
