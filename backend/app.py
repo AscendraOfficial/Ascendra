@@ -21,6 +21,8 @@ app.config["MAX_CONTENT_LENGTH"] = 512 * 1024
 
 default_origins = [
     "https://ascendraofficial.github.io",
+    "https://ascendra.ca",
+    "https://www.ascendra.ca",
     "https://jedicuber.github.io",
     "http://127.0.0.1:8765",
     "http://localhost:8765",
