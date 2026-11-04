@@ -1,3 +1,14 @@
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    text-align: center;
+}
+
 /* This is the css for the go back button. */
 .go_back {
     /* Controls width and height. */
