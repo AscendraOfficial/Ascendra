@@ -10345,3 +10345,61 @@ body.dark-mode .habit-qr-info summary {
     transition: none;
   }
 }
+
+
+/* Landing-page spacing and color corrections */
+.ascendra-page[data-route="welcome"] {
+  padding-top: max(110px, calc(65px + env(safe-area-inset-top)));
+}
+.ascendra-page[data-route="welcome"] > #main_paragraph {
+  margin-bottom: 30px;
+}
+.ascendra-page[data-route="welcome"] > #main_paragraph a {
+  color: #6500d1 !important;
+}
+.ascendra-page[data-route="welcome"] > #version {
+  margin: 20px 0 22px;
+}
+.ascendra-page[data-route="welcome"] > .credits-link {
+  margin: 0 0 20px;
+  color: #61457b;
+}
+.ascendra-page[data-route="welcome"] > footer {
+  margin: 8px 0 0;
+  padding: 12px 16px 0;
+  text-align: center;
+  line-height: 1.8;
+}
+.ascendra-page[data-route="welcome"] > footer a {
+  color: #5b00b8;
+  text-underline-offset: 3px;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] {
+  align-self: stretch;
+  margin-top: clamp(90px, 12vw, 150px);
+  background: #f8f5ff !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header {
+  background: linear-gradient(125deg, #4c008f, #7f00ff 65%, #9c4dff) !important;
+  color: #fff !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header h1 {
+  color: #fff !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .creator-section {
+  background: linear-gradient(120deg, #5c00bd, #850cfb) !important;
+  color: white;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .creator-section h2,
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .creator-section i {
+  color: white !important;
+}
+@media (max-width: 600px) {
+  .ascendra-page[data-route="welcome"] {
+    padding-top: max(100px, calc(60px + env(safe-area-inset-top)));
+  }
+  .ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] {
+    margin-top: 95px;
+  }
+  .ascendra-page[data-route="welcome"] > footer { padding-inline: 8px; }
+}
