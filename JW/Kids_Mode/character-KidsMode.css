@@ -45,10 +45,10 @@ body {
 
 /* This controls the heading */
 #character-heading {
-    color: cyan;
+    color: black;
 }
 
 /* This controls the subheading */
 #character-subtitle {
-    color: purple;
+    rgb(184, 165, 245)
 }
