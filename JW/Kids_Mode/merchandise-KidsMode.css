@@ -23,20 +23,6 @@ body {
     padding: 40px 0 110px;
 }
 
-
-
-/* Container for the three buttons */
-.merchandise-container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto;
-
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    align-items: stretch;
-}
-
 /* Individual buttons */
 #merch-button,
 #shop-button,
@@ -104,7 +90,17 @@ body {
     outline-offset: 4px;
 }
 
-/* Smaller screens: stack buttons vertically */
+.merchandise-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+    align-items: stretch;
+}
+
 @media (max-width: 700px) {
     .merchandise-container {
         grid-template-columns: 1fr;
@@ -118,7 +114,6 @@ body {
         min-height: 170px;
     }
 }
-
 
 /* =========================
    MAIN ASCENDRA NAVIGATION
