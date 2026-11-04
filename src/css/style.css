@@ -10586,3 +10586,46 @@ body.dark-mode .habit-qr-info summary {
     width: 100%;
   }
 }
+
+
+/* Gradient About panel, visually connected to the welcome section */
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] {
+  width: 100%;
+  max-width: 1100px;
+  align-self: center;
+  box-sizing: border-box;
+  margin: 62px auto 0;
+  padding: clamp(18px, 4vw, 38px);
+  border: 1px solid rgba(124, 43, 215, .16);
+  border-radius: 32px;
+  background: linear-gradient(155deg, #eee0ff 0%, #f8f2ff 43%, #e9dcff 100%) !important;
+  box-shadow: 0 18px 45px rgba(93, 33, 154, .12);
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header {
+  padding: 30px 14px 22px;
+  border-radius: 24px;
+  background: linear-gradient(120deg, #5800b4, #7f00ff 62%, #a653ff) !important;
+  color: white !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header h1 {
+  color: white !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .header-description {
+  color: #f5eaff !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-container {
+  width: 100%;
+  margin: 25px auto 0;
+}
+@media (max-width: 600px) {
+  .ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] {
+    width: 100%;
+    margin-top: 55px;
+    padding: 14px;
+    border-radius: 26px;
+  }
+  .ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header {
+    padding: 28px 14px;
+    border-radius: 20px;
+  }
+}
