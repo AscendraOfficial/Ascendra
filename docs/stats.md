@@ -1,6 +1,6 @@
 # Ascendra Stats
 
-- **Lines: 19,397**
+- **Lines: 19,393**
 
 ## Ascendra %
 - **JavaScript:** 38.5%
