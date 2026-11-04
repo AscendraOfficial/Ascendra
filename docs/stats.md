@@ -1,10 +1,10 @@
 # Ascendra Stats
 
-- **Lines: 19,295**
+- **Lines: 19,350**
 
 ## Ascendra %
-- **JavaScript:** 38.7%
-- **CSS:** 45.2%
-- **HTML:** 11.6%
+- **JavaScript:** 38.6%
+- **CSS:** 45.4%
+- **HTML:** 11.5%
 - **Python:** 4.5%
 - **C#:** 0.0%
