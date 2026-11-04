@@ -10629,3 +10629,9 @@ body.dark-mode .habit-qr-info summary {
     border-radius: 20px;
   }
 }
+
+
+/* Stronger, clearly visible purple gradient on welcome About header */
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header {
+  background: linear-gradient(115deg, #39006d 0%, #6500c9 35%, #9600ff 68%, #ca78ff 100%) !important;
+}
