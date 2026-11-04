@@ -18,8 +18,10 @@ if there is JavaScript. All together, it looks something like this:
     <title>Ascendra - Tasks, Habits and Goals</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<!-- All of the pages content -->
-<script src="script.js"></script>
+<body>
+    <!-- All of the pages content -->
+    <script src="script.js"></script>
+</body>
 </html>
 ```
 
