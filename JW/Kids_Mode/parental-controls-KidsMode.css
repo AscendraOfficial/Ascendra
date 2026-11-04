@@ -49,7 +49,7 @@ body {
 }
 
 /* Makes the card containing the form */
-#parental-controls-card {
+.parental-controls-card {
     background-color: white;
 
     width: 75%;
