@@ -37,3 +37,22 @@
     transition: 0.2s ease;
 }
 
+/* Makes the card containing the form */
+#parental-controls-card {
+    background-color: white;
+
+    width: 75%;
+    height: 80%;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+    border: 1px solid #eeeeee;
+
+    overflow: auto;
+
+    box-sizing: border-box;
+}
