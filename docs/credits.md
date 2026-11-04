@@ -4,6 +4,7 @@
 
 - Declan Chong - Lead Developer
 - Jayden Wang - Co-founder
+- Natalie Wang - Developer
 
 ## Libraries
 
