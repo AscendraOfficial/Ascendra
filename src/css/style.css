@@ -10298,3 +10298,132 @@ body.dark-mode .habit-qr-info summary {
   #global-cloud-refresh-btn { min-height: 42px; padding: 0 8px; font-size: 0.78rem; }
 }
 @media print { .global-cloud-refresh { display: none !important; } }
+
+
+/* Welcome + About visual refresh (shared by real and dc) */
+.ascendra-page[data-route="welcome"] {
+  --landing-purple: #7f00ff;
+  --landing-ink: #25163e;
+  --landing-muted: #625875;
+  box-sizing: border-box;
+  justify-content: flex-start;
+  padding: clamp(60px, 10vh, 110px) 20px 0;
+  background: radial-gradient(ellipse at 15% 5%, #e8d6ff 0%, transparent 48%),
+              linear-gradient(160deg, #faf7ff 0%, #f0e9ff 58%, #faf8ff 100%);
+  color: var(--landing-ink);
+}
+.ascendra-page[data-route="welcome"] > #title {
+  max-width: 100%;
+  text-align: center;
+  font-size: clamp(2.3rem, 6vw, 4.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  color: #6e00df;
+}
+.ascendra-page[data-route="welcome"] > h2:not(#version) {
+  margin: 12px 0;
+  text-align: center;
+  color: #392052;
+}
+.ascendra-page[data-route="welcome"] > #subtitle1 {
+  text-align: center;
+  color: var(--landing-muted);
+  font-size: clamp(1rem, 2.8vw, 1.4rem);
+}
+.ascendra-page[data-route="welcome"] > #main_paragraph {
+  box-sizing: border-box;
+  width: min(100%, 760px);
+  padding: clamp(22px, 5vw, 40px);
+  border: 1px solid #e7d6fa;
+  background: rgba(255,255,255,.92);
+  color: #3f3650;
+  box-shadow: 0 18px 45px rgba(89, 29, 145, .10);
+}
+.ascendra-page[data-route="welcome"] > #main_paragraph a {
+  color: #6500d1;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.ascendra-page[data-route="welcome"] > #main_paragraph a:hover,
+.ascendra-page[data-route="welcome"] > #main_paragraph a:focus-visible {
+  color: #450090;
+}
+.ascendra-page[data-route="welcome"] > #version {
+  color: #514260;
+  text-align: center;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about {
+  box-sizing: border-box;
+  align-self: stretch;
+  width: calc(100% + 40px);
+  margin: 64px -20px 0;
+  min-height: 0;
+  background: #f8f5ff;
+  color: #261b3a;
+  font-family: Arial, sans-serif;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-header {
+  background: linear-gradient(120deg, #5300ac, #7f00ff 58%, #a44dff);
+  padding: clamp(55px, 8vw, 95px) 20px;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-header h1 {
+  animation: none;
+  opacity: 1;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  color: #fff;
+  letter-spacing: -.025em;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about h2 {
+  animation: none;
+  opacity: 1;
+  color: #38135f;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-section,
+.ascendra-page[data-route="welcome"] > .welcome-about .feature-card,
+.ascendra-page[data-route="welcome"] > .welcome-about .creator-section {
+  border: 1px solid #eadff8;
+  background: #fff;
+  box-shadow: 0 9px 28px rgba(70, 25, 125, .075);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-section:hover,
+.ascendra-page[data-route="welcome"] > .welcome-about .feature-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(70, 25, 125, .13);
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .section-icon,
+.ascendra-page[data-route="welcome"] > .welcome-about .feature-card i,
+.ascendra-page[data-route="welcome"] > .welcome-about .creator-section > i {
+  color: #7600eb;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-roadmap-link {
+  background: #7000df;
+  color: white;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-footer {
+  background: #28133e;
+  color: #f6efff;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about .about-footer a {
+  color: #e6c9ff;
+}
+@media (max-width: 600px) {
+  .ascendra-page[data-route="welcome"] { padding-top: 70px; }
+  .ascendra-page[data-route="welcome"] > #main_paragraph {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .ascendra-page[data-route="welcome"] > .welcome-about { margin-top: 44px; }
+  .ascendra-page[data-route="welcome"] > .welcome-about .about-container {
+    width: min(92%, 1100px);
+  }
+  .ascendra-page[data-route="welcome"] > .welcome-about .about-section {
+    padding: 22px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ascendra-page[data-route="welcome"] > .welcome-about .about-section,
+  .ascendra-page[data-route="welcome"] > .welcome-about .feature-card {
+    transition: none;
+  }
+}
