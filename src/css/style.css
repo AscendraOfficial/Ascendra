@@ -10485,3 +10485,47 @@ body.dark-mode .habit-qr-info summary {
   }
   .ascendra-page[data-route="welcome"] > footer { padding-inline: 8px; }
 }
+
+
+/* Seamless full-bleed About section on the landing page */
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] {
+  box-sizing: border-box;
+  width: 100vw;
+  max-width: none;
+  align-self: center;
+  flex-shrink: 0;
+  margin: 42px 0 0;
+  padding: 0;
+  overflow: clip;
+  background: #f8f5ff !important;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 54px 24px;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-container {
+  width: min(1100px, calc(100% - 36px));
+  margin: 26px auto 44px;
+}
+.ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-section {
+  margin-bottom: 20px;
+}
+.ascendra-page[data-route="welcome"] > footer {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+@media (max-width: 600px) {
+  .ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] {
+    width: 100vw;
+    margin: 38px 0 0;
+  }
+  .ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-header {
+    padding: 46px 22px;
+  }
+  .ascendra-page[data-route="welcome"] > .welcome-about.ascendra-page[data-route="about"] .about-container {
+    width: calc(100% - 32px);
+    margin: 22px auto 36px;
+  }
+}
