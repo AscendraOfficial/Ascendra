@@ -43,11 +43,11 @@ body {
 }
 
 #merch-heading {
-    color: cyan;
+    color: black;
 }
 
 #merch-subtitle {
-    color: purple;
+    rgb(184, 165, 245)
 }
 
 /* Merchandise card */
