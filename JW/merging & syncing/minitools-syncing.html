@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Ascendra - Mini Tools</title>
+    <link rel="stylesheet" href="minitools-syncing.css">
+</head>
+<h1>Mini Tools</h1>
+<strong>Quick little tools for decisions, randomness, and everyday tasks.</strong>
+
+<section class="mini-tools-progress card" aria-labelledby="mini-tools-progress-title">
+	<div>
+		<h2 id="mini-tools-progress-title">Mini Tools Rewards</h2>
+		<p>Use each tool successfully once to earn XP and achievements.</p>
+	</div>
+	<dl class="mini-tools-totals">
+		<div>
+			<dt>Overall XP</dt>
+			<dd data-xp-total>0 XP</dd>
+		</div>
+		<div>
+			<dt>Tool achievements</dt>
+			<dd data-mini-tools-achievement-count>0 / 4</dd>
+		</div>
+	</dl>
+	<a class="mini-tools-achievement-link" href="#/achievements">
+		View Achievements
+		<i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+	</a>
+</section>
+
+<section class="mini-tools-grid">
+	<!-- Coin Flip -->
+	<article class="card">
+		<h2>Coin Flip <i class="fa-solid fa-coins"></i></h2>
+		<p>Flip a coin.</p>
+		<button id="flip" type="button">Flip</button>
+		<p class="tool-result" id="coin-flip-output" aria-live="polite"></p>
+	</article>
+
+	<!-- Dice Roll -->
+	<article class="card">
+		<h2>Dice Roll <i class="fa-solid fa-dice"></i></h2>
+		<p>Roll a six-sided die.</p>
+		<br />
+		<button id="roll" type="button">Roll</button>
+		<p class="tool-result" id="dice-roll-output" aria-live="polite"></p>
+	</article>
+
+	<!-- Random Number Generator -->
+	<article class="card">
+		<h2>Random Number Generator <i class="fa-solid fa-hashtag"></i></h2>
+		<p>Generate a random whole number.</p>
+		<label for="min">Minimum number</label>
+		<input type="number" id="min" step="1" />
+		<br />
+		<label for="max">Maximum number</label>
+		<input type="number" id="max" step="1" />
+		<br />
+		<br />
+		<button id="gen" type="button">Generate</button>
+		<p class="tool-result" id="random-number-output" aria-live="polite"></p>
+	</article>
+</section>
+<script src="minitools-syncing.js"></script>
+</html>
