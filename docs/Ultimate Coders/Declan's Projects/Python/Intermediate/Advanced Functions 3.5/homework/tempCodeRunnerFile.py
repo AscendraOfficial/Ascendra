@@ -1,0 +1,1 @@
+draw_colour_triangle(200, colour)
