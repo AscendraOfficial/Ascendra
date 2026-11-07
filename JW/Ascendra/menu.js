@@ -1,5 +1,5 @@
 function goTo(page) {
-    window.location.href = page;
+  window.location.href = page;
 }
 
 const buttons = document.querySelectorAll("#nav button");
@@ -9,41 +9,35 @@ let angle = 0;
 let paused = false;
 
 // Pause rotation while hovering over a button
-buttons.forEach(button => {
+buttons.forEach((button) => {
+  button.addEventListener("mouseenter", () => {
+    paused = true;
+  });
 
-    button.addEventListener("mouseenter", () => {
-        paused = true;
-    });
-
-    button.addEventListener("mouseleave", () => {
-        paused = false;
-    });
-
+  button.addEventListener("mouseleave", () => {
+    paused = false;
+  });
 });
 
 function animate() {
+  if (!paused) {
+    angle += 0.0015; // Rotation speed
+  }
 
-    if (!paused) {
-        angle += 0.0015; // Rotation speed
-    }
+  buttons.forEach((button, i) => {
+    const currentAngle = angle + i * ((Math.PI * 2) / buttons.length);
 
-    buttons.forEach((button, i) => {
+    const x = Math.cos(currentAngle) * radius;
+    const y = Math.sin(currentAngle) * radius;
 
-        const currentAngle = angle + i * (Math.PI * 2 / buttons.length);
+    button.style.left = `${x}px`;
+    button.style.top = `${y}px`;
 
-        const x = Math.cos(currentAngle) * radius;
-        const y = Math.sin(currentAngle) * radius;
+    // Keep the button upright
+    button.style.transform = "translate(-50%, -50%)";
+  });
 
-        button.style.left = `${x}px`;
-        button.style.top = `${y}px`;
-
-        // Keep the button upright
-        button.style.transform = "translate(-50%, -50%)";
-
-    });
-
-    requestAnimationFrame(animate);
-
+  requestAnimationFrame(animate);
 }
 
 animate();
