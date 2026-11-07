@@ -7,6 +7,7 @@ import {
   autoSyncProfile,
   clearSyncSession,
   getLastSyncedAt,
+  getSyncToken,
   getSyncMode,
   loginCloudAccount,
   markSynced,
@@ -4642,7 +4643,16 @@ const ROUTE_INITIALIZERS = {
       journalRequests.add(controller);
 
       try {
-        return await fetch(url, { ...options, signal: controller.signal });
+        const accountId = getCurrentUserId();
+        const token = accountId ? getSyncToken(accountId) : "";
+        if (!token) {
+          throw new Error("Your journal needs an active cloud session. Please log out and sign in again.");
+        }
+        return await fetch(url, {
+          ...options,
+          headers: { ...options.headers, Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
       } finally {
         clearTimeout(timeoutId);
         journalRequests.delete(controller);
