@@ -1,0 +1,400 @@
+.ascendra-page {
+	min-height: 100dvh;
+	padding-bottom: max(72px, env(safe-area-inset-bottom));
+	color: rgb(34, 31, 47);
+	background: linear-gradient(135deg, rgb(241, 247, 255), rgb(248, 241, 255));
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.ascendra-page * {
+	box-sizing: border-box;
+}
+
+.ascendra-page .top-bar {
+	min-height: calc(75px + env(safe-area-inset-top));
+	padding: 12px max(24px, env(safe-area-inset-right)) 12px max(24px, env(safe-area-inset-left));
+	padding-top: calc(12px + env(safe-area-inset-top));
+	padding-left: calc(84px + env(safe-area-inset-left));
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	position: sticky;
+	top: 0;
+	z-index: 20;
+	background: rgba(255, 255, 255, 0.9);
+	border-bottom: 1px solid rgba(35, 60, 110, 0.1);
+	backdrop-filter: blur(12px);
+}
+
+.ascendra-page .top-bar h1 {
+	margin: 0;
+	font-size: 1.7rem;
+}
+
+.ascendra-page .icon-button {
+	width: 45px;
+	height: 45px;
+	display: grid;
+	place-items: center;
+	color: rgb(76, 65, 181);
+	background: rgb(238, 232, 255);
+	border-radius: 14px;
+	text-decoration: none;
+}
+
+.ascendra-page .progression-main {
+	width: min(1080px, 92%);
+	margin: 34px auto 0;
+}
+
+.ascendra-page .progression-hero,
+.ascendra-page .progression-section {
+	border: 1px solid rgba(72, 48, 126, 0.12);
+	border-radius: 24px;
+	box-shadow: 0 14px 36px rgba(55, 32, 93, 0.11);
+}
+
+.ascendra-page .progression-hero {
+	padding: clamp(26px, 5vw, 44px);
+	color: white;
+	background: linear-gradient(135deg, rgb(79, 70, 229), rgb(126, 34, 206));
+}
+
+.ascendra-page .progression-eyebrow {
+	margin: 0;
+	color: inherit;
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 1.4px;
+}
+
+.ascendra-page .progression-hero h2 {
+	margin: 7px 0 8px;
+	font-size: clamp(2rem, 6vw, 3.2rem);
+}
+
+.ascendra-page .progression-hero > p:not(.progression-eyebrow, .progression-xp-message) {
+	max-width: 650px;
+	margin: 0;
+	line-height: 1.6;
+}
+
+.ascendra-page .progression-summary {
+	margin: 28px 0 24px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.ascendra-page .progression-summary > div {
+	min-width: 0;
+	min-height: 78px;
+	padding: 17px 17px 17px 58px;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	background: rgba(255, 255, 255, 0.14);
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	border-radius: 17px;
+}
+
+.ascendra-page .progression-summary i {
+	position: absolute;
+	left: 17px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size: 1.35rem;
+}
+
+.ascendra-page .progression-summary dd {
+	order: 1;
+	margin: 0;
+	overflow-wrap: anywhere;
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+
+.ascendra-page .progression-summary dt {
+	order: 2;
+	color: rgba(255, 255, 255, 0.82);
+	font-size: 0.82rem;
+}
+
+.ascendra-page .progression-xp-heading {
+	display: flex;
+	justify-content: space-between;
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 0.84rem;
+}
+
+.ascendra-page .progression-xp-track {
+	height: 16px;
+	margin: 8px 0 11px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.22);
+	border: 1px solid rgba(255, 255, 255, 0.26);
+	border-radius: 999px;
+}
+
+.ascendra-page [data-xp-progress-fill] {
+	width: 0;
+	height: 100%;
+	background: linear-gradient(90deg, rgb(253, 224, 71), rgb(251, 146, 60));
+	border-radius: inherit;
+	transition: width 0.7s ease;
+}
+
+.ascendra-page .progression-xp-message {
+	margin: 0;
+	color: white;
+	font-weight: 700;
+}
+
+.ascendra-page .progression-section {
+	padding: clamp(22px, 4vw, 32px);
+	margin-top: 24px;
+	background: rgba(255, 255, 255, 0.95);
+}
+
+.ascendra-page .progression-section-heading {
+	margin-bottom: 20px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 18px;
+}
+
+.ascendra-page .progression-section-heading h2 {
+	margin: 5px 0 0;
+	font-size: 1.6rem;
+}
+
+.ascendra-page .progression-section-heading .progression-eyebrow {
+	color: rgb(102, 74, 190);
+}
+
+.ascendra-page .progression-section-heading a {
+	min-height: 44px;
+	padding: 10px 14px;
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	color: rgb(84, 63, 180);
+	background: rgb(242, 238, 255);
+	border-radius: 13px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.ascendra-page .progress-achievement-grid,
+.ascendra-page .progress-badge-grid {
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 275px), 1fr));
+	gap: 15px;
+	list-style: none;
+}
+
+.ascendra-page .progress-achievement,
+.ascendra-page .progress-badge {
+	min-width: 0;
+	padding: 18px;
+	display: grid;
+	grid-template-columns: 52px minmax(0, 1fr);
+	gap: 14px;
+	align-items: start;
+	background: rgb(249, 247, 255);
+	border: 1px solid rgba(91, 33, 182, 0.13);
+	border-radius: 18px;
+}
+
+.ascendra-page .progress-achievement[data-state="unlocked"],
+.ascendra-page .progress-badge[data-state="obtained"] {
+	background: rgb(242, 236, 255);
+	border-color: rgba(109, 40, 217, 0.38);
+	box-shadow: inset 4px 0 0 rgb(124, 58, 237);
+}
+
+.ascendra-page .progress-achievement-icon,
+.ascendra-page .progress-badge > span {
+	width: 52px;
+	height: 52px;
+	display: grid;
+	place-items: center;
+	background: white;
+	border-radius: 15px;
+	box-shadow: 0 7px 18px rgba(55, 32, 93, 0.1);
+	font-size: 1.7rem;
+}
+
+.ascendra-page :is(.progress-achievement, .progress-badge) h3 {
+	margin: 0 0 7px;
+	color: rgb(57, 42, 89);
+	overflow-wrap: anywhere;
+}
+
+.ascendra-page :is(.progress-achievement, .progress-badge) p {
+	margin: 0 0 10px;
+	color: rgb(98, 91, 112);
+	line-height: 1.45;
+}
+
+.ascendra-page .progress-achievement-status,
+.ascendra-page .progress-badge strong {
+	color: rgb(91, 33, 182);
+	font-size: 0.86rem;
+}
+
+.ascendra-page .achievement-progress-track {
+	height: 8px;
+	margin-top: 10px;
+	overflow: hidden;
+	background: rgb(226, 220, 239);
+	border-radius: 999px;
+}
+
+.ascendra-page .achievement-progress-track > div {
+	height: 100%;
+	background: linear-gradient(90deg, rgb(109, 40, 217), rgb(168, 85, 247));
+	border-radius: inherit;
+}
+
+.ascendra-page .progress-achievement-date {
+	display: block;
+	margin-top: 8px;
+	color: rgb(104, 94, 124);
+	font-size: 0.78rem;
+}
+
+.ascendra-page .progression-note {
+	margin: 18px 0 0;
+	color: rgb(98, 91, 112);
+	font-size: 0.9rem;
+}
+
+.ascendra-page :is(a, button):focus-visible {
+	outline: 3px solid rgb(76, 29, 149);
+	outline-offset: 3px;
+	box-shadow: 0 0 0 5px white;
+}
+
+body.dark-mode .ascendra-page {
+	color: var(--dark-text);
+	background: transparent;
+}
+
+body.dark-mode .ascendra-page :is(.top-bar, .progression-section) {
+	color: var(--dark-text);
+	background: var(--dark-surface);
+	border-color: var(--dark-border);
+}
+
+body.dark-mode .ascendra-page :is(.progress-achievement, .progress-badge) {
+	color: var(--dark-text);
+	background: var(--dark-surface-raised);
+	border-color: var(--dark-border);
+}
+
+body.dark-mode .ascendra-page :is(.progress-achievement, .progress-badge) :is(h3, strong) {
+	color: var(--dark-text);
+}
+
+body.dark-mode .ascendra-page :is(.progress-achievement, .progress-badge) p,
+body.dark-mode .ascendra-page :is(.progress-achievement-date, .progression-note) {
+	color: var(--dark-muted);
+}
+
+body.dark-mode .ascendra-page :is(.progress-achievement-icon, .progress-badge > span) {
+	background: var(--dark-surface);
+}
+
+body.dark-mode .ascendra-page .achievement-progress-track {
+	background: rgb(64, 55, 78);
+}
+
+body.dark-mode .ascendra-page .progression-section-heading a {
+	color: #ddd6fe;
+	background: rgb(62, 48, 85);
+}
+
+body.dark-mode .ascendra-page .progression-section-heading .progression-eyebrow {
+	color: #d8b4fe;
+}
+
+body.dark-mode .ascendra-page :is(a, button):focus-visible {
+	outline-color: #facc15;
+	box-shadow: 0 0 0 5px var(--dark-surface);
+}
+
+@media screen and (max-width: 650px) {
+	.ascendra-page .top-bar {
+		min-height: calc(66px + env(safe-area-inset-top));
+		padding: 10px 14px;
+		padding-top: calc(10px + env(safe-area-inset-top));
+		padding-left: calc(72px + env(safe-area-inset-left));
+	}
+
+	.ascendra-page .top-bar h1 {
+		font-size: 1.35rem;
+	}
+
+	.ascendra-page .progression-main {
+		width: calc(100% - 28px);
+		margin-top: 20px;
+	}
+
+	.ascendra-page .progression-summary {
+		grid-template-columns: 1fr;
+	}
+
+	.ascendra-page .progression-section-heading {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.ascendra-page .progression-section-heading a {
+		width: 100%;
+		justify-content: center;
+	}
+}
+
+.progression-toast {
+	max-width: min(420px, calc(100vw - 28px));
+	padding: 13px 18px;
+	position: fixed;
+	right: max(18px, env(safe-area-inset-right));
+	bottom: max(88px, calc(72px + env(safe-area-inset-bottom)));
+	z-index: 5000;
+	color: white;
+	background: linear-gradient(135deg, #5b21b6, #7c3aed);
+	border: 1px solid rgba(255, 255, 255, 0.24);
+	border-radius: 15px;
+	box-shadow: 0 14px 34px rgba(45, 24, 82, 0.32);
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(12px);
+	transition:
+		opacity 0.2s ease,
+		transform 0.2s ease;
+	font-weight: 700;
+}
+
+.progression-toast.show {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+body.dark-mode .progression-toast {
+	color: #f8fafc;
+	background: linear-gradient(135deg, #6d28d9, #9333ea);
+	border-color: var(--dark-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.progression-toast,
+	.ascendra-page [data-xp-progress-fill] {
+		transition: none !important;
+	}
+}
