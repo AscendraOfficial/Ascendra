@@ -452,6 +452,21 @@ def claim_matches_row(claim, row):
 
 
 def require_journal_auth(user_id):
+    # Current Ascendra accounts already have a signed profile-sync session.
+    # Accept that session only for its own account's journal.
+    authorization = request.headers.get("Authorization", "")
+    scheme, _, session_token = authorization.partition(" ")
+    if scheme.lower() == "bearer" and session_token.strip() and PROFILE_SYNC_SERIALIZER:
+        try:
+            identity = PROFILE_SYNC_SERIALIZER.loads(
+                session_token.strip(), max_age=PROFILE_SYNC_TOKEN_MAX_AGE
+            )
+            if identity.get("account_id") == user_id:
+                return session_token.strip(), None
+        except (BadSignature, SignatureExpired):
+            pass
+
+    # Keep supporting existing journal-specific tokens.
     token = get_bearer_token()
 
     if not token:
