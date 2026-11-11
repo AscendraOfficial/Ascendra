@@ -25,7 +25,6 @@ Security features:
 =========================================================
 */
 
-
 /* =====================================================
    SECURITY CONFIGURATION
 ===================================================== */
@@ -43,7 +42,6 @@ const MAX_FIELD_LENGTH = 5000;
 
 const MAX_PASSPHRASE_LENGTH = 256;
 
-
 /* =====================================================
    CURRENT DATE
 ===================================================== */
@@ -58,7 +56,6 @@ let currentMonth = todayMonth;
 let currentYear = todayYear;
 let selectedDay = todayDay;
 
-
 /* =====================================================
    JOURNAL STATE
 ===================================================== */
@@ -69,7 +66,6 @@ let selectedDay = todayDay;
  * It is never written to localStorage.
  */
 let encryptionKey = null;
-
 
 /*
  * Journal data exists only in memory while unlocked.
@@ -88,29 +84,30 @@ let encryptionKey = null;
  */
 let journalData = {};
 
-
 /* =====================================================
    MONTH NAMES
 ===================================================== */
 
 const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
 ];
-
 
 /* =====================================================
    ALLOWED MOODS
 ===================================================== */
 
-const allowedMoods = [
-    "😄 Happy",
-    "🙂 Good",
-    "😐 Okay",
-    "😔 Sad",
-    "😴 Tired"
-];
-
+const allowedMoods = ["😄 Happy", "🙂 Good", "😐 Okay", "😔 Sad", "😴 Tired"];
 
 /* =====================================================
    DOM ELEMENTS
@@ -132,1164 +129,795 @@ const goalText = document.getElementById("goalText");
 const saveEntry = document.getElementById("saveEntry");
 const statusMessage = document.getElementById("statusMessage");
 
-
 /* =====================================================
    BASIC VALIDATION
 ===================================================== */
 
 function isValidString(value, maxLength = MAX_FIELD_LENGTH) {
-    return (
-        typeof value === "string" &&
-        value.length <= maxLength
-    );
+	return typeof value === "string" && value.length <= maxLength;
 }
-
 
 function sanitizeEntry(entry) {
+	if (entry === null || typeof entry !== "object" || Array.isArray(entry)) {
+		return null;
+	}
 
-    if (
-        entry === null ||
-        typeof entry !== "object" ||
-        Array.isArray(entry)
-    ) {
-        return null;
-    }
+	if (
+		!isValidString(entry.mood, 100) ||
+		!isValidString(entry.day) ||
+		!isValidString(entry.grateful) ||
+		!isValidString(entry.learn) ||
+		!isValidString(entry.goal)
+	) {
+		return null;
+	}
 
-    if (
-        !isValidString(entry.mood, 100) ||
-        !isValidString(entry.day) ||
-        !isValidString(entry.grateful) ||
-        !isValidString(entry.learn) ||
-        !isValidString(entry.goal)
-    ) {
-        return null;
-    }
+	/*
+	 * Only predefined moods are accepted.
+	 */
+	if (!allowedMoods.includes(entry.mood)) {
+		return null;
+	}
 
-    /*
-     * Only predefined moods are accepted.
-     */
-    if (!allowedMoods.includes(entry.mood)) {
-        return null;
-    }
-
-    return {
-        mood: entry.mood,
-        day: entry.day,
-        grateful: entry.grateful,
-        learn: entry.learn,
-        goal: entry.goal
-    };
+	return {
+		mood: entry.mood,
+		day: entry.day,
+		grateful: entry.grateful,
+		learn: entry.learn,
+		goal: entry.goal,
+	};
 }
-
 
 /* =====================================================
    DATE KEY
 ===================================================== */
 
 function getDateKey(day) {
+	if (!Number.isInteger(currentYear) || !Number.isInteger(currentMonth) || !Number.isInteger(day)) {
+		return null;
+	}
 
-    if (
-        !Number.isInteger(currentYear) ||
-        !Number.isInteger(currentMonth) ||
-        !Number.isInteger(day)
-    ) {
-        return null;
-    }
+	if (currentMonth < 0 || currentMonth > 11) {
+		return null;
+	}
 
-    if (
-        currentMonth < 0 ||
-        currentMonth > 11
-    ) {
-        return null;
-    }
+	const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-    const daysInMonth =
-        new Date(
-            currentYear,
-            currentMonth + 1,
-            0
-        ).getDate();
+	if (day < 1 || day > daysInMonth) {
+		return null;
+	}
 
-    if (
-        day < 1 ||
-        day > daysInMonth
-    ) {
-        return null;
-    }
-
-    return `${currentYear}-${currentMonth + 1}-${day}`;
+	return `${currentYear}-${currentMonth + 1}-${day}`;
 }
-
 
 /* =====================================================
    RANDOM BYTES
 ===================================================== */
 
 function randomBytes(length) {
+	const bytes = new Uint8Array(length);
 
-    const bytes = new Uint8Array(length);
+	crypto.getRandomValues(bytes);
 
-    crypto.getRandomValues(bytes);
-
-    return bytes;
+	return bytes;
 }
-
 
 /* =====================================================
    ARRAY BUFFER → BASE64
 ===================================================== */
 
 function bytesToBase64(bytes) {
+	let binary = "";
 
-    let binary = "";
+	for (let i = 0; i < bytes.length; i++) {
+		binary += String.fromCharCode(bytes[i]);
+	}
 
-    for (let i = 0; i < bytes.length; i++) {
-        binary += String.fromCharCode(bytes[i]);
-    }
-
-    return btoa(binary);
+	return btoa(binary);
 }
-
 
 /* =====================================================
    BASE64 → UINT8ARRAY
 ===================================================== */
 
 function base64ToBytes(base64) {
+	if (typeof base64 !== "string" || base64.length === 0) {
+		throw new Error("Invalid encoded data.");
+	}
 
-    if (
-        typeof base64 !== "string" ||
-        base64.length === 0
-    ) {
-        throw new Error("Invalid encoded data.");
-    }
+	const binary = atob(base64);
 
-    const binary = atob(base64);
+	const bytes = new Uint8Array(binary.length);
 
-    const bytes = new Uint8Array(binary.length);
+	for (let i = 0; i < binary.length; i++) {
+		bytes[i] = binary.charCodeAt(i);
+	}
 
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-
-    return bytes;
+	return bytes;
 }
-
 
 /* =====================================================
    UTF-8 ENCODING
 ===================================================== */
 
 function encodeText(text) {
-
-    return new TextEncoder().encode(text);
+	return new TextEncoder().encode(text);
 }
-
 
 function decodeText(bytes) {
-
-    return new TextDecoder().decode(bytes);
+	return new TextDecoder().decode(bytes);
 }
-
 
 /* =====================================================
    DERIVE ENCRYPTION KEY
 ===================================================== */
 
 async function deriveEncryptionKey(passphrase, salt) {
+	const encodedPassphrase = encodeText(passphrase);
 
-    const encodedPassphrase =
-        encodeText(passphrase);
+	const baseKey = await crypto.subtle.importKey(
+		"raw",
+		encodedPassphrase,
+		{
+			name: "PBKDF2",
+		},
+		false,
+		["deriveKey"],
+	);
 
-    const baseKey =
-        await crypto.subtle.importKey(
-            "raw",
-            encodedPassphrase,
-            {
-                name: "PBKDF2"
-            },
-            false,
-            ["deriveKey"]
-        );
-
-    return crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            salt: salt,
-            iterations: PBKDF2_ITERATIONS,
-            hash: "SHA-256"
-        },
-        baseKey,
-        {
-            name: "AES-GCM",
-            length: 256
-        },
-        false,
-        [
-            "encrypt",
-            "decrypt"
-        ]
-    );
+	return crypto.subtle.deriveKey(
+		{
+			name: "PBKDF2",
+			salt: salt,
+			iterations: PBKDF2_ITERATIONS,
+			hash: "SHA-256",
+		},
+		baseKey,
+		{
+			name: "AES-GCM",
+			length: 256,
+		},
+		false,
+		["encrypt", "decrypt"],
+	);
 }
-
 
 /* =====================================================
    ENCRYPT DATA
 ===================================================== */
 
 async function encryptData(data) {
+	if (!encryptionKey) {
+		throw new Error("Journal is locked.");
+	}
 
-    if (!encryptionKey) {
-        throw new Error("Journal is locked.");
-    }
+	const plaintext = encodeText(JSON.stringify(data));
 
-    const plaintext =
-        encodeText(JSON.stringify(data));
+	/*
+	 * New random IV every time.
+	 */
+	const iv = randomBytes(IV_LENGTH);
 
-    /*
-     * New random IV every time.
-     */
-    const iv =
-        randomBytes(IV_LENGTH);
+	const encrypted = await crypto.subtle.encrypt(
+		{
+			name: "AES-GCM",
+			iv: iv,
+			tagLength: 128,
+		},
+		encryptionKey,
+		plaintext,
+	);
 
-    const encrypted =
-        await crypto.subtle.encrypt(
-            {
-                name: "AES-GCM",
-                iv: iv,
-                tagLength: 128
-            },
-            encryptionKey,
-            plaintext
-        );
-
-    return {
-        version: CRYPTO_VERSION,
-        iv: bytesToBase64(iv),
-        data: bytesToBase64(
-            new Uint8Array(encrypted)
-        )
-    };
+	return {
+		version: CRYPTO_VERSION,
+		iv: bytesToBase64(iv),
+		data: bytesToBase64(new Uint8Array(encrypted)),
+	};
 }
-
 
 /* =====================================================
    DECRYPT DATA
 ===================================================== */
 
 async function decryptData(container) {
+	if (!encryptionKey) {
+		throw new Error("Journal is locked.");
+	}
 
-    if (!encryptionKey) {
-        throw new Error("Journal is locked.");
-    }
+	if (
+		!container ||
+		typeof container !== "object" ||
+		container.version !== CRYPTO_VERSION ||
+		typeof container.iv !== "string" ||
+		typeof container.data !== "string"
+	) {
+		throw new Error("Invalid journal storage.");
+	}
 
-    if (
-        !container ||
-        typeof container !== "object" ||
-        container.version !== CRYPTO_VERSION ||
-        typeof container.iv !== "string" ||
-        typeof container.data !== "string"
-    ) {
-        throw new Error("Invalid journal storage.");
-    }
+	const iv = base64ToBytes(container.iv);
 
-    const iv =
-        base64ToBytes(container.iv);
+	const encrypted = base64ToBytes(container.data);
 
-    const encrypted =
-        base64ToBytes(container.data);
+	if (iv.length !== IV_LENGTH) {
+		throw new Error("Invalid encryption IV.");
+	}
 
-    if (iv.length !== IV_LENGTH) {
-        throw new Error("Invalid encryption IV.");
-    }
+	const decrypted = await crypto.subtle.decrypt(
+		{
+			name: "AES-GCM",
+			iv: iv,
+			tagLength: 128,
+		},
+		encryptionKey,
+		encrypted,
+	);
 
-    const decrypted =
-        await crypto.subtle.decrypt(
-            {
-                name: "AES-GCM",
-                iv: iv,
-                tagLength: 128
-            },
-            encryptionKey,
-            encrypted
-        );
+	const text = decodeText(new Uint8Array(decrypted));
 
-    const text =
-        decodeText(
-            new Uint8Array(decrypted)
-        );
+	const parsed = JSON.parse(text);
 
-    const parsed =
-        JSON.parse(text);
+	if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+		throw new Error("Invalid journal data.");
+	}
 
-    if (
-        parsed === null ||
-        typeof parsed !== "object" ||
-        Array.isArray(parsed)
-    ) {
-        throw new Error("Invalid journal data.");
-    }
-
-    return parsed;
+	return parsed;
 }
-
 
 /* =====================================================
    CHECK IF ENCRYPTED JOURNAL EXISTS
 ===================================================== */
 
 function journalExists() {
+	try {
+		return localStorage.getItem(STORAGE_KEY) !== null;
+	} catch (error) {
+		console.error("Unable to access journal storage.", error);
 
-    try {
-        return localStorage.getItem(
-            STORAGE_KEY
-        ) !== null;
-    } catch (error) {
-
-        console.error(
-            "Unable to access journal storage.",
-            error
-        );
-
-        return false;
-    }
+		return false;
+	}
 }
-
 
 /* =====================================================
    SAVE ENCRYPTED JOURNAL
 ===================================================== */
 
 async function saveEncryptedJournal() {
+	if (!encryptionKey) {
+		throw new Error("Journal is locked.");
+	}
 
-    if (!encryptionKey) {
-        throw new Error("Journal is locked.");
-    }
+	const encrypted = await encryptData(journalData);
 
-    const encrypted =
-        await encryptData(journalData);
+	const serialized = JSON.stringify(encrypted);
 
-    const serialized =
-        JSON.stringify(encrypted);
+	/*
+	 * Protect against unexpectedly enormous data.
+	 */
+	if (serialized.length > 5000000) {
+		throw new Error("Journal storage size is too large.");
+	}
 
-    /*
-     * Protect against unexpectedly enormous data.
-     */
-    if (serialized.length > 5000000) {
-        throw new Error(
-            "Journal storage size is too large."
-        );
-    }
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        serialized
-    );
+	localStorage.setItem(STORAGE_KEY, serialized);
 }
-
 
 /* =====================================================
    LOAD ENCRYPTED JOURNAL
 ===================================================== */
 
 async function loadEncryptedJournal() {
+	const stored = localStorage.getItem(STORAGE_KEY);
 
-    const stored =
-        localStorage.getItem(STORAGE_KEY);
+	if (!stored) {
+		journalData = {};
+		return;
+	}
 
-    if (!stored) {
-        journalData = {};
-        return;
-    }
+	let container;
 
-    let container;
+	try {
+		container = JSON.parse(stored);
+	} catch (error) {
+		throw new Error("The journal storage is corrupted.");
+	}
 
-    try {
+	const decrypted = await decryptData(container);
 
-        container = JSON.parse(stored);
+	/*
+	 * Validate every stored entry.
+	 */
+	const validatedData = {};
 
-    } catch (error) {
+	for (const key of Object.keys(decrypted)) {
+		/*
+		 * Only accept YYYY-M-D style date keys.
+		 */
+		if (!/^\d{4}-\d{1,2}-\d{1,2}$/.test(key)) {
+			continue;
+		}
 
-        throw new Error(
-            "The journal storage is corrupted."
-        );
-    }
+		const entry = sanitizeEntry(decrypted[key]);
 
-    const decrypted =
-        await decryptData(container);
+		if (entry) {
+			validatedData[key] = entry;
+		}
+	}
 
-    /*
-     * Validate every stored entry.
-     */
-    const validatedData = {};
-
-    for (const key of Object.keys(decrypted)) {
-
-        /*
-         * Only accept YYYY-M-D style date keys.
-         */
-        if (
-            !/^\d{4}-\d{1,2}-\d{1,2}$/.test(key)
-        ) {
-            continue;
-        }
-
-        const entry =
-            sanitizeEntry(decrypted[key]);
-
-        if (entry) {
-            validatedData[key] = entry;
-        }
-    }
-
-    journalData = validatedData;
+	journalData = validatedData;
 }
-
 
 /* =====================================================
    CREATE NEW JOURNAL
 ===================================================== */
 
 async function createNewJournal(passphrase) {
+	encryptionKey = await deriveEncryptionKey(passphrase, randomBytes(SALT_LENGTH));
 
-    encryptionKey =
-        await deriveEncryptionKey(
-            passphrase,
-            randomBytes(SALT_LENGTH)
-        );
+	/*
+	 * The salt must be saved so that the same
+	 * passphrase can derive the same key later.
+	 *
+	 * We therefore need a persistent salt.
+	 */
+	const salt = randomBytes(SALT_LENGTH);
 
-    /*
-     * The salt must be saved so that the same
-     * passphrase can derive the same key later.
-     *
-     * We therefore need a persistent salt.
-     */
-    const salt =
-        randomBytes(SALT_LENGTH);
+	encryptionKey = await deriveEncryptionKey(passphrase, salt);
 
-    encryptionKey =
-        await deriveEncryptionKey(
-            passphrase,
-            salt
-        );
+	journalData = {};
 
-    journalData = {};
+	const encrypted = await encryptData(journalData);
 
-    const encrypted =
-        await encryptData(journalData);
+	const storageObject = {
+		version: CRYPTO_VERSION,
+		salt: bytesToBase64(salt),
+		iv: encrypted.iv,
+		data: encrypted.data,
+	};
 
-    const storageObject = {
-        version: CRYPTO_VERSION,
-        salt: bytesToBase64(salt),
-        iv: encrypted.iv,
-        data: encrypted.data
-    };
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(storageObject)
-    );
+	localStorage.setItem(STORAGE_KEY, JSON.stringify(storageObject));
 }
-
 
 /* =====================================================
    UNLOCK EXISTING JOURNAL
 ===================================================== */
 
 async function unlockExistingJournal(passphrase) {
+	const stored = localStorage.getItem(STORAGE_KEY);
 
-    const stored =
-        localStorage.getItem(STORAGE_KEY);
+	if (!stored) {
+		throw new Error("Journal does not exist.");
+	}
 
-    if (!stored) {
-        throw new Error("Journal does not exist.");
-    }
+	let container;
 
-    let container;
+	try {
+		container = JSON.parse(stored);
+	} catch (error) {
+		throw new Error("Journal storage is corrupted.");
+	}
 
-    try {
+	if (
+		!container ||
+		container.version !== CRYPTO_VERSION ||
+		typeof container.salt !== "string" ||
+		typeof container.iv !== "string" ||
+		typeof container.data !== "string"
+	) {
+		throw new Error("Invalid journal storage format.");
+	}
 
-        container = JSON.parse(stored);
+	const salt = base64ToBytes(container.salt);
 
-    } catch (error) {
+	if (salt.length !== SALT_LENGTH) {
+		throw new Error("Invalid encryption salt.");
+	}
 
-        throw new Error(
-            "Journal storage is corrupted."
-        );
-    }
+	const candidateKey = await deriveEncryptionKey(passphrase, salt);
 
-    if (
-        !container ||
-        container.version !== CRYPTO_VERSION ||
-        typeof container.salt !== "string" ||
-        typeof container.iv !== "string" ||
-        typeof container.data !== "string"
-    ) {
-        throw new Error(
-            "Invalid journal storage format."
-        );
-    }
+	/*
+	 * Temporarily use candidate key.
+	 */
+	encryptionKey = candidateKey;
 
-    const salt =
-        base64ToBytes(container.salt);
+	try {
+		const decrypted = await decryptData(container);
 
-    if (salt.length !== SALT_LENGTH) {
-        throw new Error(
-            "Invalid encryption salt."
-        );
-    }
+		const validatedData = {};
 
-    const candidateKey =
-        await deriveEncryptionKey(
-            passphrase,
-            salt
-        );
+		for (const key of Object.keys(decrypted)) {
+			if (!/^\d{4}-\d{1,2}-\d{1,2}$/.test(key)) {
+				continue;
+			}
 
-    /*
-     * Temporarily use candidate key.
-     */
-    encryptionKey = candidateKey;
+			const entry = sanitizeEntry(decrypted[key]);
 
-    try {
+			if (entry) {
+				validatedData[key] = entry;
+			}
+		}
 
-        const decrypted =
-            await decryptData(container);
+		journalData = validatedData;
+	} catch (error) {
+		/*
+		 * Wrong password OR tampered data.
+		 *
+		 * Do not reveal which one.
+		 */
+		encryptionKey = null;
+		journalData = {};
 
-        const validatedData = {};
-
-        for (const key of Object.keys(decrypted)) {
-
-            if (
-                !/^\d{4}-\d{1,2}-\d{1,2}$/.test(key)
-            ) {
-                continue;
-            }
-
-            const entry =
-                sanitizeEntry(decrypted[key]);
-
-            if (entry) {
-                validatedData[key] = entry;
-            }
-        }
-
-        journalData = validatedData;
-
-    } catch (error) {
-
-        /*
-         * Wrong password OR tampered data.
-         *
-         * Do not reveal which one.
-         */
-        encryptionKey = null;
-        journalData = {};
-
-        throw new Error(
-            "Unable to unlock journal."
-        );
-    }
+		throw new Error("Unable to unlock journal.");
+	}
 }
-
 
 /* =====================================================
    INITIALIZE SECURITY
 ===================================================== */
 
 async function initializeJournalSecurity() {
+	/*
+	 * Check browser crypto support.
+	 */
+	if (!window.crypto || !window.crypto.subtle) {
+		alert("Your browser does not support the security features required by Ascendra Journal.");
 
-    /*
-     * Check browser crypto support.
-     */
-    if (
-        !window.crypto ||
-        !window.crypto.subtle
-    ) {
-        alert(
-            "Your browser does not support the security features required by Ascendra Journal."
-        );
+		throw new Error("Web Crypto API unavailable.");
+	}
 
-        throw new Error(
-            "Web Crypto API unavailable."
-        );
-    }
+	/*
+	 * First-time journal setup.
+	 */
+	if (!journalExists()) {
+		let passphrase = null;
 
+		while (!passphrase) {
+			passphrase = prompt(
+				"Create a passphrase for your Ascendra Journal.\n\n" +
+					"This passphrase is NOT stored anywhere.\n" +
+					"You will need it whenever the journal is opened again.",
+			);
 
-    /*
-     * First-time journal setup.
-     */
-    if (!journalExists()) {
+			if (passphrase === null) {
+				throw new Error("Journal setup cancelled.");
+			}
 
-        let passphrase = null;
+			if (passphrase.length < 12) {
+				alert("Please use a passphrase of at least 12 characters.");
 
-        while (!passphrase) {
+				passphrase = null;
+			}
 
-            passphrase =
-                prompt(
-                    "Create a passphrase for your Ascendra Journal.\n\n" +
-                    "This passphrase is NOT stored anywhere.\n" +
-                    "You will need it whenever the journal is opened again."
-                );
+			if (passphrase && passphrase.length > MAX_PASSPHRASE_LENGTH) {
+				alert("Passphrase is too long.");
 
-            if (passphrase === null) {
-                throw new Error(
-                    "Journal setup cancelled."
-                );
-            }
+				passphrase = null;
+			}
+		}
 
-            if (
-                passphrase.length < 12
-            ) {
-                alert(
-                    "Please use a passphrase of at least 12 characters."
-                );
+		let confirmation = prompt("Confirm your journal passphrase:");
 
-                passphrase = null;
-            }
+		if (confirmation === null || confirmation !== passphrase) {
+			alert("Passphrases did not match. The journal was not created.");
 
-            if (
-                passphrase &&
-                passphrase.length > MAX_PASSPHRASE_LENGTH
-            ) {
-                alert(
-                    "Passphrase is too long."
-                );
+			throw new Error("Journal setup cancelled.");
+		}
 
-                passphrase = null;
-            }
-        }
+		await createNewJournal(passphrase);
 
+		/*
+		 * Remove the passphrase from local variables.
+		 */
+		passphrase = null;
+		confirmation = null;
 
-        let confirmation =
-            prompt(
-                "Confirm your journal passphrase:"
-            );
+		return;
+	}
 
-        if (
-            confirmation === null ||
-            confirmation !== passphrase
-        ) {
-            alert(
-                "Passphrases did not match. The journal was not created."
-            );
+	/*
+	 * Existing journal.
+	 */
+	let unlocked = false;
 
-            throw new Error(
-                "Journal setup cancelled."
-            );
-        }
+	while (!unlocked) {
+		let passphrase = prompt("Enter your Ascendra Journal passphrase:");
 
+		if (passphrase === null) {
+			throw new Error("Journal unlock cancelled.");
+		}
 
-        await createNewJournal(passphrase);
+		if (passphrase.length === 0 || passphrase.length > MAX_PASSPHRASE_LENGTH) {
+			alert("Invalid passphrase.");
 
-        /*
-         * Remove the passphrase from local variables.
-         */
-        passphrase = null;
-        confirmation = null;
+			passphrase = null;
+			continue;
+		}
 
-        return;
-    }
+		try {
+			await unlockExistingJournal(passphrase);
 
+			unlocked = true;
+		} catch (error) {
+			alert("Unable to unlock the journal. Please check your passphrase.");
+		}
 
-    /*
-     * Existing journal.
-     */
-    let unlocked = false;
-
-    while (!unlocked) {
-
-        let passphrase =
-            prompt(
-                "Enter your Ascendra Journal passphrase:"
-            );
-
-        if (passphrase === null) {
-            throw new Error(
-                "Journal unlock cancelled."
-            );
-        }
-
-        if (
-            passphrase.length === 0 ||
-            passphrase.length > MAX_PASSPHRASE_LENGTH
-        ) {
-            alert(
-                "Invalid passphrase."
-            );
-
-            passphrase = null;
-            continue;
-        }
-
-        try {
-
-            await unlockExistingJournal(
-                passphrase
-            );
-
-            unlocked = true;
-
-        } catch (error) {
-
-            alert(
-                "Unable to unlock the journal. Please check your passphrase."
-            );
-        }
-
-        passphrase = null;
-    }
+		passphrase = null;
+	}
 }
-
 
 /* =====================================================
    DATE FUNCTIONS
 ===================================================== */
 
 function isTodayDate(day) {
-
-    return (
-        day === todayDay &&
-        currentMonth === todayMonth &&
-        currentYear === todayYear
-    );
+	return day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 }
-
 
 function isFutureDate(day) {
+	const selectedDate = new Date(currentYear, currentMonth, day);
 
-    const selectedDate =
-        new Date(
-            currentYear,
-            currentMonth,
-            day
-        );
+	const realToday = new Date(todayYear, todayMonth, todayDay);
 
-    const realToday =
-        new Date(
-            todayYear,
-            todayMonth,
-            todayDay
-        );
-
-    return selectedDate > realToday;
+	return selectedDate > realToday;
 }
-
 
 /* =====================================================
    LOAD ENTRY INTO UI
 ===================================================== */
 
 function loadEntry(day) {
+	selectedDay = day;
 
-    selectedDay = day;
+	const dateKey = getDateKey(day);
 
-    const dateKey =
-        getDateKey(day);
+	if (!dateKey) {
+		return;
+	}
 
-    if (!dateKey) {
-        return;
-    }
+	const entry = journalData[dateKey] || null;
 
-    const entry =
-        journalData[dateKey] || null;
+	entryTitle.textContent = `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
 
-    entryTitle.textContent =
-        `Entry for ${monthNames[currentMonth]} ${day}, ${currentYear}`;
+	if (entry && allowedMoods.includes(entry.mood)) {
+		mood.value = entry.mood;
+	} else {
+		mood.value = "😄 Happy";
+	}
 
+	dayText.value = entry?.day || "";
 
-    if (
-        entry &&
-        allowedMoods.includes(entry.mood)
-    ) {
-        mood.value = entry.mood;
-    } else {
-        mood.value = "😄 Happy";
-    }
+	gratefulText.value = entry?.grateful || "";
 
+	learnText.value = entry?.learn || "";
 
-    dayText.value =
-        entry?.day || "";
+	goalText.value = entry?.goal || "";
 
-    gratefulText.value =
-        entry?.grateful || "";
+	const canEdit = isTodayDate(day);
 
-    learnText.value =
-        entry?.learn || "";
+	mood.disabled = !canEdit;
 
-    goalText.value =
-        entry?.goal || "";
+	dayText.disabled = !canEdit;
 
+	gratefulText.disabled = !canEdit;
 
-    const canEdit =
-        isTodayDate(day);
+	learnText.disabled = !canEdit;
 
+	goalText.disabled = !canEdit;
 
-    mood.disabled =
-        !canEdit;
+	saveEntry.style.display = canEdit ? "block" : "none";
 
-    dayText.disabled =
-        !canEdit;
-
-    gratefulText.disabled =
-        !canEdit;
-
-    learnText.disabled =
-        !canEdit;
-
-    goalText.disabled =
-        !canEdit;
-
-
-    saveEntry.style.display =
-        canEdit ? "block" : "none";
-
-
-    statusMessage.textContent =
-        canEdit
-            ? ""
-            : "Past entries are read-only.";
+	statusMessage.textContent = canEdit ? "" : "Past entries are read-only.";
 }
-
 
 /* =====================================================
    BUILD CALENDAR
 ===================================================== */
 
 function buildDateGrid() {
+	/*
+	 * Clear the existing buttons.
+	 */
+	dateGrid.replaceChildren();
 
-    /*
-     * Clear the existing buttons.
-     */
-    dateGrid.replaceChildren();
+	monthTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-    monthTitle.textContent =
-        `${monthNames[currentMonth]} ${currentYear}`;
+	const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
+	for (let day = 1; day <= daysInMonth; day++) {
+		const button = document.createElement("button");
 
-    const daysInMonth =
-        new Date(
-            currentYear,
-            currentMonth + 1,
-            0
-        ).getDate();
+		/*
+		 * Safe text insertion.
+		 */
+		button.textContent = String(day);
 
+		button.classList.add("date-button");
 
-    for (
-        let day = 1;
-        day <= daysInMonth;
-        day++
-    ) {
+		const dateKey = getDateKey(day);
 
-        const button =
-            document.createElement("button");
+		if (dateKey && Object.prototype.hasOwnProperty.call(journalData, dateKey)) {
+			button.classList.add("has-entry");
+		}
 
+		if (isTodayDate(day)) {
+			button.classList.add("today");
+		}
 
-        /*
-         * Safe text insertion.
-         */
-        button.textContent =
-            String(day);
+		if (day === selectedDay) {
+			button.classList.add("selected-day");
+		}
 
+		if (isFutureDate(day)) {
+			button.classList.add("future");
 
-        button.classList.add(
-            "date-button"
-        );
+			button.disabled = true;
+		} else {
+			button.addEventListener("click", () => {
+				loadEntry(day);
 
+				buildDateGrid();
+			});
+		}
 
-        const dateKey =
-            getDateKey(day);
-
-
-        if (
-            dateKey &&
-            Object.prototype.hasOwnProperty.call(
-                journalData,
-                dateKey
-            )
-        ) {
-            button.classList.add(
-                "has-entry"
-            );
-        }
-
-
-        if (
-            isTodayDate(day)
-        ) {
-            button.classList.add(
-                "today"
-            );
-        }
-
-
-        if (
-            day === selectedDay
-        ) {
-            button.classList.add(
-                "selected-day"
-            );
-        }
-
-
-        if (
-            isFutureDate(day)
-        ) {
-
-            button.classList.add(
-                "future"
-            );
-
-            button.disabled = true;
-
-        } else {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    loadEntry(day);
-
-                    buildDateGrid();
-                }
-            );
-        }
-
-
-        dateGrid.appendChild(
-            button
-        );
-    }
+		dateGrid.appendChild(button);
+	}
 }
-
 
 /* =====================================================
    PREVIOUS MONTH
 ===================================================== */
 
-prevMonth.addEventListener(
-    "click",
-    () => {
+prevMonth.addEventListener("click", () => {
+	currentMonth--;
 
-        currentMonth--;
+	if (currentMonth < 0) {
+		currentMonth = 11;
 
-        if (currentMonth < 0) {
+		currentYear--;
+	}
 
-            currentMonth = 11;
+	selectedDay = 1;
 
-            currentYear--;
-        }
+	buildDateGrid();
 
-        selectedDay = 1;
-
-        buildDateGrid();
-
-        loadEntry(selectedDay);
-    }
-);
-
+	loadEntry(selectedDay);
+});
 
 /* =====================================================
    NEXT MONTH
 ===================================================== */
 
-nextMonth.addEventListener(
-    "click",
-    () => {
+nextMonth.addEventListener("click", () => {
+	currentMonth++;
 
-        currentMonth++;
+	if (currentMonth > 11) {
+		currentMonth = 0;
 
-        if (currentMonth > 11) {
+		currentYear++;
+	}
 
-            currentMonth = 0;
+	selectedDay = 1;
 
-            currentYear++;
-        }
+	buildDateGrid();
 
-        selectedDay = 1;
+	if (!isFutureDate(selectedDay)) {
+		loadEntry(selectedDay);
+	} else {
+		/*
+		 * Clear the form when navigating
+		 * into a future month.
+		 */
+		entryTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-        buildDateGrid();
+		mood.value = "😄 Happy";
 
+		dayText.value = "";
 
-        if (
-            !isFutureDate(selectedDay)
-        ) {
+		gratefulText.value = "";
 
-            loadEntry(selectedDay);
+		learnText.value = "";
 
-        } else {
+		goalText.value = "";
 
-            /*
-             * Clear the form when navigating
-             * into a future month.
-             */
-            entryTitle.textContent =
-                `${monthNames[currentMonth]} ${currentYear}`;
+		mood.disabled = true;
+		dayText.disabled = true;
+		gratefulText.disabled = true;
+		learnText.disabled = true;
+		goalText.disabled = true;
 
-            mood.value =
-                "😄 Happy";
+		saveEntry.style.display = "none";
 
-            dayText.value =
-                "";
-
-            gratefulText.value =
-                "";
-
-            learnText.value =
-                "";
-
-            goalText.value =
-                "";
-
-            mood.disabled = true;
-            dayText.disabled = true;
-            gratefulText.disabled = true;
-            learnText.disabled = true;
-            goalText.disabled = true;
-
-            saveEntry.style.display =
-                "none";
-
-            statusMessage.textContent =
-                "Future entries cannot be created yet.";
-        }
-    }
-);
-
+		statusMessage.textContent = "Future entries cannot be created yet.";
+	}
+});
 
 /* =====================================================
    SAVE ENTRY
 ===================================================== */
 
-saveEntry.addEventListener(
-    "click",
-    async () => {
+saveEntry.addEventListener("click", async () => {
+	/*
+	 * SECURITY:
+	 *
+	 * The interface is not trusted.
+	 *
+	 * Even if somebody changes disabled=false
+	 * through Developer Tools, this check remains.
+	 */
+	if (!isTodayDate(selectedDay)) {
+		statusMessage.textContent = "Past entries are read-only.";
 
-        /*
-         * SECURITY:
-         *
-         * The interface is not trusted.
-         *
-         * Even if somebody changes disabled=false
-         * through Developer Tools, this check remains.
-         */
-        if (
-            !isTodayDate(selectedDay)
-        ) {
+		return;
+	}
 
-            statusMessage.textContent =
-                "Past entries are read-only.";
+	if (!encryptionKey) {
+		statusMessage.textContent = "Journal is locked.";
 
-            return;
-        }
+		return;
+	}
 
+	const dateKey = getDateKey(selectedDay);
 
-        if (!encryptionKey) {
+	if (!dateKey) {
+		statusMessage.textContent = "Unable to save entry.";
 
-            statusMessage.textContent =
-                "Journal is locked.";
+		return;
+	}
 
-            return;
-        }
+	/*
+	 * Validate mood.
+	 */
+	const selectedMood = allowedMoods.includes(mood.value) ? mood.value : "😄 Happy";
 
+	/*
+	 * Validate text lengths.
+	 */
+	if (
+		!isValidString(dayText.value) ||
+		!isValidString(gratefulText.value) ||
+		!isValidString(learnText.value) ||
+		!isValidString(goalText.value)
+	) {
+		statusMessage.textContent = "One or more fields are too long.";
 
-        const dateKey =
-            getDateKey(selectedDay);
+		return;
+	}
 
+	const entry = {
+		mood: selectedMood,
+		day: dayText.value,
+		grateful: gratefulText.value,
+		learn: learnText.value,
+		goal: goalText.value,
+	};
 
-        if (!dateKey) {
+	const validatedEntry = sanitizeEntry(entry);
 
-            statusMessage.textContent =
-                "Unable to save entry.";
+	if (!validatedEntry) {
+		statusMessage.textContent = "Unable to validate entry.";
 
-            return;
-        }
+		return;
+	}
 
+	/*
+	 * Store only in memory first.
+	 */
+	journalData[dateKey] = validatedEntry;
 
-        /*
-         * Validate mood.
-         */
-        const selectedMood =
-            allowedMoods.includes(mood.value)
-                ? mood.value
-                : "😄 Happy";
+	try {
+		/*
+		 * Entire journal is encrypted before
+		 * touching localStorage.
+		 */
+		await saveEncryptedJournal();
 
+		statusMessage.textContent = "Entry saved!";
 
-        /*
-         * Validate text lengths.
-         */
-        if (
-            !isValidString(dayText.value) ||
-            !isValidString(gratefulText.value) ||
-            !isValidString(learnText.value) ||
-            !isValidString(goalText.value)
-        ) {
+		buildDateGrid();
+	} catch (error) {
+		console.error("Unable to save encrypted journal.", error);
 
-            statusMessage.textContent =
-                "One or more fields are too long.";
-
-            return;
-        }
-
-
-        const entry = {
-            mood: selectedMood,
-            day: dayText.value,
-            grateful: gratefulText.value,
-            learn: learnText.value,
-            goal: goalText.value
-        };
-
-
-        const validatedEntry =
-            sanitizeEntry(entry);
-
-
-        if (!validatedEntry) {
-
-            statusMessage.textContent =
-                "Unable to validate entry.";
-
-            return;
-        }
-
-
-        /*
-         * Store only in memory first.
-         */
-        journalData[dateKey] =
-            validatedEntry;
-
-
-        try {
-
-            /*
-             * Entire journal is encrypted before
-             * touching localStorage.
-             */
-            await saveEncryptedJournal();
-
-
-            statusMessage.textContent =
-                "Entry saved!";
-
-
-            buildDateGrid();
-
-
-        } catch (error) {
-
-            console.error(
-                "Unable to save encrypted journal.",
-                error
-            );
-
-
-            statusMessage.textContent =
-                "Unable to save entry. Please try again.";
-        }
-    }
-);
-
+		statusMessage.textContent = "Unable to save entry. Please try again.";
+	}
+});
 
 /* =====================================================
    AUTO-LOCK WHEN PAGE LEAVES
@@ -1306,82 +934,60 @@ saveEntry.addEventListener(
  * switching browser tabs, remove this section.
  */
 
-document.addEventListener(
-    "visibilitychange",
-    () => {
+document.addEventListener("visibilitychange", () => {
+	if (document.visibilityState === "hidden") {
+		encryptionKey = null;
 
-        if (
-            document.visibilityState === "hidden"
-        ) {
+		journalData = {};
 
-            encryptionKey = null;
+		/*
+		 * Clear sensitive form contents.
+		 */
+		dayText.value = "";
+		gratefulText.value = "";
+		learnText.value = "";
+		goalText.value = "";
 
-            journalData = {};
+		mood.value = "😄 Happy";
 
-            /*
-             * Clear sensitive form contents.
-             */
-            dayText.value = "";
-            gratefulText.value = "";
-            learnText.value = "";
-            goalText.value = "";
+		mood.disabled = true;
+		dayText.disabled = true;
+		gratefulText.disabled = true;
+		learnText.disabled = true;
+		goalText.disabled = true;
 
-            mood.value =
-                "😄 Happy";
+		saveEntry.style.display = "none";
 
-            mood.disabled = true;
-            dayText.disabled = true;
-            gratefulText.disabled = true;
-            learnText.disabled = true;
-            goalText.disabled = true;
-
-            saveEntry.style.display =
-                "none";
-
-            statusMessage.textContent =
-                "Journal locked.";
-        }
-    }
-);
-
+		statusMessage.textContent = "Journal locked.";
+	}
+});
 
 /* =====================================================
    INITIALIZE
 ===================================================== */
 
 (async function initialize() {
+	try {
+		await initializeJournalSecurity();
 
-    try {
+		buildDateGrid();
 
-        await initializeJournalSecurity();
+		loadEntry(selectedDay);
+	} catch (error) {
+		console.error("Journal initialization failed.", error);
 
-        buildDateGrid();
+		/*
+		 * Disable journal controls if initialization
+		 * fails.
+		 */
+		mood.disabled = true;
+		dayText.disabled = true;
+		gratefulText.disabled = true;
+		learnText.disabled = true;
+		goalText.disabled = true;
 
-        loadEntry(selectedDay);
+		saveEntry.style.display = "none";
 
-    } catch (error) {
-
-        console.error(
-            "Journal initialization failed.",
-            error
-        );
-
-        /*
-         * Disable journal controls if initialization
-         * fails.
-         */
-        mood.disabled = true;
-        dayText.disabled = true;
-        gratefulText.disabled = true;
-        learnText.disabled = true;
-        goalText.disabled = true;
-
-        saveEntry.style.display =
-            "none";
-
-        statusMessage.textContent =
-            "Journal is locked.";
-
-    }
-
+		statusMessage.textContent = "Journal is locked.";
+	}
 })();

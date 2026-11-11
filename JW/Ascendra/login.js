@@ -1,7 +1,7 @@
 const form = document.getElementById("login");
 
 form.addEventListener("submit", function (event) {
-  event.preventDefault();
+	event.preventDefault();
 
-  console.log("Login submitted!");
+	console.log("Login submitted!");
 });

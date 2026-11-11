@@ -1,444 +1,405 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const totalTasksElement = document.getElementById("total-tasks");
+	const totalTasksElement = document.getElementById("total-tasks");
 
-  const completedTasksElement = document.getElementById("completed-tasks");
+	const completedTasksElement = document.getElementById("completed-tasks");
 
-  const remainingTasksElement = document.getElementById("remaining-tasks");
+	const remainingTasksElement = document.getElementById("remaining-tasks");
 
-  const taskCompletionRateElement = document.getElementById(
-    "task-completion-rate",
-  );
+	const taskCompletionRateElement = document.getElementById("task-completion-rate");
 
-  const taskProgressLabel = document.getElementById("task-progress-label");
+	const taskProgressLabel = document.getElementById("task-progress-label");
 
-  const taskProgressFill = document.getElementById("task-progress-fill");
+	const taskProgressFill = document.getElementById("task-progress-fill");
 
-  const taskProgressMessage = document.getElementById("task-progress-message");
+	const taskProgressMessage = document.getElementById("task-progress-message");
 
-  const totalHabitsElement = document.getElementById("total-habits");
+	const totalHabitsElement = document.getElementById("total-habits");
 
-  const successfulHabitDaysElement = document.getElementById(
-    "successful-habit-days",
-  );
+	const successfulHabitDaysElement = document.getElementById("successful-habit-days");
 
-  const missedHabitDaysElement = document.getElementById("missed-habit-days");
+	const missedHabitDaysElement = document.getElementById("missed-habit-days");
 
-  const habitSuccessRateElement = document.getElementById("habit-success-rate");
+	const habitSuccessRateElement = document.getElementById("habit-success-rate");
 
-  const habitProgressLabel = document.getElementById("habit-progress-label");
+	const habitProgressLabel = document.getElementById("habit-progress-label");
 
-  const habitProgressFill = document.getElementById("habit-progress-fill");
+	const habitProgressFill = document.getElementById("habit-progress-fill");
 
-  const habitProgressMessage = document.getElementById(
-    "habit-progress-message",
-  );
+	const habitProgressMessage = document.getElementById("habit-progress-message");
 
-  const dueTodayElement = document.getElementById("due-today");
+	const dueTodayElement = document.getElementById("due-today");
 
-  const overdueTasksElement = document.getElementById("overdue-tasks");
+	const overdueTasksElement = document.getElementById("overdue-tasks");
 
-  const futureTasksElement = document.getElementById("future-tasks");
+	const futureTasksElement = document.getElementById("future-tasks");
 
-  const habitsSuccessfulTodayElement = document.getElementById(
-    "habits-successful-today",
-  );
+	const habitsSuccessfulTodayElement = document.getElementById("habits-successful-today");
 
-  const habitsMissedTodayElement = document.getElementById(
-    "habits-missed-today",
-  );
+	const habitsMissedTodayElement = document.getElementById("habits-missed-today");
 
-  const habitsUncheckedTodayElement = document.getElementById(
-    "habits-unchecked-today",
-  );
+	const habitsUncheckedTodayElement = document.getElementById("habits-unchecked-today");
 
-  const achievementIcon = document.getElementById("achievement-icon");
+	const achievementIcon = document.getElementById("achievement-icon");
 
-  const achievementTitle = document.getElementById("achievement-title");
+	const achievementTitle = document.getElementById("achievement-title");
 
-  const achievementDescription = document.getElementById(
-    "achievement-description",
-  );
+	const achievementDescription = document.getElementById("achievement-description");
 
-  const recentTasksContainer = document.getElementById("recent-tasks");
+	const recentTasksContainer = document.getElementById("recent-tasks");
 
-  const welcomeMessage = document.getElementById("welcome-message");
+	const welcomeMessage = document.getElementById("welcome-message");
 
-  function getStoredArray(key) {
-    const savedData = localStorage.getItem(key);
+	function getStoredArray(key) {
+		const savedData = localStorage.getItem(key);
 
-    if (!savedData) {
-      return [];
-    }
+		if (!savedData) {
+			return [];
+		}
 
-    try {
-      const parsedData = JSON.parse(savedData);
+		try {
+			const parsedData = JSON.parse(savedData);
 
-      if (Array.isArray(parsedData)) {
-        return parsedData;
-      }
+			if (Array.isArray(parsedData)) {
+				return parsedData;
+			}
 
-      return [];
-    } catch (error) {
-      console.error("Could not read " + key + ":", error);
+			return [];
+		} catch (error) {
+			console.error("Could not read " + key + ":", error);
 
-      return [];
-    }
-  }
+			return [];
+		}
+	}
 
-  function getTodayString() {
-    const today = new Date();
+	function getTodayString() {
+		const today = new Date();
 
-    const year = today.getFullYear();
+		const year = today.getFullYear();
 
-    const month = String(today.getMonth() + 1).padStart(2, "0");
+		const month = String(today.getMonth() + 1).padStart(2, "0");
 
-    const day = String(today.getDate()).padStart(2, "0");
+		const day = String(today.getDate()).padStart(2, "0");
 
-    return year + "-" + month + "-" + day;
-  }
+		return year + "-" + month + "-" + day;
+	}
 
-  function updateWelcomeMessage() {
-    const name = localStorage.getItem("name");
+	function updateWelcomeMessage() {
+		const name = localStorage.getItem("name");
 
-    if (name) {
-      welcomeMessage.textContent = "Keep building momentum, " + name + ".";
-    }
-  }
-
-  function updateTaskStatistics(todos) {
-    const totalTasks = todos.length;
-    let completedTasks = 0;
-
-    todos.forEach(function (todo) {
-      if (todo.completed === true) {
-        completedTasks++;
-      }
-    });
-
-    const remainingTasks = totalTasks - completedTasks;
-
-    let completionRate = 0;
+		if (name) {
+			welcomeMessage.textContent = "Keep building momentum, " + name + ".";
+		}
+	}
 
-    if (totalTasks > 0) {
-      completionRate = Math.round((completedTasks / totalTasks) * 100);
-    }
-
-    totalTasksElement.textContent = totalTasks;
-
-    completedTasksElement.textContent = completedTasks;
+	function updateTaskStatistics(todos) {
+		const totalTasks = todos.length;
+		let completedTasks = 0;
 
-    remainingTasksElement.textContent = remainingTasks;
+		todos.forEach(function (todo) {
+			if (todo.completed === true) {
+				completedTasks++;
+			}
+		});
 
-    taskCompletionRateElement.textContent = completionRate + "%";
+		const remainingTasks = totalTasks - completedTasks;
 
-    taskProgressLabel.textContent = completionRate + "%";
+		let completionRate = 0;
 
-    taskProgressFill.style.width = completionRate + "%";
+		if (totalTasks > 0) {
+			completionRate = Math.round((completedTasks / totalTasks) * 100);
+		}
 
-    updateTaskProgressMessage(totalTasks, completedTasks, completionRate);
+		totalTasksElement.textContent = totalTasks;
 
-    return completedTasks;
-  }
+		completedTasksElement.textContent = completedTasks;
 
-  function updateTaskProgressMessage(
-    totalTasks,
-    completedTasks,
-    completionRate,
-  ) {
-    if (totalTasks === 0) {
-      taskProgressMessage.textContent =
-        "Add your first task to begin tracking progress.";
-    } else if (completionRate === 100) {
-      taskProgressMessage.textContent =
-        "Every task is complete. Absolute productivity monster.";
-    } else if (completionRate >= 75) {
-      taskProgressMessage.textContent = "You are nearly there. Finish strong.";
-    } else if (completionRate >= 50) {
-      taskProgressMessage.textContent =
-        "More than halfway complete. Nice work.";
-    } else if (completedTasks > 0) {
-      taskProgressMessage.textContent =
-        "Progress is progress. Keep stacking wins.";
-    } else {
-      taskProgressMessage.textContent = "Your tasks are ready when you are.";
-    }
-  }
-
-  function updateTaskDateStatistics(todos) {
-    const today = getTodayString();
-
-    let dueToday = 0;
-    let overdueTasks = 0;
-    let futureTasks = 0;
-
-    todos.forEach(function (todo) {
-      if (todo.completed === true) {
-        return;
-      }
-
-      if (todo.date === today) {
-        dueToday++;
-      } else if (todo.date && todo.date < today) {
-        overdueTasks++;
-      } else if (todo.date && todo.date > today) {
-        futureTasks++;
-      }
-    });
-
-    dueTodayElement.textContent = dueToday;
-
-    overdueTasksElement.textContent = overdueTasks;
-
-    futureTasksElement.textContent = futureTasks;
-  }
-
-  function updateHabitStatistics(habits) {
-    let successfulHabitDays = 0;
-    let missedHabitDays = 0;
-
-    habits.forEach(function (habit) {
-      if (!habit.history) {
-        return;
-      }
-
-      const historyDates = Object.keys(habit.history);
-
-      historyDates.forEach(function (date) {
-        const result = habit.history[date];
-
-        if (result === true) {
-          successfulHabitDays++;
-        } else if (result === false) {
-          missedHabitDays++;
-        }
-      });
-    });
-
-    const totalCheckIns = successfulHabitDays + missedHabitDays;
-
-    let habitSuccessRate = 0;
-
-    if (totalCheckIns > 0) {
-      habitSuccessRate = Math.round(
-        (successfulHabitDays / totalCheckIns) * 100,
-      );
-    }
-
-    totalHabitsElement.textContent = habits.length;
-
-    successfulHabitDaysElement.textContent = successfulHabitDays;
-
-    missedHabitDaysElement.textContent = missedHabitDays;
-
-    habitSuccessRateElement.textContent = habitSuccessRate + "%";
-
-    habitProgressLabel.textContent = habitSuccessRate + "%";
-
-    habitProgressFill.style.width = habitSuccessRate + "%";
-
-    updateHabitProgressMessage(habits.length, totalCheckIns, habitSuccessRate);
-
-    return successfulHabitDays;
-  }
-
-  function updateHabitProgressMessage(
-    totalHabits,
-    totalCheckIns,
-    habitSuccessRate,
-  ) {
-    if (totalHabits === 0) {
-      habitProgressMessage.textContent =
-        "Add your first habit to begin tracking progress.";
-    } else if (totalCheckIns === 0) {
-      habitProgressMessage.textContent =
-        "Check off a habit to begin tracking it.";
-    } else if (habitSuccessRate === 100) {
-      habitProgressMessage.textContent =
-        "Perfect habit record so far. Huge win.";
-    } else if (habitSuccessRate >= 75) {
-      habitProgressMessage.textContent = "Your habits are looking strong.";
-    } else if (habitSuccessRate >= 50) {
-      habitProgressMessage.textContent =
-        "You are building consistency. Keep going.";
-    } else {
-      habitProgressMessage.textContent = "Every new day is another chance.";
-    }
-  }
-
-  function updateTodayHabitStatistics(habits) {
-    const today = getTodayString();
-
-    let successfulToday = 0;
-    let missedToday = 0;
-    let uncheckedToday = 0;
-
-    habits.forEach(function (habit) {
-      if (!habit.history || habit.history[today] === undefined) {
-        uncheckedToday++;
-      } else if (habit.history[today] === true) {
-        successfulToday++;
-      } else {
-        missedToday++;
-      }
-    });
+		remainingTasksElement.textContent = remainingTasks;
 
-    habitsSuccessfulTodayElement.textContent = successfulToday;
+		taskCompletionRateElement.textContent = completionRate + "%";
 
-    habitsMissedTodayElement.textContent = missedToday;
+		taskProgressLabel.textContent = completionRate + "%";
 
-    habitsUncheckedTodayElement.textContent = uncheckedToday;
-  }
+		taskProgressFill.style.width = completionRate + "%";
 
-  function updateAchievement(completedTasks, successfulHabitDays) {
-    const totalWins = completedTasks + successfulHabitDays;
+		updateTaskProgressMessage(totalTasks, completedTasks, completionRate);
 
-    if (totalWins >= 100) {
-      achievementIcon.textContent = "👑";
-      achievementTitle.textContent = "Ascendra Legend";
+		return completedTasks;
+	}
 
-      achievementDescription.textContent =
-        "You have collected at least 100 total wins.";
-    } else if (totalWins >= 50) {
-      achievementIcon.textContent = "🏆";
-      achievementTitle.textContent = "Progress Champion";
+	function updateTaskProgressMessage(totalTasks, completedTasks, completionRate) {
+		if (totalTasks === 0) {
+			taskProgressMessage.textContent = "Add your first task to begin tracking progress.";
+		} else if (completionRate === 100) {
+			taskProgressMessage.textContent = "Every task is complete. Absolute productivity monster.";
+		} else if (completionRate >= 75) {
+			taskProgressMessage.textContent = "You are nearly there. Finish strong.";
+		} else if (completionRate >= 50) {
+			taskProgressMessage.textContent = "More than halfway complete. Nice work.";
+		} else if (completedTasks > 0) {
+			taskProgressMessage.textContent = "Progress is progress. Keep stacking wins.";
+		} else {
+			taskProgressMessage.textContent = "Your tasks are ready when you are.";
+		}
+	}
 
-      achievementDescription.textContent =
-        "You have collected at least 50 total wins.";
-    } else if (totalWins >= 25) {
-      achievementIcon.textContent = "🔥";
-      achievementTitle.textContent = "On Fire";
+	function updateTaskDateStatistics(todos) {
+		const today = getTodayString();
 
-      achievementDescription.textContent =
-        "You have collected at least 25 total wins.";
-    } else if (totalWins >= 10) {
-      achievementIcon.textContent = "⭐";
-      achievementTitle.textContent = "Momentum Builder";
+		let dueToday = 0;
+		let overdueTasks = 0;
+		let futureTasks = 0;
 
-      achievementDescription.textContent =
-        "You have collected at least 10 total wins.";
-    } else if (totalWins >= 1) {
-      achievementIcon.textContent = "✅";
-      achievementTitle.textContent = "First Win";
+		todos.forEach(function (todo) {
+			if (todo.completed === true) {
+				return;
+			}
 
-      achievementDescription.textContent =
-        "You recorded your first completed task or habit.";
-    } else {
-      achievementIcon.textContent = "🌱";
-      achievementTitle.textContent = "Getting Started";
+			if (todo.date === today) {
+				dueToday++;
+			} else if (todo.date && todo.date < today) {
+				overdueTasks++;
+			} else if (todo.date && todo.date > today) {
+				futureTasks++;
+			}
+		});
 
-      achievementDescription.textContent =
-        "Complete a task or habit check-in to begin.";
-    }
-  }
+		dueTodayElement.textContent = dueToday;
 
-  function formatDate(dateString) {
-    if (!dateString) {
-      return "No due date";
-    }
+		overdueTasksElement.textContent = overdueTasks;
 
-    const date = new Date(dateString + "T00:00:00");
+		futureTasksElement.textContent = futureTasks;
+	}
 
-    return date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  }
+	function updateHabitStatistics(habits) {
+		let successfulHabitDays = 0;
+		let missedHabitDays = 0;
 
-  function displayRecentTasks(todos) {
-    recentTasksContainer.innerHTML = "";
+		habits.forEach(function (habit) {
+			if (!habit.history) {
+				return;
+			}
 
-    if (todos.length === 0) {
-      const emptyMessage = document.createElement("p");
+			const historyDates = Object.keys(habit.history);
 
-      emptyMessage.classList.add("empty-message");
+			historyDates.forEach(function (date) {
+				const result = habit.history[date];
 
-      emptyMessage.textContent =
-        "No tasks yet. Your productivity empire awaits.";
+				if (result === true) {
+					successfulHabitDays++;
+				} else if (result === false) {
+					missedHabitDays++;
+				}
+			});
+		});
 
-      recentTasksContainer.appendChild(emptyMessage);
+		const totalCheckIns = successfulHabitDays + missedHabitDays;
 
-      return;
-    }
+		let habitSuccessRate = 0;
 
-    const recentTasks = todos.slice();
+		if (totalCheckIns > 0) {
+			habitSuccessRate = Math.round((successfulHabitDays / totalCheckIns) * 100);
+		}
 
-    recentTasks.sort(function (firstTask, secondTask) {
-      return secondTask.id - firstTask.id;
-    });
+		totalHabitsElement.textContent = habits.length;
 
-    const limitedTasks = recentTasks.slice(0, 5);
+		successfulHabitDaysElement.textContent = successfulHabitDays;
 
-    limitedTasks.forEach(function (todo) {
-      const taskRow = document.createElement("div");
+		missedHabitDaysElement.textContent = missedHabitDays;
 
-      taskRow.classList.add("recent-task");
+		habitSuccessRateElement.textContent = habitSuccessRate + "%";
 
-      const taskInfo = document.createElement("div");
+		habitProgressLabel.textContent = habitSuccessRate + "%";
 
-      taskInfo.classList.add("recent-task-info");
+		habitProgressFill.style.width = habitSuccessRate + "%";
 
-      const taskTitle = document.createElement("p");
+		updateHabitProgressMessage(habits.length, totalCheckIns, habitSuccessRate);
 
-      taskTitle.classList.add("recent-task-title");
+		return successfulHabitDays;
+	}
 
-      if (todo.completed === true) {
-        taskTitle.textContent = "✅ " + todo.task;
-      } else {
-        taskTitle.textContent = "⬜ " + todo.task;
-      }
+	function updateHabitProgressMessage(totalHabits, totalCheckIns, habitSuccessRate) {
+		if (totalHabits === 0) {
+			habitProgressMessage.textContent = "Add your first habit to begin tracking progress.";
+		} else if (totalCheckIns === 0) {
+			habitProgressMessage.textContent = "Check off a habit to begin tracking it.";
+		} else if (habitSuccessRate === 100) {
+			habitProgressMessage.textContent = "Perfect habit record so far. Huge win.";
+		} else if (habitSuccessRate >= 75) {
+			habitProgressMessage.textContent = "Your habits are looking strong.";
+		} else if (habitSuccessRate >= 50) {
+			habitProgressMessage.textContent = "You are building consistency. Keep going.";
+		} else {
+			habitProgressMessage.textContent = "Every new day is another chance.";
+		}
+	}
 
-      const taskDate = document.createElement("p");
+	function updateTodayHabitStatistics(habits) {
+		const today = getTodayString();
 
-      taskDate.classList.add("recent-task-date");
+		let successfulToday = 0;
+		let missedToday = 0;
+		let uncheckedToday = 0;
 
-      taskDate.textContent = "Due: " + formatDate(todo.date);
+		habits.forEach(function (habit) {
+			if (!habit.history || habit.history[today] === undefined) {
+				uncheckedToday++;
+			} else if (habit.history[today] === true) {
+				successfulToday++;
+			} else {
+				missedToday++;
+			}
+		});
 
-      const taskStatus = document.createElement("span");
+		habitsSuccessfulTodayElement.textContent = successfulToday;
 
-      taskStatus.classList.add("task-status");
+		habitsMissedTodayElement.textContent = missedToday;
 
-      if (todo.completed === true) {
-        taskStatus.classList.add("completed");
+		habitsUncheckedTodayElement.textContent = uncheckedToday;
+	}
 
-        taskStatus.textContent = "Completed";
-      } else {
-        taskStatus.classList.add("pending");
+	function updateAchievement(completedTasks, successfulHabitDays) {
+		const totalWins = completedTasks + successfulHabitDays;
 
-        taskStatus.textContent = "Pending";
-      }
+		if (totalWins >= 100) {
+			achievementIcon.textContent = "👑";
+			achievementTitle.textContent = "Ascendra Legend";
 
-      taskInfo.appendChild(taskTitle);
-      taskInfo.appendChild(taskDate);
+			achievementDescription.textContent = "You have collected at least 100 total wins.";
+		} else if (totalWins >= 50) {
+			achievementIcon.textContent = "🏆";
+			achievementTitle.textContent = "Progress Champion";
 
-      taskRow.appendChild(taskInfo);
-      taskRow.appendChild(taskStatus);
+			achievementDescription.textContent = "You have collected at least 50 total wins.";
+		} else if (totalWins >= 25) {
+			achievementIcon.textContent = "🔥";
+			achievementTitle.textContent = "On Fire";
 
-      recentTasksContainer.appendChild(taskRow);
-    });
-  }
+			achievementDescription.textContent = "You have collected at least 25 total wins.";
+		} else if (totalWins >= 10) {
+			achievementIcon.textContent = "⭐";
+			achievementTitle.textContent = "Momentum Builder";
 
-  function loadStats() {
-    const todos = getStoredArray("todos");
+			achievementDescription.textContent = "You have collected at least 10 total wins.";
+		} else if (totalWins >= 1) {
+			achievementIcon.textContent = "✅";
+			achievementTitle.textContent = "First Win";
 
-    const habits = getStoredArray("habits");
+			achievementDescription.textContent = "You recorded your first completed task or habit.";
+		} else {
+			achievementIcon.textContent = "🌱";
+			achievementTitle.textContent = "Getting Started";
 
-    updateWelcomeMessage();
+			achievementDescription.textContent = "Complete a task or habit check-in to begin.";
+		}
+	}
 
-    const completedTasks = updateTaskStatistics(todos);
+	function formatDate(dateString) {
+		if (!dateString) {
+			return "No due date";
+		}
 
-    updateTaskDateStatistics(todos);
+		const date = new Date(dateString + "T00:00:00");
 
-    const successfulHabitDays = updateHabitStatistics(habits);
+		return date.toLocaleDateString(undefined, {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+		});
+	}
 
-    updateTodayHabitStatistics(habits);
+	function displayRecentTasks(todos) {
+		recentTasksContainer.innerHTML = "";
 
-    updateAchievement(completedTasks, successfulHabitDays);
+		if (todos.length === 0) {
+			const emptyMessage = document.createElement("p");
 
-    displayRecentTasks(todos);
-  }
+			emptyMessage.classList.add("empty-message");
 
-  loadStats();
+			emptyMessage.textContent = "No tasks yet. Your productivity empire awaits.";
+
+			recentTasksContainer.appendChild(emptyMessage);
+
+			return;
+		}
+
+		const recentTasks = todos.slice();
+
+		recentTasks.sort(function (firstTask, secondTask) {
+			return secondTask.id - firstTask.id;
+		});
+
+		const limitedTasks = recentTasks.slice(0, 5);
+
+		limitedTasks.forEach(function (todo) {
+			const taskRow = document.createElement("div");
+
+			taskRow.classList.add("recent-task");
+
+			const taskInfo = document.createElement("div");
+
+			taskInfo.classList.add("recent-task-info");
+
+			const taskTitle = document.createElement("p");
+
+			taskTitle.classList.add("recent-task-title");
+
+			if (todo.completed === true) {
+				taskTitle.textContent = "✅ " + todo.task;
+			} else {
+				taskTitle.textContent = "⬜ " + todo.task;
+			}
+
+			const taskDate = document.createElement("p");
+
+			taskDate.classList.add("recent-task-date");
+
+			taskDate.textContent = "Due: " + formatDate(todo.date);
+
+			const taskStatus = document.createElement("span");
+
+			taskStatus.classList.add("task-status");
+
+			if (todo.completed === true) {
+				taskStatus.classList.add("completed");
+
+				taskStatus.textContent = "Completed";
+			} else {
+				taskStatus.classList.add("pending");
+
+				taskStatus.textContent = "Pending";
+			}
+
+			taskInfo.appendChild(taskTitle);
+			taskInfo.appendChild(taskDate);
+
+			taskRow.appendChild(taskInfo);
+			taskRow.appendChild(taskStatus);
+
+			recentTasksContainer.appendChild(taskRow);
+		});
+	}
+
+	function loadStats() {
+		const todos = getStoredArray("todos");
+
+		const habits = getStoredArray("habits");
+
+		updateWelcomeMessage();
+
+		const completedTasks = updateTaskStatistics(todos);
+
+		updateTaskDateStatistics(todos);
+
+		const successfulHabitDays = updateHabitStatistics(habits);
+
+		updateTodayHabitStatistics(habits);
+
+		updateAchievement(completedTasks, successfulHabitDays);
+
+		displayRecentTasks(todos);
+	}
+
+	loadStats();
 });
 
 v;

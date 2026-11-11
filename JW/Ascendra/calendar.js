@@ -3,18 +3,18 @@ let currentMonth = today.getMonth();
 let currentYear = today.getFullYear();
 
 const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
 ];
 
 const calendarTitle = document.querySelector(".calendar-header h2");
@@ -34,132 +34,124 @@ const eventDateInput = document.getElementById("eventDate");
 let events = JSON.parse(localStorage.getItem("events")) || [];
 
 flatpickr("#eventDate", {
-  enableTime: true,
-  dateFormat: "Y-m-d H:i",
-  altInput: true,
-  altFormat: "F j, Y h:i K",
-  minDate: "today",
+	enableTime: true,
+	dateFormat: "Y-m-d H:i",
+	altInput: true,
+	altFormat: "F j, Y h:i K",
+	minDate: "today",
 });
 
 function renderCalendar() {
-  calendarBody.innerHTML = "";
-  calendarTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+	calendarBody.innerHTML = "";
+	calendarTitle.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+	const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+	const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  let date = 1;
+	let date = 1;
 
-  for (let row = 0; row < 6; row++) {
-    const tr = document.createElement("tr");
+	for (let row = 0; row < 6; row++) {
+		const tr = document.createElement("tr");
 
-    for (let col = 0; col < 7; col++) {
-      const td = document.createElement("td");
+		for (let col = 0; col < 7; col++) {
+			const td = document.createElement("td");
 
-      if (row === 0 && col < firstDay) {
-        td.classList.add("empty-day");
-      } else if (date > daysInMonth) {
-        td.classList.add("empty-day");
-      } else {
-        td.textContent = date;
+			if (row === 0 && col < firstDay) {
+				td.classList.add("empty-day");
+			} else if (date > daysInMonth) {
+				td.classList.add("empty-day");
+			} else {
+				td.textContent = date;
 
-        if (
-          date === today.getDate() &&
-          currentMonth === today.getMonth() &&
-          currentYear === today.getFullYear()
-        ) {
-          td.classList.add("today");
-        }
+				if (date === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+					td.classList.add("today");
+				}
 
-        showEventsForDay(td, date);
-        date++;
-      }
+				showEventsForDay(td, date);
+				date++;
+			}
 
-      tr.appendChild(td);
-    }
+			tr.appendChild(td);
+		}
 
-    calendarBody.appendChild(tr);
-  }
+		calendarBody.appendChild(tr);
+	}
 }
 
 function showEventsForDay(dayCell, dayNumber) {
-  events.forEach((event) => {
-    const eventDate = new Date(event.date);
+	events.forEach((event) => {
+		const eventDate = new Date(event.date);
 
-    if (
-      eventDate.getDate() === dayNumber &&
-      eventDate.getMonth() === currentMonth &&
-      eventDate.getFullYear() === currentYear
-    ) {
-      const eventText = document.createElement("div");
-      eventText.classList.add("calendar-event");
-      eventText.textContent = event.title;
+		if (eventDate.getDate() === dayNumber && eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear) {
+			const eventText = document.createElement("div");
+			eventText.classList.add("calendar-event");
+			eventText.textContent = event.title;
 
-      eventText.onclick = () => {
-        if (confirm(`Delete "${event.title}"?`)) {
-          events = events.filter((e) => e.id !== event.id);
-          localStorage.setItem("events", JSON.stringify(events));
-          renderCalendar();
-        }
-      };
+			eventText.onclick = () => {
+				if (confirm(`Delete "${event.title}"?`)) {
+					events = events.filter((e) => e.id !== event.id);
+					localStorage.setItem("events", JSON.stringify(events));
+					renderCalendar();
+				}
+			};
 
-      dayCell.appendChild(eventText);
-    }
-  });
+			dayCell.appendChild(eventText);
+		}
+	});
 }
 
 prevMonth.onclick = () => {
-  currentMonth--;
+	currentMonth--;
 
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    currentYear--;
-  }
+	if (currentMonth < 0) {
+		currentMonth = 11;
+		currentYear--;
+	}
 
-  renderCalendar();
+	renderCalendar();
 };
 
 nextMonth.onclick = () => {
-  currentMonth++;
+	currentMonth++;
 
-  if (currentMonth > 11) {
-    currentMonth = 0;
-    currentYear++;
-  }
+	if (currentMonth > 11) {
+		currentMonth = 0;
+		currentYear++;
+	}
 
-  renderCalendar();
+	renderCalendar();
 };
 
 addEventBtn.onclick = () => {
-  popup.style.display = "block";
+	popup.style.display = "block";
 };
 
 closePopup.onclick = () => {
-  popup.style.display = "none";
+	popup.style.display = "none";
 };
 
 saveEvent.onclick = () => {
-  const title = eventTitleInput.value.trim();
-  const dateValue = eventDateInput.value;
+	const title = eventTitleInput.value.trim();
+	const dateValue = eventDateInput.value;
 
-  if (title === "" || dateValue === "") {
-    alert("Add an event name and date first!");
-    return;
-  }
+	if (title === "" || dateValue === "") {
+		alert("Add an event name and date first!");
+		return;
+	}
 
-  events.push({
-    id: Date.now(),
-    title: title,
-    date: dateValue,
-  });
+	events.push({
+		id: Date.now(),
+		title: title,
+		date: dateValue,
+	});
 
-  localStorage.setItem("events", JSON.stringify(events));
+	localStorage.setItem("events", JSON.stringify(events));
 
-  eventTitleInput.value = "";
-  eventDateInput.value = "";
-  popup.style.display = "none";
+	eventTitleInput.value = "";
+	eventDateInput.value = "";
+	popup.style.display = "none";
 
-  renderCalendar();
+	renderCalendar();
 };
 
 renderCalendar();

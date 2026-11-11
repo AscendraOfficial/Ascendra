@@ -1,220 +1,216 @@
 document.addEventListener("DOMContentLoaded", function () {
-  /* ================================
+	/* ================================
        PROFILE ELEMENTS
     ================================ */
 
-  const nameInput = document.getElementById("name-input");
+	const nameInput = document.getElementById("name-input");
 
-  const surnameInput = document.getElementById("surname-input");
+	const surnameInput = document.getElementById("surname-input");
 
-  const usernameInput = document.getElementById("username-input");
+	const usernameInput = document.getElementById("username-input");
 
-  const bioInput = document.getElementById("bio-input");
+	const bioInput = document.getElementById("bio-input");
 
-  const displayName = document.getElementById("display-name");
+	const displayName = document.getElementById("display-name");
 
-  const displayUsername = document.getElementById("display-username");
+	const displayUsername = document.getElementById("display-username");
 
-  const displayBio = document.getElementById("display-bio");
+	const displayBio = document.getElementById("display-bio");
 
-  const saveButton = document.getElementById("save-button");
+	const saveButton = document.getElementById("save-button");
 
-  const saveMessage = document.getElementById("save-message");
+	const saveMessage = document.getElementById("save-message");
 
-  const profileUpload = document.getElementById("profile-upload");
+	const profileUpload = document.getElementById("profile-upload");
 
-  const profilePicture = document.getElementById("profile-picture");
+	const profilePicture = document.getElementById("profile-picture");
 
-  const characterCount = document.getElementById("character-count");
+	const characterCount = document.getElementById("character-count");
 
-  const streakNumber = document.getElementById("streak-number");
+	const streakNumber = document.getElementById("streak-number");
 
-  const tasksNumber = document.getElementById("tasks-number");
+	const tasksNumber = document.getElementById("tasks-number");
 
-  const achievementsNumber = document.getElementById("achievements-number");
+	const achievementsNumber = document.getElementById("achievements-number");
 
-  /* ================================
+	/* ================================
        PROFILE HELPERS
     ================================ */
 
-  function cleanUsername(username) {
-    return username.trim().replace(/@/g, "").replace(/\s+/g, "");
-  }
+	function cleanUsername(username) {
+		return username.trim().replace(/@/g, "").replace(/\s+/g, "");
+	}
 
-  function showMessage(message, type) {
-    saveMessage.textContent = message;
+	function showMessage(message, type) {
+		saveMessage.textContent = message;
 
-    if (type === "success") {
-      saveMessage.className = "success-message";
-    } else {
-      saveMessage.className = "error-message";
-    }
+		if (type === "success") {
+			saveMessage.className = "success-message";
+		} else {
+			saveMessage.className = "error-message";
+		}
 
-    setTimeout(function () {
-      saveMessage.textContent = "";
-      saveMessage.className = "";
-    }, 3000);
-  }
+		setTimeout(function () {
+			saveMessage.textContent = "";
+			saveMessage.className = "";
+		}, 3000);
+	}
 
-  /* ================================
+	/* ================================
        LOAD PROFILE
     ================================ */
 
-  function loadProfile() {
-    const savedName = localStorage.getItem("name") || "Ascendra";
+	function loadProfile() {
+		const savedName = localStorage.getItem("name") || "Ascendra";
 
-    const savedSurname = localStorage.getItem("surname") || "User";
+		const savedSurname = localStorage.getItem("surname") || "User";
 
-    const savedUsername = localStorage.getItem("username") || "ascendrauser";
+		const savedUsername = localStorage.getItem("username") || "ascendrauser";
 
-    const savedBio =
-      localStorage.getItem("ascendra-profile-bio") ||
-      "Becoming better, one day at a time.";
+		const savedBio = localStorage.getItem("ascendra-profile-bio") || "Becoming better, one day at a time.";
 
-    const savedPicture = localStorage.getItem("ascendra-profile-picture");
+		const savedPicture = localStorage.getItem("ascendra-profile-picture");
 
-    nameInput.value = savedName;
+		nameInput.value = savedName;
 
-    surnameInput.value = savedSurname;
+		surnameInput.value = savedSurname;
 
-    usernameInput.value = savedUsername;
+		usernameInput.value = savedUsername;
 
-    bioInput.value = savedBio;
+		bioInput.value = savedBio;
 
-    displayName.textContent = savedName + " " + savedSurname;
+		displayName.textContent = savedName + " " + savedSurname;
 
-    displayUsername.textContent = "@" + savedUsername;
+		displayUsername.textContent = "@" + savedUsername;
 
-    displayBio.textContent = savedBio;
+		displayBio.textContent = savedBio;
 
-    characterCount.textContent = savedBio.length + " / 120";
+		characterCount.textContent = savedBio.length + " / 120";
 
-    streakNumber.textContent = localStorage.getItem("ascendra-streak") || "0";
+		streakNumber.textContent = localStorage.getItem("ascendra-streak") || "0";
 
-    tasksNumber.textContent =
-      localStorage.getItem("ascendra-tasks-completed") || "0";
+		tasksNumber.textContent = localStorage.getItem("ascendra-tasks-completed") || "0";
 
-    achievementsNumber.textContent =
-      localStorage.getItem("ascendra-achievements") || "0";
+		achievementsNumber.textContent = localStorage.getItem("ascendra-achievements") || "0";
 
-    if (savedPicture) {
-      profilePicture.src = savedPicture;
-    }
-  }
+		if (savedPicture) {
+			profilePicture.src = savedPicture;
+		}
+	}
 
-  /* ================================
+	/* ================================
        SAVE PROFILE
     ================================ */
 
-  saveButton.addEventListener("click", function () {
-    const name = nameInput.value.trim();
+	saveButton.addEventListener("click", function () {
+		const name = nameInput.value.trim();
 
-    const surname = surnameInput.value.trim();
+		const surname = surnameInput.value.trim();
 
-    const username = cleanUsername(usernameInput.value);
+		const username = cleanUsername(usernameInput.value);
 
-    const bio = bioInput.value.trim();
+		const bio = bioInput.value.trim();
 
-    if (name === "") {
-      showMessage("Please enter your first name.", "error");
+		if (name === "") {
+			showMessage("Please enter your first name.", "error");
 
-      return;
-    }
+			return;
+		}
 
-    if (surname === "") {
-      showMessage("Please enter your surname.", "error");
+		if (surname === "") {
+			showMessage("Please enter your surname.", "error");
 
-      return;
-    }
+			return;
+		}
 
-    if (username === "") {
-      showMessage("Please enter a username.", "error");
+		if (username === "") {
+			showMessage("Please enter a username.", "error");
 
-      return;
-    }
+			return;
+		}
 
-    const oldUsername = localStorage.getItem("username");
+		const oldUsername = localStorage.getItem("username");
 
-    const updatedUser = {
-      name: name,
+		const updatedUser = {
+			name: name,
 
-      surname: surname,
+			surname: surname,
 
-      username: username,
-    };
+			username: username,
+		};
 
-    localStorage.setItem("name", name);
+		localStorage.setItem("name", name);
 
-    localStorage.setItem("surname", surname);
+		localStorage.setItem("surname", surname);
 
-    localStorage.setItem("username", username);
+		localStorage.setItem("username", username);
 
-    localStorage.setItem("ascendra-profile-bio", bio);
+		localStorage.setItem("ascendra-profile-bio", bio);
 
-    localStorage.setItem(username, JSON.stringify(updatedUser));
+		localStorage.setItem(username, JSON.stringify(updatedUser));
 
-    if (oldUsername && oldUsername !== username) {
-      localStorage.removeItem(oldUsername);
-    }
+		if (oldUsername && oldUsername !== username) {
+			localStorage.removeItem(oldUsername);
+		}
 
-    displayName.textContent = name + " " + surname;
+		displayName.textContent = name + " " + surname;
 
-    displayUsername.textContent = "@" + username;
+		displayUsername.textContent = "@" + username;
 
-    displayBio.textContent = bio || "Becoming better, one day at a time.";
+		displayBio.textContent = bio || "Becoming better, one day at a time.";
 
-    usernameInput.value = username;
+		usernameInput.value = username;
 
-    showMessage("Profile saved successfully!", "success");
-  });
+		showMessage("Profile saved successfully!", "success");
+	});
 
-  /* ================================
+	/* ================================
        BIO CHARACTER COUNT
     ================================ */
 
-  bioInput.addEventListener("input", function () {
-    characterCount.textContent = bioInput.value.length + " / 120";
-  });
+	bioInput.addEventListener("input", function () {
+		characterCount.textContent = bioInput.value.length + " / 120";
+	});
 
-  /* ================================
+	/* ================================
        PROFILE PICTURE
     ================================ */
 
-  profileUpload.addEventListener("change", function (event) {
-    const selectedFile = event.target.files[0];
+	profileUpload.addEventListener("change", function (event) {
+		const selectedFile = event.target.files[0];
 
-    if (!selectedFile) {
-      return;
-    }
+		if (!selectedFile) {
+			return;
+		}
 
-    if (!selectedFile.type.startsWith("image/")) {
-      showMessage("Please choose an image file.", "error");
+		if (!selectedFile.type.startsWith("image/")) {
+			showMessage("Please choose an image file.", "error");
 
-      profileUpload.value = "";
+			profileUpload.value = "";
 
-      return;
-    }
+			return;
+		}
 
-    const reader = new FileReader();
+		const reader = new FileReader();
 
-    reader.addEventListener("load", function () {
-      profilePicture.src = reader.result;
+		reader.addEventListener("load", function () {
+			profilePicture.src = reader.result;
 
-      try {
-        localStorage.setItem("ascendra-profile-picture", reader.result);
+			try {
+				localStorage.setItem("ascendra-profile-picture", reader.result);
 
-        showMessage("Profile picture updated!", "success");
-      } catch (error) {
-        showMessage("That image is too large.", "error");
-      }
-    });
+				showMessage("Profile picture updated!", "success");
+			} catch (error) {
+				showMessage("That image is too large.", "error");
+			}
+		});
 
-    reader.readAsDataURL(selectedFile);
-  });
+		reader.readAsDataURL(selectedFile);
+	});
 
-  /* ================================
+	/* ================================
        START
     ================================ */
 
-  loadProfile();
+	loadProfile();
 });

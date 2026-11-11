@@ -9,11 +9,9 @@ export const responses = {
     (username) =>
       `Good to see you again, ${username}! Make sure you complete your habits today!`,
 
-    (username) =>
-      `Hey ${username}! Let's make today productive!`,
+    (username) => `Hey ${username}! Let's make today productive!`,
 
-    (username) =>
-      `Welcome back, ${username}!`,
+    (username) => `Welcome back, ${username}!`,
   ],
 
   goodbye: [
@@ -95,7 +93,6 @@ export const responses = {
     () => `One moment...`,
   ],
 };
-
 
 export const manualResponses = {
   taskHelp:

@@ -1,435 +1,390 @@
 /* =========================================================
-   WHOLE PAGE
-   Controls the overall Breathing page
-   ========================================================= */
+	 WHOLE PAGE
+	 Controls the overall Breathing page
+	 ========================================================= */
 
 * {
-    /* Makes width and height calculations easier */
-    box-sizing: border-box;
+	/* Makes width and height calculations easier */
+	box-sizing: border-box;
 }
 
 body {
+	/* Removes the browser's default margin */
+	margin: 0;
 
-    /* Removes the browser's default margin */
-    margin: 0;
+	/* Uses Arial throughout the page */
+	font-family: Arial, sans-serif;
 
-    /* Uses Arial throughout the page */
-    font-family: Arial, sans-serif;
+	/* Sets the page background to a very light grey */
+	background: #f5f7fa;
 
-    /* Sets the page background to a very light grey */
-    background: #f5f7fa;
+	/* Makes the main text dark grey */
+	color: #222;
 
-    /* Makes the main text dark grey */
-    color: #222;
+	/* Centers the text on the page */
+	text-align: center;
 
-    /* Centers the text on the page */
-    text-align: center;
-
-    /* Adds space at the bottom so the navbar
-       doesn't cover page content */
-    padding-bottom: 120px;
+	/* Adds space at the bottom so the navbar
+			 doesn't cover page content */
+	padding-bottom: 120px;
 }
 
-
 /* =========================================================
-   MAIN CONTENT
-   Controls the main Breathing Exercises area
-   ========================================================= */
+	 MAIN CONTENT
+	 Controls the main Breathing Exercises area
+	 ========================================================= */
 
 main {
+	/* Makes the content maximum 1000px wide,
+			 while allowing it to shrink on smaller screens */
+	width: min(1000px, 92%);
 
-    /* Makes the content maximum 1000px wide,
-       while allowing it to shrink on smaller screens */
-    width: min(1000px, 92%);
-
-    /* Centers the main content horizontally */
-    margin: 40px auto;
+	/* Centers the main content horizontally */
+	margin: 40px auto;
 }
 
-
 /* =========================================================
-   MAIN TITLE
-   Controls "Breathing Exercises"
-   ========================================================= */
+	 MAIN TITLE
+	 Controls "Breathing Exercises"
+	 ========================================================= */
 
 h1 {
+	/* Makes the title 42px */
+	font-size: 42px;
 
-    /* Makes the title 42px */
-    font-size: 42px;
+	/* Makes the title blue */
+	color: rgb(37, 99, 235);
 
-    /* Makes the title blue */
-    color: rgb(37, 99, 235);
-
-    /* Adds 5px of space below the title */
-    margin-bottom: 5px;
+	/* Adds 5px of space below the title */
+	margin-bottom: 5px;
 }
 
-
 /* =========================================================
-   SUBTITLE
-   Controls "Choose a breathing exercise"
-   ========================================================= */
+	 SUBTITLE
+	 Controls "Choose a breathing exercise"
+	 ========================================================= */
 
 .subtitle {
+	/* Makes the subtitle grey */
+	color: gray;
 
-    /* Makes the subtitle grey */
-    color: gray;
-
-    /* Adds 30px of space below the subtitle */
-    margin-bottom: 30px;
+	/* Adds 30px of space below the subtitle */
+	margin-bottom: 30px;
 }
 
-
 /* =========================================================
-   EXERCISE MENU
-   Controls the three breathing exercise buttons
-   ========================================================= */
+	 EXERCISE MENU
+	 Controls the three breathing exercise buttons
+	 ========================================================= */
 
 .menu {
+	/* Uses CSS Grid to arrange the buttons */
+	display: grid;
 
-    /* Uses CSS Grid to arrange the buttons */
-    display: grid;
+	/* Creates 3 equal columns */
+	grid-template-columns: repeat(3, 1fr);
 
-    /* Creates 3 equal columns */
-    grid-template-columns: repeat(3, 1fr);
+	/* Adds 18px of space between buttons */
+	gap: 18px;
 
-    /* Adds 18px of space between buttons */
-    gap: 18px;
-
-    /* Adds 35px of space below the menu */
-    margin-bottom: 35px;
+	/* Adds 35px of space below the menu */
+	margin-bottom: 35px;
 }
 
-
 /* =========================================================
-   EXERCISE MENU BUTTONS
-   Controls Box, Calm and 4-7-8 buttons
-   ========================================================= */
+	 EXERCISE MENU BUTTONS
+	 Controls Box, Calm and 4-7-8 buttons
+	 ========================================================= */
 
 .menu button {
+	/* Makes the button background white */
+	background: white;
 
-    /* Makes the button background white */
-    background: white;
+	/* Gives the button a transparent border */
+	border: 2px solid transparent;
 
-    /* Gives the button a transparent border */
-    border: 2px solid transparent;
+	/* Gives the buttons rounded corners */
+	border-radius: 20px;
 
-    /* Gives the buttons rounded corners */
-    border-radius: 20px;
+	/* Adds 25px of space inside the buttons */
+	padding: 25px;
 
-    /* Adds 25px of space inside the buttons */
-    padding: 25px;
+	/* Makes the main button text 20px */
+	font-size: 20px;
 
-    /* Makes the main button text 20px */
-    font-size: 20px;
+	/* Makes the button text bold */
+	font-weight: bold;
 
-    /* Makes the button text bold */
-    font-weight: bold;
+	/* Changes the cursor to a pointer */
+	cursor: pointer;
 
-    /* Changes the cursor to a pointer */
-    cursor: pointer;
-
-    /* Adds a subtle shadow below each button */
-    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+	/* Adds a subtle shadow below each button */
+	box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
 }
 
-
 /* =========================================================
-   EXERCISE BUTTON HOVER
-   Changes the border when the mouse hovers over a button
-   ========================================================= */
+	 EXERCISE BUTTON HOVER
+	 Changes the border when the mouse hovers over a button
+	 ========================================================= */
 
 .menu button:hover {
-
-    /* Makes the border blue */
-    border-color: rgb(37, 99, 235);
+	/* Makes the border blue */
+	border-color: rgb(37, 99, 235);
 }
 
-
 /* =========================================================
-   EXERCISE BUTTON SUBTEXT
-   Controls the 4-4-4-4, 5-5 and 4-7-8 text
-   ========================================================= */
+	 EXERCISE BUTTON SUBTEXT
+	 Controls the 4-4-4-4, 5-5 and 4-7-8 text
+	 ========================================================= */
 
 .menu span {
+	/* Makes the subtext blue */
+	color: rgb(37, 99, 235);
 
-    /* Makes the subtext blue */
-    color: rgb(37, 99, 235);
-
-    /* Makes the subtext 15px */
-    font-size: 15px;
+	/* Makes the subtext 15px */
+	font-size: 15px;
 }
 
-
 /* =========================================================
-   BREATHING BOX
-   Controls the main breathing exercise container
-   ========================================================= */
+	 BREATHING BOX
+	 Controls the main breathing exercise container
+	 ========================================================= */
 
 .breathing-box {
+	/* Makes the box background white */
+	background: white;
 
-    /* Makes the box background white */
-    background: white;
+	/* Gives the box rounded corners */
+	border-radius: 25px;
 
-    /* Gives the box rounded corners */
-    border-radius: 25px;
+	/* Adds 35px of space inside */
+	padding: 35px;
 
-    /* Adds 35px of space inside */
-    padding: 35px;
-
-    /* Adds a subtle shadow */
-    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
+	/* Adds a subtle shadow */
+	box-shadow: 0 5px 14px rgba(0, 0, 0, 0.08);
 }
 
-
 /* =========================================================
-   BREATHING CIRCLE
-   Controls the large breathing animation circle
-   ========================================================= */
+	 BREATHING CIRCLE
+	 Controls the large breathing animation circle
+	 ========================================================= */
 
 #circle {
+	/* Makes the circle 220px wide */
+	width: 220px;
 
-    /* Makes the circle 220px wide */
-    width: 220px;
+	/* Makes the circle 220px tall */
+	height: 220px;
 
-    /* Makes the circle 220px tall */
-    height: 220px;
+	/* Centers the circle horizontally */
+	margin: 35px auto;
 
-    /* Centers the circle horizontally */
-    margin: 35px auto;
+	/* Makes the square into a circle */
+	border-radius: 50%;
 
-    /* Makes the square into a circle */
-    border-radius: 50%;
+	/* Creates a blue radial gradient */
+	background: radial-gradient(circle, rgb(29, 101, 190), rgb(30, 64, 175));
 
-    /* Creates a blue radial gradient */
-    background: radial-gradient(
-        circle,
-        rgb(29, 101, 190),
-        rgb(30, 64, 175)
-    );
+	/* Makes the text inside the circle white */
+	color: white;
 
-    /* Makes the text inside the circle white */
-    color: white;
+	/* Turns the circle into a Flexbox container */
+	display: flex;
 
+	/* Places the phase text and countdown vertically */
+	flex-direction: column;
 
-    /* Turns the circle into a Flexbox container */
-    display: flex;
+	/* Centers the content horizontally */
+	align-items: center;
 
-    /* Places the phase text and countdown vertically */
-    flex-direction: column;
+	/* Centers the content vertically */
+	justify-content: center;
 
-    /* Centers the content horizontally */
-    align-items: center;
+	/* Starts the circle at its normal size */
+	transform: scale(1);
 
-    /* Centers the content vertically */
-    justify-content: center;
+	/* Makes size changes animate over 1 second */
+	transition: transform 1s linear;
 
-
-    /* Starts the circle at its normal size */
-    transform: scale(1);
-
-    /* Makes size changes animate over 1 second */
-    transition: transform 1s linear;
-
-    /* Adds a blue glow around the circle */
-    box-shadow: 0 0 35px rgba(37, 99, 235, 0.5);
+	/* Adds a blue glow around the circle */
+	box-shadow: 0 0 35px rgba(37, 99, 235, 0.5);
 }
 
-
 /* =========================================================
-   BREATHING PHASE TEXT
-   Controls "Ready", "Breathe In", "Hold", etc.
-   ========================================================= */
+	 BREATHING PHASE TEXT
+	 Controls "Ready", "Breathe In", "Hold", etc.
+	 ========================================================= */
 
 #phaseText {
+	/* Removes the default margin */
+	margin: 0;
 
-    /* Removes the default margin */
-    margin: 0;
-
-    /* Makes the phase text 22px */
-    font-size: 22px;
+	/* Makes the phase text 22px */
+	font-size: 22px;
 }
 
-
 /* =========================================================
-   COUNTDOWN
-   Controls the countdown number inside the circle
-   ========================================================= */
+	 COUNTDOWN
+	 Controls the countdown number inside the circle
+	 ========================================================= */
 
 #countdown {
+	/* Adds 10px of space above the countdown */
+	margin: 10px 0 0;
 
-    /* Adds 10px of space above the countdown */
-    margin: 10px 0 0;
+	/* Makes the countdown 48px */
+	font-size: 48px;
 
-    /* Makes the countdown 48px */
-    font-size: 48px;
-
-    /* Makes the countdown bold */
-    font-weight: bold;
+	/* Makes the countdown bold */
+	font-weight: bold;
 }
 
-
 /* =========================================================
-   START AND STOP BUTTONS
-   Controls both breathing control buttons
-   ========================================================= */
+	 START AND STOP BUTTONS
+	 Controls both breathing control buttons
+	 ========================================================= */
 
 #startBtn,
 #stopBtn {
+	/* Removes the default button border */
+	border: none;
 
-    /* Removes the default button border */
-    border: none;
+	/* Adds 12px vertical and 24px horizontal padding */
+	padding: 12px 24px;
 
-    /* Adds 12px vertical and 24px horizontal padding */
-    padding: 12px 24px;
+	/* Adds 8px of space around each button */
+	margin: 8px;
 
-    /* Adds 8px of space around each button */
-    margin: 8px;
+	/* Creates pill-shaped buttons */
+	border-radius: 999px;
 
-    /* Creates pill-shaped buttons */
-    border-radius: 999px;
+	/* Makes the text 16px */
+	font-size: 16px;
 
-    /* Makes the text 16px */
-    font-size: 16px;
-
-    /* Shows a pointer when hovering */
-    cursor: pointer;
+	/* Shows a pointer when hovering */
+	cursor: pointer;
 }
 
-
 /* =========================================================
-   START BUTTON
-   Controls the Start button
-   ========================================================= */
+	 START BUTTON
+	 Controls the Start button
+	 ========================================================= */
 
 #startBtn {
+	/* Makes the Start button blue */
+	background: rgb(37, 99, 235);
 
-    /* Makes the Start button blue */
-    background: rgb(37, 99, 235);
-
-    /* Makes the text white */
-    color: white;
+	/* Makes the text white */
+	color: white;
 }
 
-
 /* =========================================================
-   STOP BUTTON
-   Controls the Stop button
-   ========================================================= */
+	 STOP BUTTON
+	 Controls the Stop button
+	 ========================================================= */
 
 #stopBtn {
-
-    /* Makes the Stop button light grey */
-    background: #e5e7eb;
+	/* Makes the Stop button light grey */
+	background: #e5e7eb;
 }
 
-
 /* =========================================================
-   BOTTOM NAVIGATION
-   Controls the navigation bar
-   ========================================================= */
+	 BOTTOM NAVIGATION
+	 Controls the navigation bar
+	 ========================================================= */
 
 .navbar {
+	/* Keeps the navbar fixed on the screen */
+	position: fixed;
 
-    /* Keeps the navbar fixed on the screen */
-    position: fixed;
+	/* Places it 20px above the bottom */
+	bottom: 20px;
 
-    /* Places it 20px above the bottom */
-    bottom: 20px;
+	/* Places the left edge at the centre of the screen */
+	left: 50%;
 
-    /* Places the left edge at the centre of the screen */
-    left: 50%;
+	/* Moves the navbar left by half its width
+			 to properly centre it */
+	transform: translateX(-50%);
 
-    /* Moves the navbar left by half its width
-       to properly centre it */
-    transform: translateX(-50%);
+	/* Uses Flexbox for the navigation buttons */
+	display: flex;
 
+	/* Makes the navbar 600px wide */
+	width: 600px;
 
-    /* Uses Flexbox for the navigation buttons */
-    display: flex;
+	/* Makes the navbar pill-shaped */
+	border-radius: 999px;
 
-    /* Makes the navbar 600px wide */
-    width: 600px;
+	/* Prevents buttons from overflowing outside
+			 the rounded navbar */
+	overflow: hidden;
 
-    /* Makes the navbar pill-shaped */
-    border-radius: 999px;
+	/* Makes the navbar light grey */
+	background-color: rgb(240, 240, 240);
 
-    /* Prevents buttons from overflowing outside
-       the rounded navbar */
-    overflow: hidden;
-
-    /* Makes the navbar light grey */
-    background-color: rgb(240, 240, 240);
-
-    /* Adds a subtle shadow */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	/* Adds a subtle shadow */
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-
 /* =========================================================
-   NAVIGATION BUTTONS
-   Controls each button in the navbar
-   ========================================================= */
+	 NAVIGATION BUTTONS
+	 Controls each button in the navbar
+	 ========================================================= */
 
 .navbar button {
+	/* Makes each button take an equal amount of space */
+	flex: 1;
 
-    /* Makes each button take an equal amount of space */
-    flex: 1;
+	/* Removes the default border */
+	border: none;
 
-    /* Removes the default border */
-    border: none;
+	/* Makes the button background transparent */
+	background: transparent;
 
-    /* Makes the button background transparent */
-    background: transparent;
+	/* Adds vertical padding */
+	padding: 15px 0;
 
-    /* Adds vertical padding */
-    padding: 15px 0;
+	/* Makes the text 16px */
+	font-size: 16px;
 
-    /* Makes the text 16px */
-    font-size: 16px;
+	/* Changes the cursor to a pointer */
+	cursor: pointer;
 
-    /* Changes the cursor to a pointer */
-    cursor: pointer;
-
-    /* Smoothly changes the background colour */
-    transition: background-color 0.2s;
+	/* Smoothly changes the background colour */
+	transition: background-color 0.2s;
 }
 
-
 /* =========================================================
-   NAVIGATION BUTTON HOVER
-   ========================================================= */
+	 NAVIGATION BUTTON HOVER
+	 ========================================================= */
 
 .navbar button:hover {
-
-    /* Makes the button light grey when hovered */
-    background-color: rgb(215, 215, 215);
+	/* Makes the button light grey when hovered */
+	background-color: rgb(215, 215, 215);
 }
 
-
 /* =========================================================
-   CURRENT NAVIGATION BUTTON
-   Highlights the Breathing button
-   ========================================================= */
+	 CURRENT NAVIGATION BUTTON
+	 Highlights the Breathing button
+	 ========================================================= */
 
 .navbar .current {
+	/* Makes the current button blue */
+	background-color: rgb(37, 99, 235);
 
-    /* Makes the current button blue */
-    background-color: rgb(37, 99, 235);
+	/* Makes the text white */
+	color: white;
 
-    /* Makes the text white */
-    color: white;
-
-    /* Gives the current button rounded corners */
-    border-radius: 25px;
+	/* Gives the current button rounded corners */
+	border-radius: 25px;
 }
 
-
 /* =========================================================
-   ASCENDRA COIN
-   These classes match your HTML coin section.
-   Your separate coin(KidsMode).css may also control these.
-   ========================================================= */
+	 ASCENDRA COIN
+	 These classes match your HTML coin section.
+	 Your separate coin(KidsMode).css may also control these.
+	 ========================================================= */
 
 /*
 .coin-display
@@ -441,44 +396,42 @@ These are intentionally NOT styled here because you already
 load coin(KidsMode).css separately in your HTML.
 */
 
-
 /* =========================================================
-   MOBILE RESPONSIVE DESIGN
-   Applies when the screen is 750px wide or smaller
-   ========================================================= */
+	 MOBILE RESPONSIVE DESIGN
+	 Applies when the screen is 750px wide or smaller
+	 ========================================================= */
 
 @media (max-width: 750px) {
+	/* Makes the exercise menu one column on smaller screens */
+	.menu {
+		grid-template-columns: 1fr;
+	}
 
-    /* Makes the exercise menu one column on smaller screens */
-    .menu {
-        grid-template-columns: 1fr;
-    }
+	/* Reduces the main content spacing */
+	main {
+		width: 92%;
+		margin: 25px auto;
+	}
 
-    /* Reduces the main content spacing */
-    main {
-        width: 92%;
-        margin: 25px auto;
-    }
+	/* Makes the title slightly smaller on mobile */
+	h1 {
+		font-size: 34px;
+	}
 
-    /* Makes the title slightly smaller on mobile */
-    h1 {
-        font-size: 34px;
-    }
+	/* Makes the navbar fit smaller screens */
+	.navbar {
+		width: 95%;
+	}
 
-    /* Makes the navbar fit smaller screens */
-    .navbar {
-        width: 95%;
-    }
+	/* Allows the navigation buttons to become smaller */
+	.navbar button {
+		font-size: 13px;
+		padding: 12px 4px;
+	}
 
-    /* Allows the navigation buttons to become smaller */
-    .navbar button {
-        font-size: 13px;
-        padding: 12px 4px;
-    }
-
-    /* Makes the breathing circle slightly smaller */
-    #circle {
-        width: 190px;
-        height: 190px;
-    }
+	/* Makes the breathing circle slightly smaller */
+	#circle {
+		width: 190px;
+		height: 190px;
+	}
 }

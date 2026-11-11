@@ -32,13 +32,7 @@ const ENCRYPTED_MARKER = "__ascendra_encrypted_v1__";
 const MAX_FIELD_LENGTH = 5000;
 const JOURNAL_TOKEN_FIELD = "journalTokenV1";
 
-const ALLOWED_MOODS = new Set([
-  "Happy",
-  "Good",
-  "Okay",
-  "Sad",
-  "Tired",
-]);
+const ALLOWED_MOODS = new Set(["Happy", "Good", "Okay", "Sad", "Tired"]);
 
 function getRequestUrl(input) {
   if (typeof input === "string") return input;
@@ -48,7 +42,9 @@ function getRequestUrl(input) {
 }
 
 function getRequestMethod(input, init) {
-  return String(init?.method || (input instanceof Request ? input.method : "GET")).toUpperCase();
+  return String(
+    init?.method || (input instanceof Request ? input.method : "GET"),
+  ).toUpperCase();
 }
 
 function isJournalEndpoint(input) {
@@ -155,10 +151,16 @@ function validateJournalToken(token) {
 
 function getOrCreateJournalToken(userId) {
   const activeUserId = String(getActiveIdentityItem("accountId") || "").trim();
-  const username = String(getActiveIdentityItem("loggedInUser") || getActiveIdentityItem("username") || "").trim();
+  const username = String(
+    getActiveIdentityItem("loggedInUser") ||
+      getActiveIdentityItem("username") ||
+      "",
+  ).trim();
 
   if (!userId || !activeUserId || userId !== activeUserId) {
-    throw new Error("Journal access does not match the active Ascendra account.");
+    throw new Error(
+      "Journal access does not match the active Ascendra account.",
+    );
   }
 
   const record = username ? readStoredAccount(username) : null;
@@ -396,14 +398,20 @@ function readLocalJson(key) {
     const value = localStorage.getItem(key);
     if (!value) return null;
     const parsed = JSON.parse(value);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed
+      : null;
   } catch {
     return null;
   }
 }
 
 function findLegacyClaim(userId) {
-  const username = String(getActiveIdentityItem("loggedInUser") || getActiveIdentityItem("username") || "")
+  const username = String(
+    getActiveIdentityItem("loggedInUser") ||
+      getActiveIdentityItem("username") ||
+      "",
+  )
     .trim()
     .toLowerCase();
 
@@ -524,8 +532,16 @@ async function claimJournal(nativeFetch, baseUrl, userId, token) {
   }
 }
 
-async function migrateLegacyEntries(nativeFetch, baseUrl, entries, userId, token) {
-  const legacyEntries = entries.filter((entry) => entry.__legacyPlaintext === true);
+async function migrateLegacyEntries(
+  nativeFetch,
+  baseUrl,
+  entries,
+  userId,
+  token,
+) {
+  const legacyEntries = entries.filter(
+    (entry) => entry.__legacyPlaintext === true,
+  );
 
   for (const legacyEntry of legacyEntries) {
     const encrypted = await encryptEntry(legacyEntry, token);
@@ -539,7 +555,9 @@ async function migrateLegacyEntries(nativeFetch, baseUrl, entries, userId, token
     });
 
     if (!response.ok) {
-      console.warn(`Ascendra could not migrate journal entry ${legacyEntry.date} to encrypted storage.`);
+      console.warn(
+        `Ascendra could not migrate journal entry ${legacyEntry.date} to encrypted storage.`,
+      );
     }
   }
 }
@@ -555,7 +573,10 @@ async function secureGet(nativeFetch, input, init) {
   const requestInit = requestInitWithBody(input, init, "GET", headers);
 
   let response = await nativeFetch(getRequestUrl(input), requestInit);
-  if (response.status === 428 && (await responseCode(response)) === "journal_auth_required") {
+  if (
+    response.status === 428 &&
+    (await responseCode(response)) === "journal_auth_required"
+  ) {
     const url = new URL(getRequestUrl(input), window.location.href);
     await claimJournal(nativeFetch, url.origin, userId, token);
     response = await nativeFetch(getRequestUrl(input), requestInit);
@@ -578,9 +599,14 @@ async function secureGet(nativeFetch, input, init) {
   // Once the legacy owner has authenticated, silently replace plaintext
   // backend rows with AES-GCM ciphertext.
   const baseUrl = new URL(getRequestUrl(input), window.location.href).origin;
-  migrateLegacyEntries(nativeFetch, baseUrl, entries, userId, token).catch((error) => {
-    console.warn("Ascendra could not finish journal encryption migration.", error);
-  });
+  migrateLegacyEntries(nativeFetch, baseUrl, entries, userId, token).catch(
+    (error) => {
+      console.warn(
+        "Ascendra could not finish journal encryption migration.",
+        error,
+      );
+    },
+  );
 
   const cleanEntries = entries.map(({ __legacyPlaintext, ...entry }) => entry);
   return responseWithJson(cleanEntries, response);
@@ -600,7 +626,9 @@ async function readRequestJson(input, init) {
 
 async function securePost(nativeFetch, input, init) {
   const plaintextEntry = await readRequestJson(input, init);
-  const userId = String(plaintextEntry?.user_id || plaintextEntry?.userId || "").trim();
+  const userId = String(
+    plaintextEntry?.user_id || plaintextEntry?.userId || "",
+  ).trim();
 
   if (!userId) {
     throw new Error("The journal entry is missing its account.");
@@ -627,7 +655,10 @@ async function securePost(nativeFetch, input, init) {
 
   let response = await nativeFetch(getRequestUrl(input), requestInit);
 
-  if (response.status === 428 && (await responseCode(response)) === "journal_auth_required") {
+  if (
+    response.status === 428 &&
+    (await responseCode(response)) === "journal_auth_required"
+  ) {
     const url = new URL(getRequestUrl(input), window.location.href);
     await claimJournal(nativeFetch, url.origin, userId, token);
     response = await nativeFetch(getRequestUrl(input), requestInit);

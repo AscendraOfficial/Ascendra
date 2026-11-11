@@ -11,8 +11,22 @@ const PROGRESSION_STORAGE_KEY = "ascendraProgression";
 const PROGRESSION_VERSION = 1;
 const XP_PER_LEVEL = 100;
 const DEFAULT_APP_NAME = "Ascendra";
-const APP_NAME_ATTRIBUTES = Object.freeze(["alt", "aria-label", "content", "placeholder", "title"]);
-const HABIT_IMPORT_DAY_KEYS = Object.freeze(["mon", "tue", "wed", "thu", "fri", "sat", "sun"]);
+const APP_NAME_ATTRIBUTES = Object.freeze([
+  "alt",
+  "aria-label",
+  "content",
+  "placeholder",
+  "title",
+]);
+const HABIT_IMPORT_DAY_KEYS = Object.freeze([
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+  "sun",
+]);
 const HABIT_IMPORT_MAX_LENGTH = 10000;
 const HABIT_IMPORT_MAX_HABITS = 30;
 
@@ -28,14 +42,23 @@ function getHabitImportWeekDates(weekStart) {
   if (!start) return [];
 
   return HABIT_IMPORT_DAY_KEYS.map(function (_, index) {
-    const date = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const date = new Date(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate(),
+    );
     date.setDate(start.getDate() + index);
     return date;
   });
 }
 
 function normalizeHabitImportStatus(value) {
-  if (value === true || value === false || value === null || value === undefined) {
+  if (
+    value === true ||
+    value === false ||
+    value === null ||
+    value === undefined
+  ) {
     return value ?? null;
   }
   throw new Error("Habit results must be true, false, or blank.");
@@ -62,7 +85,9 @@ function normalizeImportedHabit(value, index, compact = false) {
   const frequency = source.frequency ?? "daily";
 
   if (!name || name.length > 120) {
-    throw new Error(`Habit ${index + 1} needs a name between 1 and 120 characters.`);
+    throw new Error(
+      `Habit ${index + 1} needs a name between 1 and 120 characters.`,
+    );
   }
   if (emoji.length > 8) {
     throw new Error(`Habit ${index + 1} has an invalid emoji.`);
@@ -80,7 +105,9 @@ function normalizeImportedHabit(value, index, compact = false) {
   }
 
   const results = HABIT_IMPORT_DAY_KEYS.map(function (dayKey, dayIndex) {
-    return normalizeHabitImportStatus(compactResults ? compactResults[dayIndex] : source[dayKey]);
+    return normalizeHabitImportStatus(
+      compactResults ? compactResults[dayIndex] : source[dayKey],
+    );
   });
 
   return { name, emoji, type, frequency, results };
@@ -107,10 +134,17 @@ function validateHabitImportPayload(value) {
 
   const requestedWeekStart = value.weekStart ?? value.w;
   const fallbackWeekStart = formatLocalDate(getStartOfWeek());
-  const weekStart = requestedWeekStart === undefined ? fallbackWeekStart : String(requestedWeekStart);
+  const weekStart =
+    requestedWeekStart === undefined
+      ? fallbackWeekStart
+      : String(requestedWeekStart);
   const weekDates = getHabitImportWeekDates(weekStart);
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(weekStart) || weekDates.length !== 7 || formatLocalDate(weekDates[0]) !== weekStart) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(weekStart) ||
+    weekDates.length !== 7 ||
+    formatLocalDate(weekDates[0]) !== weekStart
+  ) {
     throw new Error("The imported week start date is invalid.");
   }
 
@@ -128,14 +162,21 @@ function validateHabitImportPayload(value) {
   }
 
   if (candidates.length === 0 || candidates.length > HABIT_IMPORT_MAX_HABITS) {
-    throw new Error(`A habit QR can contain between 1 and ${HABIT_IMPORT_MAX_HABITS} habits.`);
+    throw new Error(
+      `A habit QR can contain between 1 and ${HABIT_IMPORT_MAX_HABITS} habits.`,
+    );
   }
 
-  const habits = candidates.map((habit, index) => normalizeImportedHabit(habit, index, compact));
+  const habits = candidates.map((habit, index) =>
+    normalizeImportedHabit(habit, index, compact),
+  );
   const todayKey = formatLocalDate();
   habits.forEach(function (habit) {
     habit.results.forEach(function (result, index) {
-      if (typeof result === "boolean" && formatLocalDate(weekDates[index]) > todayKey) {
+      if (
+        typeof result === "boolean" &&
+        formatLocalDate(weekDates[index]) > todayKey
+      ) {
         throw new Error("Future habit check-ins must stay blank.");
       }
     });
@@ -144,7 +185,8 @@ function validateHabitImportPayload(value) {
   const names = new Set();
   habits.forEach(function (habit) {
     const key = habit.name.toLocaleLowerCase();
-    if (names.has(key)) throw new Error(`The QR data repeats the habit “${habit.name}”.`);
+    if (names.has(key))
+      throw new Error(`The QR data repeats the habit “${habit.name}”.`);
     names.add(key);
   });
 
@@ -157,10 +199,17 @@ function consumeHabitImportParameter() {
 
   const serializedImport = url.searchParams.get("habitImport");
   url.searchParams.delete("habitImport");
-  history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
+  history.replaceState(
+    history.state,
+    "",
+    `${url.pathname}${url.search}${url.hash}`,
+  );
 
   try {
-    if (!serializedImport || serializedImport.length > HABIT_IMPORT_MAX_LENGTH) {
+    if (
+      !serializedImport ||
+      serializedImport.length > HABIT_IMPORT_MAX_LENGTH
+    ) {
       throw new Error("The habit QR data is empty or too large.");
     }
 
@@ -174,7 +223,13 @@ function consumeHabitImportParameter() {
     return { data: validateHabitImportPayload(parsedImport), error: null };
   } catch (error) {
     console.warn("Ascendra ignored an invalid habit import.", error);
-    return { data: null, error: error instanceof Error ? error.message : "The habit QR data could not be read." };
+    return {
+      data: null,
+      error:
+        error instanceof Error
+          ? error.message
+          : "The habit QR data could not be read.",
+    };
   }
 }
 
@@ -187,7 +242,8 @@ function changeText(element, newText) {
 }
 
 function configuredAppText(value) {
-  const configuredName = String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
+  const configuredName =
+    String(APP_CONFIG.name || "").trim() || DEFAULT_APP_NAME;
   return String(value).split(DEFAULT_APP_NAME).join(configuredName);
 }
 
@@ -207,7 +263,10 @@ function renderAppMetadata(root = document) {
 
     APP_NAME_ATTRIBUTES.forEach((attribute) => {
       if (element.hasAttribute(attribute)) {
-        element.setAttribute(attribute, configuredAppText(element.getAttribute(attribute)));
+        element.setAttribute(
+          attribute,
+          configuredAppText(element.getAttribute(attribute)),
+        );
       }
     });
   });
@@ -224,7 +283,13 @@ renderAppMetadata(document.head);
 renderAppMetadata(document.body);
 
 const TAB_IDENTITY_PREFIX = "ascendra:tab-identity:";
-const TAB_IDENTITY_FIELDS = Object.freeze(["loggedInUser", "name", "surname", "username", "accountId"]);
+const TAB_IDENTITY_FIELDS = Object.freeze([
+  "loggedInUser",
+  "name",
+  "surname",
+  "username",
+  "accountId",
+]);
 const LEGACY_USER_KEYS = Object.freeze([
   "todos",
   "habits",
@@ -363,21 +428,27 @@ const badges = [
   {
     id: "genesis",
     name: "GENESIS",
-    description: configuredAppText("Awarded to the first person in the world to use Ascendra."),
+    description: configuredAppText(
+      "Awarded to the first person in the world to use Ascendra.",
+    ),
     icon: "\u{1F30C}",
     obtained: false,
   },
   {
     id: "coFounder",
     name: "Co-Founder",
-    description: configuredAppText("Awarded to someone who helped create and shape Ascendra from the beginning."),
+    description: configuredAppText(
+      "Awarded to someone who helped create and shape Ascendra from the beginning.",
+    ),
     icon: "\u{1F91D}",
     obtained: false,
   },
   {
     id: "founder",
     name: "Founder",
-    description: configuredAppText("Awarded to the creator and lead developer of Ascendra."),
+    description: configuredAppText(
+      "Awarded to the creator and lead developer of Ascendra.",
+    ),
     icon: "\u{1F451}",
     obtained: false,
   },
@@ -402,7 +473,9 @@ function parseLocalDateTime(value, fallbackTime = "") {
     .match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2})(?::\d{2})?)?$/);
   if (!match) return null;
 
-  const fallbackMatch = String(fallbackTime || "").match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  const fallbackMatch = String(fallbackTime || "").match(
+    /^(\d{1,2}):(\d{2})(?::\d{2})?$/,
+  );
   const year = Number(match[1]);
   const month = Number(match[2]);
   const day = Number(match[3]);
@@ -426,7 +499,10 @@ function parseLocalDateTime(value, fallbackTime = "") {
 function dateKeyDayNumber(value) {
   const parsed = value instanceof Date ? value : parseLocalDateTime(value);
   if (!parsed) return Number.NaN;
-  return Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()) / DAY_IN_MILLISECONDS;
+  return (
+    Date.UTC(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()) /
+    DAY_IN_MILLISECONDS
+  );
 }
 
 function eventDateTime(event) {
@@ -461,9 +537,19 @@ async function derivePasswordDigest(password, salt, iterations) {
     throw new Error("Secure password storage requires HTTPS or localhost.");
   }
 
-  const keyMaterial = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
 
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, keyMaterial, 256);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations },
+    keyMaterial,
+    256,
+  );
   return new Uint8Array(bits);
 }
 
@@ -472,7 +558,11 @@ async function createPasswordCredentials(password) {
     throw new Error("Secure password storage requires HTTPS or localhost.");
   }
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const digest = await derivePasswordDigest(password, salt, PASSWORD_ITERATIONS);
+  const digest = await derivePasswordDigest(
+    password,
+    salt,
+    PASSWORD_ITERATIONS,
+  );
   return {
     version: 1,
     kdf: "PBKDF2",
@@ -504,7 +594,11 @@ async function verifyPasswordCredentials(password, credentials) {
     return false;
   }
 
-  const actual = await derivePasswordDigest(password, salt, credentials.iterations);
+  const actual = await derivePasswordDigest(
+    password,
+    salt,
+    credentials.iterations,
+  );
   if (actual.length !== expected.length) return false;
 
   let difference = 0;
@@ -533,12 +627,18 @@ function normalizeUsername(username) {
   return String(username || "").trim();
 }
 
-function getUsernameValidationMessage(username, { allowLegacyUsername = "" } = {}) {
+function getUsernameValidationMessage(
+  username,
+  { allowLegacyUsername = "" } = {},
+) {
   const normalized = normalizeUsername(username);
   const allowedLegacy = normalizeUsername(allowLegacyUsername);
 
   if (!normalized) return "Please enter a username.";
-  if (allowedLegacy && normalized.toLowerCase() === allowedLegacy.toLowerCase()) {
+  if (
+    allowedLegacy &&
+    normalized.toLowerCase() === allowedLegacy.toLowerCase()
+  ) {
     return "";
   }
   if (normalized.length > 20) {
@@ -572,14 +672,22 @@ function findStoredAccount(username) {
 
   for (let index = 0; index < localStorage.length; index++) {
     const candidateKey = localStorage.key(index);
-    if (candidateKey && candidateKey.toLowerCase() === requestedUsernameLower && !legacyKeys.includes(candidateKey)) {
+    if (
+      candidateKey &&
+      candidateKey.toLowerCase() === requestedUsernameLower &&
+      !legacyKeys.includes(candidateKey)
+    ) {
       legacyKeys.push(candidateKey);
     }
   }
 
   for (const legacyKey of legacyKeys) {
     const legacyAccount = readStoredJson(legacyKey);
-    if (legacyAccount && !Array.isArray(legacyAccount) && (legacyAccount.credentials || typeof legacyAccount.password === "string")) {
+    if (
+      legacyAccount &&
+      !Array.isArray(legacyAccount) &&
+      (legacyAccount.credentials || typeof legacyAccount.password === "string")
+    ) {
       return { account: legacyAccount, key: legacyKey, legacy: true };
     }
   }
@@ -588,7 +696,10 @@ function findStoredAccount(username) {
 }
 
 function saveStoredAccount(account) {
-  localStorage.setItem(accountStorageKey(account.username), JSON.stringify(account));
+  localStorage.setItem(
+    accountStorageKey(account.username),
+    JSON.stringify(account),
+  );
 }
 
 function ensureStoredAccountId(accountRecord) {
@@ -607,7 +718,9 @@ function ensureStoredAccountId(accountRecord) {
   try {
     localStorage.setItem(accountRecord.key, serializedAccount);
     if (localStorage.getItem(accountRecord.key) !== serializedAccount) {
-      throw new Error(configuredAppText("Ascendra could not verify this account."));
+      throw new Error(
+        configuredAppText("Ascendra could not verify this account."),
+      );
     }
   } catch (error) {
     if (previousValue === null) {
@@ -637,14 +750,18 @@ function readTabIdentityItem(field) {
       return sessionStorage.getItem(key);
     }
   } catch (error) {
-    console.warn(configuredAppText("Ascendra could not read this tab's session identity."), error);
+    console.warn(
+      configuredAppText("Ascendra could not read this tab's session identity."),
+      error,
+    );
   }
   return tabIdentityFallback.has(key) ? tabIdentityFallback.get(key) : null;
 }
 
 function writeTabIdentityItem(field, value) {
   const key = tabIdentityStorageKey(field);
-  const normalizedValue = value === null || value === undefined ? null : String(value);
+  const normalizedValue =
+    value === null || value === undefined ? null : String(value);
 
   try {
     if (typeof sessionStorage !== "undefined") {
@@ -656,7 +773,10 @@ function writeTabIdentityItem(field, value) {
       return;
     }
   } catch (error) {
-    console.warn(configuredAppText("Ascendra could not save this tab's session identity."), error);
+    console.warn(
+      configuredAppText("Ascendra could not save this tab's session identity."),
+      error,
+    );
   }
 
   if (normalizedValue === null) {
@@ -668,19 +788,28 @@ function writeTabIdentityItem(field, value) {
 
 function initializeTabIdentity() {
   if (readTabIdentityItem("initialized") === "true") {
-    const tabUsername = String(readTabIdentityItem("loggedInUser") || "").trim();
+    const tabUsername = String(
+      readTabIdentityItem("loggedInUser") || "",
+    ).trim();
     const tabAccountId = String(readTabIdentityItem("accountId") || "");
     const accountRecord = tabUsername ? findStoredAccount(tabUsername) : null;
 
-    if (tabUsername && (!tabAccountId || accountRecord?.account?.accountId !== tabAccountId)) {
+    if (
+      tabUsername &&
+      (!tabAccountId || accountRecord?.account?.accountId !== tabAccountId)
+    ) {
       clearActiveIdentity();
       history.replaceState({ route: "login" }, "", "#/login");
     }
     return;
   }
 
-  let publishedUsername = String(localStorage.getItem("loggedInUser") || "").trim();
-  let accountRecord = publishedUsername ? findStoredAccount(publishedUsername) : null;
+  let publishedUsername = String(
+    localStorage.getItem("loggedInUser") || "",
+  ).trim();
+  let accountRecord = publishedUsername
+    ? findStoredAccount(publishedUsername)
+    : null;
 
   try {
     if (accountRecord) {
@@ -689,7 +818,10 @@ function initializeTabIdentity() {
       throw new Error("The published account no longer exists.");
     }
   } catch (error) {
-    console.warn(configuredAppText("Ascendra signed out an unverifiable account."), error);
+    console.warn(
+      configuredAppText("Ascendra signed out an unverifiable account."),
+      error,
+    );
     TAB_IDENTITY_FIELDS.forEach((field) => localStorage.removeItem(field));
     publishedUsername = "";
     accountRecord = null;
@@ -715,9 +847,15 @@ function getActiveIdentityItem(field) {
   return readTabIdentityItem(field) || "";
 }
 
-function setActiveIdentity(identity, { publish = true, previousUsername = null } = {}) {
+function setActiveIdentity(
+  identity,
+  { publish = true, previousUsername = null } = {},
+) {
   const username = String(identity?.username || "").trim();
-  const loggedInUser = identity?.loggedInUser === null ? "" : String(identity?.loggedInUser ?? username).trim();
+  const loggedInUser =
+    identity?.loggedInUser === null
+      ? ""
+      : String(identity?.loggedInUser ?? username).trim();
   const values = {
     loggedInUser,
     name: String(identity?.name || ""),
@@ -737,7 +875,9 @@ function setActiveIdentity(identity, { publish = true, previousUsername = null }
   const previousClean = String(previousUsername || "")
     .trim()
     .toLowerCase();
-  const canPublish = publish || (previousClean ? sharedUsername === previousClean : sharedUsername === "");
+  const canPublish =
+    publish ||
+    (previousClean ? sharedUsername === previousClean : sharedUsername === "");
 
   if (!canPublish) return;
 
@@ -750,7 +890,10 @@ function setActiveIdentity(identity, { publish = true, previousUsername = null }
       }
     });
   } catch (error) {
-    console.warn(configuredAppText("Ascendra could not publish this tab's identity."), error);
+    console.warn(
+      configuredAppText("Ascendra could not publish this tab's identity."),
+      error,
+    );
   }
 }
 
@@ -768,13 +911,18 @@ function clearActiveIdentity() {
   writeTabIdentityItem("initialized", "true");
 
   if (
-    (tabUsername && sharedUsername === tabUsername && (!sharedAccountId || sharedAccountId === tabAccountId)) ||
+    (tabUsername &&
+      sharedUsername === tabUsername &&
+      (!sharedAccountId || sharedAccountId === tabAccountId)) ||
     (!tabUsername && !sharedUsername)
   ) {
     try {
       TAB_IDENTITY_FIELDS.forEach((field) => localStorage.removeItem(field));
     } catch (error) {
-      console.warn(configuredAppText("Ascendra could not clear the published identity."), error);
+      console.warn(
+        configuredAppText("Ascendra could not clear the published identity."),
+        error,
+      );
     }
   }
 }
@@ -791,7 +939,9 @@ function userStorageKey(key, username = getLoggedInUsername()) {
   const cleanUsername = String(username || "")
     .trim()
     .toLowerCase();
-  return cleanUsername ? `ascendra:data:${cleanUsername}:${key}` : `ascendra:guest:${key}`;
+  return cleanUsername
+    ? `ascendra:data:${cleanUsername}:${key}`
+    : `ascendra:guest:${key}`;
 }
 
 function getUserItem(key, username = getLoggedInUsername()) {
@@ -824,10 +974,19 @@ function readUserJson(key, fallback = null, username = getLoggedInUsername()) {
 
 function getUserArray(key, username = getLoggedInUsername()) {
   const value = readUserJson(key, [], username);
-  const items = Array.isArray(value) ? value.filter((item) => item && typeof item === "object" && !Array.isArray(item)) : [];
+  const items = Array.isArray(value)
+    ? value.filter(
+        (item) => item && typeof item === "object" && !Array.isArray(item),
+      )
+    : [];
 
   if (key === "todos" || key === "habits") {
-    ensureStableActivityIds(items, key === "todos" ? "task" : "habit", key, username);
+    ensureStableActivityIds(
+      items,
+      key === "todos" ? "task" : "habit",
+      key,
+      username,
+    );
   }
 
   return items;
@@ -844,12 +1003,16 @@ function getRewardXp(eventId) {
     return XP_REWARDS.task;
   }
 
-  const habitMatch = normalizedEventId.match(/^habit:([^:]{1,240}):(\d{4}-\d{2}-\d{2})$/);
+  const habitMatch = normalizedEventId.match(
+    /^habit:([^:]{1,240}):(\d{4}-\d{2}-\d{2})$/,
+  );
   if (habitMatch && parseLocalDateTime(habitMatch[2])) {
     return XP_REWARDS.habit;
   }
 
-  if (MINI_TOOL_IDS.some((toolId) => normalizedEventId === `minitool:${toolId}`)) {
+  if (
+    MINI_TOOL_IDS.some((toolId) => normalizedEventId === `minitool:${toolId}`)
+  ) {
     return XP_REWARDS.miniTool;
   }
 
@@ -885,7 +1048,9 @@ function normalizeProgressionState(value) {
       const xp = getRewardXp(eventId);
       if (!xp) return;
 
-      const awardedAt = normalizeStoredTimestamp(isPlainRecord(storedReward) ? storedReward.awardedAt : storedReward);
+      const awardedAt = normalizeStoredTimestamp(
+        isPlainRecord(storedReward) ? storedReward.awardedAt : storedReward,
+      );
 
       state.rewardedEvents[eventId] = {
         xp,
@@ -894,13 +1059,19 @@ function normalizeProgressionState(value) {
     });
   }
 
-  const storedAchievements = isPlainRecord(value.achievements) ? value.achievements : {};
+  const storedAchievements = isPlainRecord(value.achievements)
+    ? value.achievements
+    : {};
 
   achievements.forEach((achievement) => {
-    const stored = isPlainRecord(storedAchievements[achievement.id]) ? storedAchievements[achievement.id] : {};
+    const stored = isPlainRecord(storedAchievements[achievement.id])
+      ? storedAchievements[achievement.id]
+      : {};
 
     const progressValue = Number(stored.progress);
-    const progress = Number.isFinite(progressValue) ? Math.min(achievement.goal, Math.max(0, progressValue)) : 0;
+    const progress = Number.isFinite(progressValue)
+      ? Math.min(achievement.goal, Math.max(0, progressValue))
+      : 0;
     const unlockedAt = normalizeStoredTimestamp(stored.unlockedAt);
 
     state.achievements[achievement.id] = {
@@ -913,7 +1084,9 @@ function normalizeProgressionState(value) {
   const storedBadges = isPlainRecord(value.badges) ? value.badges : {};
 
   badges.forEach((badge) => {
-    const stored = isPlainRecord(storedBadges[badge.id]) ? storedBadges[badge.id] : {};
+    const stored = isPlainRecord(storedBadges[badge.id])
+      ? storedBadges[badge.id]
+      : {};
 
     state.badges[badge.id] = {
       obtained: stored.obtained === true,
@@ -930,10 +1103,16 @@ function loadProgressionState() {
 
 function saveProgressionState(state) {
   try {
-    setUserItem(PROGRESSION_STORAGE_KEY, JSON.stringify(normalizeProgressionState(state)));
+    setUserItem(
+      PROGRESSION_STORAGE_KEY,
+      JSON.stringify(normalizeProgressionState(state)),
+    );
     return true;
   } catch (error) {
-    console.warn(configuredAppText("Ascendra could not save progression."), error);
+    console.warn(
+      configuredAppText("Ascendra could not save progression."),
+      error,
+    );
     return false;
   }
 }
@@ -950,14 +1129,20 @@ function hashProgressIdentifier(value) {
   return (hash >>> 0).toString(36);
 }
 
-function ensureStableActivityIds(items, type, storageKey, username = getLoggedInUsername()) {
+function ensureStableActivityIds(
+  items,
+  type,
+  storageKey,
+  username = getLoggedInUsername(),
+) {
   const usedIds = new Set();
   const changedItems = [];
   const migrationSeed = Date.now().toString(36);
 
   items.forEach((item, index) => {
     const existingId = item?.id ?? item?.createdAt;
-    const normalizedId = existingId === undefined || existingId === null ? "" : String(existingId);
+    const normalizedId =
+      existingId === undefined || existingId === null ? "" : String(existingId);
 
     if (normalizedId && !usedIds.has(normalizedId)) {
       usedIds.add(normalizedId);
@@ -1002,7 +1187,10 @@ function ensureStableActivityIds(items, type, storageKey, username = getLoggedIn
         delete item.id;
       }
     });
-    console.warn(configuredAppText(`Ascendra could not migrate legacy ${storageKey}.`), error);
+    console.warn(
+      configuredAppText(`Ascendra could not migrate legacy ${storageKey}.`),
+      error,
+    );
     return false;
   }
 }
@@ -1103,18 +1291,28 @@ function reconcileAchievementState(state) {
   let unlockOffset = 0;
 
   achievements.forEach((achievement) => {
-    const existing = isPlainRecord(state.achievements?.[achievement.id]) ? state.achievements[achievement.id] : {};
+    const existing = isPlainRecord(state.achievements?.[achievement.id])
+      ? state.achievements[achievement.id]
+      : {};
 
     let progress = 0;
     if (achievement.id !== "noZeroDays") {
       if (achievement.eventId) {
-        progress = Object.prototype.hasOwnProperty.call(state.rewardedEvents, achievement.eventId) ? 1 : 0;
+        progress = Object.prototype.hasOwnProperty.call(
+          state.rewardedEvents,
+          achievement.eventId,
+        )
+          ? 1
+          : 0;
       } else {
         progress = Number(statistics[achievement.stat] || 0);
       }
     }
 
-    progress = Math.min(achievement.goal, Math.max(0, Number.isFinite(progress) ? progress : 0));
+    progress = Math.min(
+      achievement.goal,
+      Math.max(0, Number.isFinite(progress) ? progress : 0),
+    );
 
     if (achievement.id === "noZeroDays") {
       state.achievements[achievement.id] = {
@@ -1158,7 +1356,9 @@ function reconcileBadgeState(state) {
     .toLowerCase();
 
   badges.forEach((badge) => {
-    const existing = isPlainRecord(state.badges?.[badge.id]) ? state.badges[badge.id] : {};
+    const existing = isPlainRecord(state.badges?.[badge.id])
+      ? state.badges[badge.id]
+      : {};
 
     let obtained = false;
     if (badge.id === "genesis") {
@@ -1171,7 +1371,10 @@ function reconcileBadgeState(state) {
 
     state.badges[badge.id] = {
       obtained,
-      obtainedAt: obtained ? normalizeStoredTimestamp(existing.obtainedAt) || new Date().toISOString() : null,
+      obtainedAt: obtained
+        ? normalizeStoredTimestamp(existing.obtainedAt) ||
+          new Date().toISOString()
+        : null,
     };
   });
 }
@@ -1230,7 +1433,9 @@ function recordMiniToolUse(toolId) {
 
   return {
     state,
-    newlyUnlocked: newlyUnlocked.filter((achievement) => achievement.category === "miniTools"),
+    newlyUnlocked: newlyUnlocked.filter(
+      (achievement) => achievement.category === "miniTools",
+    ),
     xpAwarded: awarded && saved ? getRewardXp(eventId) : 0,
     saved,
   };
@@ -1240,7 +1445,9 @@ function recordZenSession() {
   const state = loadProgressionState();
   addExistingActivityRewards(state);
 
-  const completedSessionIds = Object.keys(state.rewardedEvents || {}).filter((eventId) => /^unwind:zen:\d{1,9}$/.test(eventId));
+  const completedSessionIds = Object.keys(state.rewardedEvents || {}).filter(
+    (eventId) => /^unwind:zen:\d{1,9}$/.test(eventId),
+  );
   let sessionNumber = completedSessionIds.length + 1;
   let eventId = `unwind:zen:${sessionNumber}`;
 
@@ -1265,14 +1472,19 @@ function recordZenSession() {
 
   return {
     state,
-    newlyUnlocked: newlyUnlocked.filter((achievement) => achievement.category === "wellbeing"),
+    newlyUnlocked: newlyUnlocked.filter(
+      (achievement) => achievement.category === "wellbeing",
+    ),
     xpAwarded: awarded ? getRewardXp(eventId) : 0,
     saved,
   };
 }
 
 function getTotalXp(state) {
-  return Object.keys(state.rewardedEvents || {}).reduce((total, eventId) => total + getRewardXp(eventId), 0);
+  return Object.keys(state.rewardedEvents || {}).reduce(
+    (total, eventId) => total + getRewardXp(eventId),
+    0,
+  );
 }
 
 function getLevelProgress(totalXp) {
@@ -1294,7 +1506,9 @@ function getLevelProgress(totalXp) {
 }
 
 function getUnlockedAchievements(state) {
-  return achievements.filter((achievement) => state.achievements?.[achievement.id]?.unlocked === true);
+  return achievements.filter(
+    (achievement) => state.achievements?.[achievement.id]?.unlocked === true,
+  );
 }
 
 function getLatestUnlockedAchievement(state) {
@@ -1302,7 +1516,10 @@ function getLatestUnlockedAchievement(state) {
     getUnlockedAchievements(state)
       .map((achievement) => ({
         definition: achievement,
-        unlockedAt: normalizeStoredTimestamp(state.achievements[achievement.id].unlockedAt) || new Date(0).toISOString(),
+        unlockedAt:
+          normalizeStoredTimestamp(
+            state.achievements[achievement.id].unlockedAt,
+          ) || new Date(0).toISOString(),
       }))
       .sort((first, second) => {
         return Date.parse(second.unlockedAt) - Date.parse(first.unlockedAt);
@@ -1319,17 +1536,27 @@ function setProgressText(selector, value) {
 function renderProgressionSummary(state) {
   const levelProgress = getLevelProgress(getTotalXp(state));
   const unlockedCount = getUnlockedAchievements(state).length;
-  const miniToolAchievements = achievements.filter((achievement) => achievement.category === "miniTools");
-  const unlockedMiniTools = miniToolAchievements.filter((achievement) => state.achievements?.[achievement.id]?.unlocked === true).length;
+  const miniToolAchievements = achievements.filter(
+    (achievement) => achievement.category === "miniTools",
+  );
+  const unlockedMiniTools = miniToolAchievements.filter(
+    (achievement) => state.achievements?.[achievement.id]?.unlocked === true,
+  ).length;
 
   setProgressText("[data-xp-total]", `${levelProgress.totalXp} XP`);
   setProgressText("[data-xp-number]", levelProgress.totalXp);
   setProgressText("[data-xp-level]", levelProgress.level);
   setProgressText("[data-xp-level-start]", `${levelProgress.levelStartXp} XP`);
   setProgressText("[data-xp-level-end]", `${levelProgress.nextLevelXp} XP`);
-  setProgressText("[data-xp-message]", `${levelProgress.remainingXp} XP to Level ${levelProgress.level + 1}`);
+  setProgressText(
+    "[data-xp-message]",
+    `${levelProgress.remainingXp} XP to Level ${levelProgress.level + 1}`,
+  );
   setProgressText("[data-achievement-count]", unlockedCount);
-  setProgressText("[data-mini-tools-achievement-count]", `${unlockedMiniTools} / ${miniToolAchievements.length}`);
+  setProgressText(
+    "[data-mini-tools-achievement-count]",
+    `${unlockedMiniTools} / ${miniToolAchievements.length}`,
+  );
 
   document.querySelectorAll("[data-xp-progress-fill]").forEach((fill) => {
     fill.style.width = `${levelProgress.percent}%`;
@@ -1338,7 +1565,10 @@ function renderProgressionSummary(state) {
   document.querySelectorAll("[data-xp-progress]").forEach((progress) => {
     progress.setAttribute("aria-valuemin", "0");
     progress.setAttribute("aria-valuemax", String(XP_PER_LEVEL));
-    progress.setAttribute("aria-valuenow", String(levelProgress.currentLevelXp));
+    progress.setAttribute(
+      "aria-valuenow",
+      String(levelProgress.currentLevelXp),
+    );
     progress.setAttribute(
       "aria-valuetext",
       `${levelProgress.currentLevelXp} of ${XP_PER_LEVEL} XP toward Level ${levelProgress.level + 1}`,
@@ -1358,7 +1588,8 @@ function renderLatestAchievement(state) {
   if (!latest) {
     icon.textContent = "\u{1F331}";
     title.textContent = "Getting Started";
-    description.textContent = "Complete a task, habit, or Mini Tool to unlock your first achievement.";
+    description.textContent =
+      "Complete a task, habit, or Mini Tool to unlock your first achievement.";
     if (date) date.textContent = "No achievements unlocked yet";
     return;
   }
@@ -1399,12 +1630,17 @@ function createAchievementCard(achievement, state) {
 
   const status = document.createElement("strong");
   status.className = "progress-achievement-status";
-  status.textContent = achievementState.unlocked ? "Unlocked" : `${achievementState.progress} / ${achievement.goal}`;
+  status.textContent = achievementState.unlocked
+    ? "Unlocked"
+    : `${achievementState.progress} / ${achievement.goal}`;
 
   const progress = document.createElement("div");
   progress.className = "achievement-progress-track";
   progress.setAttribute("role", "progressbar");
-  progress.setAttribute("aria-label", `${achievement.name} achievement progress`);
+  progress.setAttribute(
+    "aria-label",
+    `${achievement.name} achievement progress`,
+  );
   progress.setAttribute("aria-valuemin", "0");
   progress.setAttribute("aria-valuemax", String(achievement.goal));
   progress.setAttribute("aria-valuenow", String(achievementState.progress));
@@ -1486,7 +1722,9 @@ function announceProgressionReward(progression) {
     document.body.appendChild(toast);
   }
 
-  const unlockedNames = progression.newlyUnlocked.map((achievement) => achievement.name).join(" and ");
+  const unlockedNames = progression.newlyUnlocked
+    .map((achievement) => achievement.name)
+    .join(" and ");
   const unlockText = unlockedNames ? ` \u2022 Unlocked: ${unlockedNames}` : "";
 
   toast.textContent = `+${progression.xpAwarded} XP${unlockText}`;
@@ -1504,12 +1742,19 @@ window.getLevelProgress = getLevelProgress;
 window.getTotalXp = getTotalXp;
 
 function isTodoCompleted(todo) {
-  return todo?.completed === true || todo?.completed === "true" || todo?.done === true || todo?.done === "true";
+  return (
+    todo?.completed === true ||
+    todo?.completed === "true" ||
+    todo?.done === true ||
+    todo?.done === "true"
+  );
 }
 
 function getHabitHistory(habit) {
   const history = habit?.history;
-  return history && typeof history === "object" && !Array.isArray(history) ? history : {};
+  return history && typeof history === "object" && !Array.isArray(history)
+    ? history
+    : {};
 }
 
 function isHabitScheduledForDate(habit, date = new Date()) {
@@ -1537,7 +1782,11 @@ function getScheduledHabitHistoryEntries(habit) {
 function getHabitCurrentStreak(habit, fromDate = new Date()) {
   const history = getHabitHistory(habit);
 
-  const date = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+  const date = new Date(
+    fromDate.getFullYear(),
+    fromDate.getMonth(),
+    fromDate.getDate(),
+  );
 
   let streak = 0;
   let inspectedDays = 0;
@@ -1584,7 +1833,10 @@ function collectUserDataEntries(username) {
   const prefix = `ascendra:data:${cleanUsername}:`;
   return collectStorageEntries(prefix).filter((entry) => {
     const suffix = entry.key.slice(prefix.length);
-    return LEGACY_USER_KEYS.includes(suffix) || /^journal-\d{4}-\d{1,2}-\d{1,2}$/.test(suffix);
+    return (
+      LEGACY_USER_KEYS.includes(suffix) ||
+      /^journal-\d{4}-\d{1,2}-\d{1,2}$/.test(suffix)
+    );
   });
 }
 
@@ -1618,7 +1870,11 @@ function ensureActiveAccountAccess(username) {
     .trim()
     .toLowerCase();
   const activeUsername = getLoggedInUsername();
-  if (cleanUsername && cleanUsername === activeUsername && !activeAccountMatchesIdentity(activeUsername)) {
+  if (
+    cleanUsername &&
+    cleanUsername === activeUsername &&
+    !activeAccountMatchesIdentity(activeUsername)
+  ) {
     invalidateMissingActiveAccount();
     return false;
   }
@@ -1627,7 +1883,11 @@ function ensureActiveAccountAccess(username) {
 
 function assertActiveAccountForWrite(username) {
   if (!ensureActiveAccountAccess(username)) {
-    throw new Error(configuredAppText("Ascendra stopped a save because this account changed in another tab."));
+    throw new Error(
+      configuredAppText(
+        "Ascendra stopped a save because this account changed in another tab.",
+      ),
+    );
   }
 }
 
@@ -1652,7 +1912,9 @@ function copyStorageEntries(entries, getTargetKey, collisionMessage) {
         writtenEntries.push(entry);
       }
       if (localStorage.getItem(entry.targetKey) !== entry.value) {
-        throw new Error(configuredAppText("Ascendra could not verify copied data."));
+        throw new Error(
+          configuredAppText("Ascendra could not verify copied data."),
+        );
       }
     });
   } catch (error) {
@@ -1675,7 +1937,12 @@ function rollbackCopiedStorageEntries(writtenEntries) {
   });
 }
 
-function renameStoredAccountAndData(accountRecord, updatedAccount, oldUsername, newUsername) {
+function renameStoredAccountAndData(
+  accountRecord,
+  updatedAccount,
+  oldUsername,
+  newUsername,
+) {
   const oldClean = String(oldUsername || "")
     .trim()
     .toLowerCase();
@@ -1691,7 +1958,9 @@ function renameStoredAccountAndData(accountRecord, updatedAccount, oldUsername, 
     try {
       localStorage.setItem(oldAccountKey, serializedAccount);
       if (localStorage.getItem(oldAccountKey) !== serializedAccount) {
-        throw new Error(configuredAppText("Ascendra could not verify the updated account."));
+        throw new Error(
+          configuredAppText("Ascendra could not verify the updated account."),
+        );
       }
     } catch (error) {
       if (previousValue === null) {
@@ -1727,7 +1996,9 @@ function renameStoredAccountAndData(accountRecord, updatedAccount, oldUsername, 
     localStorage.setItem(newAccountKey, serializedAccount);
     wroteNewAccount = true;
     if (localStorage.getItem(newAccountKey) !== serializedAccount) {
-      throw new Error(configuredAppText("Ascendra could not verify the renamed account."));
+      throw new Error(
+        configuredAppText("Ascendra could not verify the renamed account."),
+      );
     }
   } catch (error) {
     rollbackCopiedStorageEntries(copied.writtenEntries);
@@ -1797,7 +2068,9 @@ function deleteOwnedLegacyData(username) {
 function deleteCurrentAccountData() {
   const username = getLoggedInUsername();
   if (username) assertActiveAccountForWrite(username);
-  const dataEntries = username ? collectUserDataEntries(username) : collectStorageEntries("ascendra:guest:");
+  const dataEntries = username
+    ? collectUserDataEntries(username)
+    : collectStorageEntries("ascendra:guest:");
 
   dataEntries.forEach((entry) => {
     localStorage.removeItem(entry.key);
@@ -1827,7 +2100,9 @@ function migrateLegacyUserData(username) {
 
   const entries = getLegacyStorageEntries();
   const missingEntries = entries.filter((entry) => {
-    return localStorage.getItem(userStorageKey(entry.key, cleanUsername)) === null;
+    return (
+      localStorage.getItem(userStorageKey(entry.key, cleanUsername)) === null
+    );
   });
   let copied = { writtenEntries: [] };
 
@@ -1843,11 +2118,16 @@ function migrateLegacyUserData(username) {
         .trim()
         .toLowerCase() !== cleanUsername
     ) {
-      throw new Error(configuredAppText("Ascendra could not verify the legacy data owner."));
+      throw new Error(
+        configuredAppText("Ascendra could not verify the legacy data owner."),
+      );
     }
   } catch (error) {
     rollbackCopiedStorageEntries(copied.writtenEntries);
-    console.warn(configuredAppText("Ascendra could not migrate legacy data."), error);
+    console.warn(
+      configuredAppText("Ascendra could not migrate legacy data."),
+      error,
+    );
     return false;
   }
 
@@ -1867,7 +2147,9 @@ function createModalController(dialog, initialFocus, options = {}) {
   let previousFocus = null;
 
   function getFocusableElements() {
-    return [...dialog.querySelectorAll(focusableSelector)].filter((element) => element.getClientRects().length > 0);
+    return [...dialog.querySelectorAll(focusableSelector)].filter(
+      (element) => element.getClientRects().length > 0,
+    );
   }
 
   function close({ restoreFocus = true } = {}) {
@@ -1922,7 +2204,8 @@ function createModalController(dialog, initialFocus, options = {}) {
 
     requestAnimationFrame(() => {
       if (dialog.getAttribute("aria-hidden") !== "false") return;
-      const target = typeof initialFocus === "function" ? initialFocus() : initialFocus;
+      const target =
+        typeof initialFocus === "function" ? initialFocus() : initialFocus;
       (target || getFocusableElements()[0] || dialog).focus();
     });
   }
@@ -1946,10 +2229,14 @@ function formatHabitImportWeek(weekStart) {
 
 function decodeHabitTrackerPhoto(file) {
   if (!(file instanceof File) || !file.type.startsWith("image/")) {
-    return Promise.reject(new Error("Choose a photo of the printed habit table."));
+    return Promise.reject(
+      new Error("Choose a photo of the printed habit table."),
+    );
   }
   if (file.size > 20 * 1024 * 1024) {
-    return Promise.reject(new Error("That photo is larger than 20 MB. Choose a smaller image."));
+    return Promise.reject(
+      new Error("That photo is larger than 20 MB. Choose a smaller image."),
+    );
   }
 
   if (typeof createImageBitmap === "function") return createImageBitmap(file);
@@ -1976,7 +2263,10 @@ function findHabitTrackerScanCorners(imageData) {
 
   for (let pixelIndex = 0; pixelIndex < pixelCount; pixelIndex++) {
     const dataIndex = pixelIndex * 4;
-    const luminance = data[dataIndex] * 0.299 + data[dataIndex + 1] * 0.587 + data[dataIndex + 2] * 0.114;
+    const luminance =
+      data[dataIndex] * 0.299 +
+      data[dataIndex + 1] * 0.587 +
+      data[dataIndex + 2] * 0.114;
     dark[pixelIndex] = data[dataIndex + 3] > 80 && luminance < 145 ? 1 : 0;
   }
 
@@ -2027,7 +2317,15 @@ function findHabitTrackerScanCorners(imageData) {
     const boxHeight = maxY - minY + 1;
     const density = count / (boxWidth * boxHeight);
     const aspect = boxWidth / boxHeight;
-    if (boxWidth >= 5 && boxHeight >= 5 && boxWidth <= 140 && boxHeight <= 140 && aspect >= 0.62 && aspect <= 1.62 && density >= 0.8) {
+    if (
+      boxWidth >= 5 &&
+      boxHeight >= 5 &&
+      boxWidth <= 140 &&
+      boxHeight <= 140 &&
+      aspect >= 0.62 &&
+      aspect <= 1.62 &&
+      density >= 0.8
+    ) {
       candidates.push({
         x: (minX + maxX) / 2,
         y: (minY + maxY) / 2,
@@ -2044,47 +2342,113 @@ function findHabitTrackerScanCorners(imageData) {
       for (let c = b + 1; c < largest.length - 1; c++) {
         for (let d = c + 1; d < largest.length; d++) {
           const points = [largest[a], largest[b], largest[c], largest[d]];
-          const averageSide = points.reduce((sum, point) => sum + point.side, 0) / 4;
-          if (points.some((point) => Math.abs(point.side - averageSide) / averageSide > 0.28)) continue;
+          const averageSide =
+            points.reduce((sum, point) => sum + point.side, 0) / 4;
+          if (
+            points.some(
+              (point) =>
+                Math.abs(point.side - averageSide) / averageSide > 0.28,
+            )
+          )
+            continue;
 
-          const orderedByY = [...points].sort((left, right) => left.y - right.y);
-          const top = orderedByY.slice(0, 2).sort((left, right) => left.x - right.x);
-          const bottom = orderedByY.slice(2).sort((left, right) => left.x - right.x);
+          const orderedByY = [...points].sort(
+            (left, right) => left.y - right.y,
+          );
+          const top = orderedByY
+            .slice(0, 2)
+            .sort((left, right) => left.x - right.x);
+          const bottom = orderedByY
+            .slice(2)
+            .sort((left, right) => left.x - right.x);
           const [topLeft, topRight] = top;
           const [bottomLeft, bottomRight] = bottom;
-          const topWidth = Math.hypot(topRight.x - topLeft.x, topRight.y - topLeft.y);
-          const bottomWidth = Math.hypot(bottomRight.x - bottomLeft.x, bottomRight.y - bottomLeft.y);
-          const leftHeight = Math.hypot(bottomLeft.x - topLeft.x, bottomLeft.y - topLeft.y);
-          const rightHeight = Math.hypot(bottomRight.x - topRight.x, bottomRight.y - topRight.y);
+          const topWidth = Math.hypot(
+            topRight.x - topLeft.x,
+            topRight.y - topLeft.y,
+          );
+          const bottomWidth = Math.hypot(
+            bottomRight.x - bottomLeft.x,
+            bottomRight.y - bottomLeft.y,
+          );
+          const leftHeight = Math.hypot(
+            bottomLeft.x - topLeft.x,
+            bottomLeft.y - topLeft.y,
+          );
+          const rightHeight = Math.hypot(
+            bottomRight.x - topRight.x,
+            bottomRight.y - topRight.y,
+          );
 
-          if (Math.min(topWidth, bottomWidth) < averageSide * 12 || Math.min(leftHeight, rightHeight) < averageSide * 2.5) continue;
-          if (Math.max(topWidth, bottomWidth) / Math.min(topWidth, bottomWidth) > 1.8) continue;
-          if (Math.max(leftHeight, rightHeight) / Math.min(leftHeight, rightHeight) > 2) continue;
-          if (Math.abs(topRight.y - topLeft.y) / topWidth > 0.45 || Math.abs(bottomRight.y - bottomLeft.y) / bottomWidth > 0.45) continue;
-          if (Math.abs(bottomLeft.x - topLeft.x) / leftHeight > 0.45 || Math.abs(bottomRight.x - topRight.x) / rightHeight > 0.45) continue;
+          if (
+            Math.min(topWidth, bottomWidth) < averageSide * 12 ||
+            Math.min(leftHeight, rightHeight) < averageSide * 2.5
+          )
+            continue;
+          if (
+            Math.max(topWidth, bottomWidth) / Math.min(topWidth, bottomWidth) >
+            1.8
+          )
+            continue;
+          if (
+            Math.max(leftHeight, rightHeight) /
+              Math.min(leftHeight, rightHeight) >
+            2
+          )
+            continue;
+          if (
+            Math.abs(topRight.y - topLeft.y) / topWidth > 0.45 ||
+            Math.abs(bottomRight.y - bottomLeft.y) / bottomWidth > 0.45
+          )
+            continue;
+          if (
+            Math.abs(bottomLeft.x - topLeft.x) / leftHeight > 0.45 ||
+            Math.abs(bottomRight.x - topRight.x) / rightHeight > 0.45
+          )
+            continue;
 
-          const area = ((topWidth + bottomWidth) / 2) * ((leftHeight + rightHeight) / 2);
+          const area =
+            ((topWidth + bottomWidth) / 2) * ((leftHeight + rightHeight) / 2);
           const score = area * averageSide;
-          if (!best || score > best.score) best = { topLeft, topRight, bottomLeft, bottomRight, score };
+          if (!best || score > best.score)
+            best = { topLeft, topRight, bottomLeft, bottomRight, score };
         }
       }
     }
   }
 
   if (!best)
-    throw new Error("Ascendra could not find all four table corner squares. Retake the photo straight-on with the whole table visible.");
+    throw new Error(
+      "Ascendra could not find all four table corner squares. Retake the photo straight-on with the whole table visible.",
+    );
   return best;
 }
 
 function mapHabitTrackerPoint(corners, horizontal, vertical) {
-  const topX = corners.topLeft.x + (corners.topRight.x - corners.topLeft.x) * horizontal;
-  const topY = corners.topLeft.y + (corners.topRight.y - corners.topLeft.y) * horizontal;
-  const bottomX = corners.bottomLeft.x + (corners.bottomRight.x - corners.bottomLeft.x) * horizontal;
-  const bottomY = corners.bottomLeft.y + (corners.bottomRight.y - corners.bottomLeft.y) * horizontal;
-  return { x: topX + (bottomX - topX) * vertical, y: topY + (bottomY - topY) * vertical };
+  const topX =
+    corners.topLeft.x + (corners.topRight.x - corners.topLeft.x) * horizontal;
+  const topY =
+    corners.topLeft.y + (corners.topRight.y - corners.topLeft.y) * horizontal;
+  const bottomX =
+    corners.bottomLeft.x +
+    (corners.bottomRight.x - corners.bottomLeft.x) * horizontal;
+  const bottomY =
+    corners.bottomLeft.y +
+    (corners.bottomRight.y - corners.bottomLeft.y) * horizontal;
+  return {
+    x: topX + (bottomX - topX) * vertical,
+    y: topY + (bottomY - topY) * vertical,
+  };
 }
 
-function measureHabitTrackerMark(imageData, corners, horizontal, vertical, horizontalRadius, verticalRadius) {
+function measureHabitTrackerMark(
+  imageData,
+  corners,
+  horizontal,
+  vertical,
+  horizontalRadius,
+  verticalRadius,
+) {
   const { data, width, height } = imageData;
   let darkPixels = 0;
   let sampledPixels = 0;
@@ -2093,11 +2457,18 @@ function measureHabitTrackerMark(imageData, corners, horizontal, vertical, horiz
 
   for (let yStep = -5; yStep <= 5; yStep++) {
     for (let xStep = -5; xStep <= 5; xStep++) {
-      const point = mapHabitTrackerPoint(corners, horizontal + horizontalRadius * (xStep / 5), vertical + verticalRadius * (yStep / 5));
+      const point = mapHabitTrackerPoint(
+        corners,
+        horizontal + horizontalRadius * (xStep / 5),
+        vertical + verticalRadius * (yStep / 5),
+      );
       const x = Math.max(0, Math.min(width - 1, Math.round(point.x)));
       const y = Math.max(0, Math.min(height - 1, Math.round(point.y)));
       const dataIndex = (y * width + x) * 4;
-      const luminance = data[dataIndex] * 0.299 + data[dataIndex + 1] * 0.587 + data[dataIndex + 2] * 0.114;
+      const luminance =
+        data[dataIndex] * 0.299 +
+        data[dataIndex + 1] * 0.587 +
+        data[dataIndex + 2] * 0.114;
       if (luminance < 145) {
         darkPixels++;
         occupiedRows.add(yStep);
@@ -2117,7 +2488,10 @@ function measureHabitTrackerMark(imageData, corners, horizontal, vertical, horiz
 async function detectHabitTrackerMarks(file, importData) {
   const image = await decodeHabitTrackerPhoto(file);
   const maximumDimension = 1600;
-  const scale = Math.min(1, maximumDimension / Math.max(image.width, image.height));
+  const scale = Math.min(
+    1,
+    maximumDimension / Math.max(image.width, image.height),
+  );
   const width = Math.max(1, Math.round(image.width * scale));
   const height = Math.max(1, Math.round(image.height * scale));
   const canvas = document.createElement("canvas");
@@ -2142,8 +2516,18 @@ async function detectHabitTrackerMarks(file, importData) {
       if (!isHabitScheduledForDate(habit, date)) return null;
       const horizontal = nameColumnWidth + dayColumnWidth * (dayIndex + 0.5);
       const vertical = rowHeight * (habitIndex + 1.5);
-      const mark = measureHabitTrackerMark(imageData, corners, horizontal, vertical, dayColumnWidth * 0.06, rowHeight * 0.13);
-      const marked = mark.inkRatio >= 0.08 && mark.rowCoverage >= 0.27 && mark.columnCoverage >= 0.27;
+      const mark = measureHabitTrackerMark(
+        imageData,
+        corners,
+        horizontal,
+        vertical,
+        dayColumnWidth * 0.06,
+        rowHeight * 0.13,
+      );
+      const marked =
+        mark.inkRatio >= 0.08 &&
+        mark.rowCoverage >= 0.27 &&
+        mark.columnCoverage >= 0.27;
       if (marked) detected++;
       return marked;
     });
@@ -2182,7 +2566,11 @@ function initializeHabitImportPreview() {
   )
     return;
 
-  const modal = createModalController(dialog, pendingHabitImport.error ? closeButton : confirmButton, { display: "flex" });
+  const modal = createModalController(
+    dialog,
+    pendingHabitImport.error ? closeButton : confirmButton,
+    { display: "flex" },
+  );
 
   function closeImportPreview() {
     pendingHabitImport = null;
@@ -2202,7 +2590,12 @@ function initializeHabitImportPreview() {
       heading.textContent = `${habit.emoji ? `${habit.emoji} ` : ""}${habit.name}`;
 
       const details = document.createElement("p");
-      const frequency = habit.frequency === "weekdays" ? "Weekdays" : habit.frequency === "weekends" ? "Weekends" : "Every day";
+      const frequency =
+        habit.frequency === "weekdays"
+          ? "Weekdays"
+          : habit.frequency === "weekends"
+            ? "Weekends"
+            : "Every day";
       details.textContent = `${habit.type === "bad" ? "Avoid habit" : "Build habit"} · ${frequency}`;
 
       const results = document.createElement("ul");
@@ -2213,11 +2606,16 @@ function initializeHabitImportPreview() {
         const dateKey = formatLocalDate(dates[index]);
         const scheduled = isHabitScheduledForDate(habit, dates[index]);
         const future = dateKey > todayKey;
-        const day = dates[index].toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+        const day = dates[index].toLocaleDateString(undefined, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        });
 
         function updateResultButton() {
           const current = habit.results[index];
-          resultButton.dataset.result = current === null ? "pending" : String(current);
+          resultButton.dataset.result =
+            current === null ? "pending" : String(current);
           resultButton.textContent = !scheduled
             ? `— ${day}`
             : future
@@ -2241,7 +2639,8 @@ function initializeHabitImportPreview() {
         resultButton.disabled = !scheduled || future;
         resultButton.addEventListener("click", function () {
           const current = habit.results[index];
-          habit.results[index] = current === null ? true : current === true ? false : null;
+          habit.results[index] =
+            current === null ? true : current === true ? false : null;
           updateResultButton();
         });
         updateResultButton();
@@ -2266,8 +2665,14 @@ function initializeHabitImportPreview() {
       renderImportPreview(data);
       photoStatus.textContent = `Detected ${detected} checkmark${detected === 1 ? "" : "s"}. Review every result below before importing.`;
     } catch (error) {
-      console.warn("Ascendra could not detect the paper habit checkmarks.", error);
-      photoStatus.textContent = error instanceof Error ? error.message : "Ascendra could not analyze that photo.";
+      console.warn(
+        "Ascendra could not detect the paper habit checkmarks.",
+        error,
+      );
+      photoStatus.textContent =
+        error instanceof Error
+          ? error.message
+          : "Ascendra could not analyze that photo.";
     } finally {
       photoInput.disabled = false;
       photoInput.value = "";
@@ -2280,7 +2685,8 @@ function initializeHabitImportPreview() {
 
     if (!data) return;
     if (!username) {
-      status.textContent = "Log in to an Ascendra account before importing these habits.";
+      status.textContent =
+        "Log in to an Ascendra account before importing these habits.";
       return;
     }
 
@@ -2331,14 +2737,19 @@ function initializeHabitImportPreview() {
         syncProgressionFromActivity();
       }
     } catch (error) {
-      console.error("Ascendra could not save the reviewed habit import.", error);
-      status.textContent = "The import could not be saved. Your existing habits were not changed.";
+      console.error(
+        "Ascendra could not save the reviewed habit import.",
+        error,
+      );
+      status.textContent =
+        "The import could not be saved. Your existing habits were not changed.";
       return;
     }
 
     pendingHabitImport = null;
     modal.close();
-    if (["habits", "stats"].includes(getRoute())) renderRoute(getRoute(), { focusRoute: false });
+    if (["habits", "stats"].includes(getRoute()))
+      renderRoute(getRoute(), { focusRoute: false });
   }
 
   closeButton.addEventListener("click", closeImportPreview);
@@ -2395,7 +2806,10 @@ function goBack() {
   if (history.length > 1) {
     history.back();
   } else {
-    navigate(getRoute() === "login" || getRoute() === "signup" ? "welcome" : "home", true);
+    navigate(
+      getRoute() === "login" || getRoute() === "signup" ? "welcome" : "home",
+      true,
+    );
   }
 }
 window.navigate = navigate;
@@ -2409,15 +2823,24 @@ window.addEventListener("storage", function handleAccountStorageChange() {
 window.addEventListener("focus", function handleAccountWindowFocus() {
   invalidateMissingActiveAccount();
 });
-document.addEventListener("visibilitychange", function handleAccountVisibility() {
-  if (!document.hidden) invalidateMissingActiveAccount();
-});
+document.addEventListener(
+  "visibilitychange",
+  function handleAccountVisibility() {
+    if (!document.hidden) invalidateMissingActiveAccount();
+  },
+);
 
 function getSavedSettings() {
   // Default to enabled so accounts created before this option keep their existing companion experience.
-  const defaults = { accentColor: "purple", lightMode: true, ascendraAIEnabled: true };
+  const defaults = {
+    accentColor: "purple",
+    lightMode: true,
+    ascendraAIEnabled: true,
+  };
   const saved = readUserJson("ascendraSettings", null);
-  return saved && typeof saved === "object" && !Array.isArray(saved) ? { ...defaults, ...saved } : defaults;
+  return saved && typeof saved === "object" && !Array.isArray(saved)
+    ? { ...defaults, ...saved }
+    : defaults;
 }
 
 function applySavedSettings() {
@@ -2429,11 +2852,26 @@ function applySavedSettings() {
   };
   const settings = getSavedSettings();
   const darkModeEnabled = settings.lightMode === false;
-  document.documentElement.style.setProperty("--accent", colors[settings.accentColor] || colors.purple);
-  document.documentElement.style.setProperty("--bg", darkModeEnabled ? "#17131f" : "#f6f3ff");
-  document.documentElement.style.setProperty("--card", darkModeEnabled ? "#241d30" : "white");
-  document.documentElement.style.setProperty("--text", darkModeEnabled ? "#f5f5f5" : "#222");
-  document.documentElement.style.setProperty("--muted", darkModeEnabled ? "#cbd5e1" : "#666");
+  document.documentElement.style.setProperty(
+    "--accent",
+    colors[settings.accentColor] || colors.purple,
+  );
+  document.documentElement.style.setProperty(
+    "--bg",
+    darkModeEnabled ? "#17131f" : "#f6f3ff",
+  );
+  document.documentElement.style.setProperty(
+    "--card",
+    darkModeEnabled ? "#241d30" : "white",
+  );
+  document.documentElement.style.setProperty(
+    "--text",
+    darkModeEnabled ? "#f5f5f5" : "#222",
+  );
+  document.documentElement.style.setProperty(
+    "--muted",
+    darkModeEnabled ? "#cbd5e1" : "#666",
+  );
   document.body.classList.toggle("dark-mode", darkModeEnabled);
 
   // Only an explicit opt-out hides the companion; missing legacy values continue to mean enabled.
@@ -2476,7 +2914,8 @@ function renderRoute(route, { focusRoute = true } = {}) {
   if (route !== "login" && invalidateMissingActiveAccount()) return;
   const template = document.getElementById("page-" + route);
   if (!template) {
-    app.innerHTML = '<div class="spa-error" role="main"><h1>Page not found</h1></div>';
+    app.innerHTML =
+      '<div class="spa-error" role="main"><h1>Page not found</h1></div>';
     return;
   }
   // stop route-owned intervals/animations when possible by replacing the DOM and calling cleanup
@@ -2499,7 +2938,10 @@ function renderRoute(route, { focusRoute = true } = {}) {
   app.appendChild(page);
   renderAppMetadata(page);
   app.dataset.route = route;
-  document.title = APP_CONFIG.name + " - " + route.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  document.title =
+    APP_CONFIG.name +
+    " - " +
+    route.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
   backButton.hidden = route === "welcome";
   applySavedSettings();
   page.querySelectorAll(".navbar").forEach((navbar) => {
@@ -2517,10 +2959,14 @@ function renderRoute(route, { focusRoute = true } = {}) {
     const cleanup = (ROUTE_INITIALIZERS[route] || function () {})();
     if (typeof cleanup === "function") initializedCleanups.set(route, cleanup);
   } catch (error) {
-    console.error(configuredAppText("Ascendra page error on ") + route + ":", error);
+    console.error(
+      configuredAppText("Ascendra page error on ") + route + ":",
+      error,
+    );
     const box = document.createElement("div");
     box.className = "spa-error";
-    box.innerHTML = "<h2>This page hit an error</h2><p>Open DevTools Console for the exact line.</p>";
+    box.innerHTML =
+      "<h2>This page hit an error</h2><p>Open DevTools Console for the exact line.</p>";
     page.prepend(box);
   }
   if (focusRoute) {
@@ -2539,9 +2985,22 @@ function handleLocationChange() {
 window.addEventListener("popstate", handleLocationChange);
 window.addEventListener("hashchange", handleLocationChange);
 document.addEventListener("click", function (e) {
-  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  if (
+    e.defaultPrevented ||
+    e.button !== 0 ||
+    e.metaKey ||
+    e.ctrlKey ||
+    e.shiftKey ||
+    e.altKey
+  )
+    return;
   const a = e.target.closest('a[href^="#/"]');
-  if (!a || a.hasAttribute("download") || (a.target && a.target.toLowerCase() !== "_self")) return;
+  if (
+    !a ||
+    a.hasAttribute("download") ||
+    (a.target && a.target.toLowerCase() !== "_self")
+  )
+    return;
   e.preventDefault();
   navigate(a.getAttribute("href"));
 });
@@ -2551,7 +3010,9 @@ const ROUTE_INITIALIZERS = {
   "loading-screen": function init_loading_screen() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    const reduceLoadingMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceLoadingMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     let backgroundStars = [];
     let viewportWidth = window.innerWidth;
@@ -2618,7 +3079,11 @@ const ROUTE_INITIALIZERS = {
       // Center the shooting star
       ctx.save();
 
-      const sceneScale = Math.min(1, (viewportWidth * 0.9) / 400, (viewportHeight * 0.9) / 400);
+      const sceneScale = Math.min(
+        1,
+        (viewportWidth * 0.9) / 400,
+        (viewportHeight * 0.9) / 400,
+      );
       const offsetX = (viewportWidth - 400 * sceneScale) / 2;
       const offsetY = (viewportHeight - 400 * sceneScale) / 2;
       ctx.translate(offsetX, offsetY);
@@ -2678,7 +3143,9 @@ const ROUTE_INITIALIZERS = {
       const recordSnapshot = record ? localStorage.getItem(record.key) : null;
 
       function accountChangedDuringLogin() {
-        return Boolean(record && localStorage.getItem(record.key) !== recordSnapshot);
+        return Boolean(
+          record && localStorage.getItem(record.key) !== recordSnapshot,
+        );
       }
 
       submitButton.disabled = true;
@@ -2688,14 +3155,19 @@ const ROUTE_INITIALIZERS = {
         let needsMigration = false;
 
         if (savedUser?.credentials) {
-          passwordMatches = await verifyPasswordCredentials(password, savedUser.credentials);
+          passwordMatches = await verifyPasswordCredentials(
+            password,
+            savedUser.credentials,
+          );
           if (!loginActive) return;
           if (accountChangedDuringLogin()) {
             alert("That account changed. Please try logging in again.");
             return;
           }
           needsMigration =
-            passwordMatches && (savedUser.credentials.iterations < PASSWORD_ITERATIONS || typeof savedUser.password === "string");
+            passwordMatches &&
+            (savedUser.credentials.iterations < PASSWORD_ITERATIONS ||
+              typeof savedUser.password === "string");
         } else if (savedUser && typeof savedUser.password === "string") {
           passwordMatches = savedUser.password === password;
           needsMigration = passwordMatches;
@@ -2709,7 +3181,9 @@ const ROUTE_INITIALIZERS = {
         }
 
         if (needsMigration || !savedUser.accountId) {
-          const credentials = needsMigration ? await createPasswordCredentials(password) : savedUser.credentials;
+          const credentials = needsMigration
+            ? await createPasswordCredentials(password)
+            : savedUser.credentials;
           if (!loginActive) return;
           if (accountChangedDuringLogin()) {
             alert("That account changed. Please try logging in again.");
@@ -2766,7 +3240,9 @@ const ROUTE_INITIALIZERS = {
 
       const name = document.getElementById("name").value.trim();
       const surname = document.getElementById("surname").value.trim();
-      const username = normalizeUsername(document.getElementById("username").value);
+      const username = normalizeUsername(
+        document.getElementById("username").value,
+      );
       const password = document.getElementById("password").value;
 
       if (!name || !surname || !username) {
@@ -2903,20 +3379,24 @@ const ROUTE_INITIALIZERS = {
         text1: "Cristiano Ronaldo - 'Talent without working hard is nothing.'",
       },
       {
-        text2: 'Audrey Hepburn - "Nothing is impossible. The word itself even says I\'m possible!"',
+        text2:
+          'Audrey Hepburn - "Nothing is impossible. The word itself even says I\'m possible!"',
       },
       {
-        text3: "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'",
+        text3:
+          "孔丘 - 'It doesn't matter how slow you go, as long as you never stop'",
       },
       {
-        text4: "Thomas Edison - 'Many of life's failures are people who did not realize how close they were to success when they gave up.'",
+        text4:
+          "Thomas Edison - 'Many of life's failures are people who did not realize how close they were to success when they gave up.'",
       },
       {
         text5: "Nelson Mandela - 'It always seems impossible until it's done.'",
       },
       { text6: "Wayne Gretzky - 'You miss 100% of the shots you don't take.'" },
       {
-        text7: "Vincent Van Gogh - 'Great things are done by a series of small things brought together'",
+        text7:
+          "Vincent Van Gogh - 'Great things are done by a series of small things brought together'",
       },
     ];
 
@@ -2975,7 +3455,9 @@ const ROUTE_INITIALIZERS = {
     if (todoList) {
       todoList.innerHTML = "";
 
-      const activeTodos = todayTodos.filter((todo) => !isTodoCompleted(todo)).slice(0, 5);
+      const activeTodos = todayTodos
+        .filter((todo) => !isTodoCompleted(todo))
+        .slice(0, 5);
 
       if (activeTodos.length === 0) {
         todoList.innerHTML = "<li>No to-dos due today 🎉</li>";
@@ -2983,7 +3465,9 @@ const ROUTE_INITIALIZERS = {
         activeTodos.forEach((todo) => {
           const li = document.createElement("li");
 
-          li.textContent = todo.date ? `${todo.task} — ${todo.date}` : `${todo.task} — No due date`;
+          li.textContent = todo.date
+            ? `${todo.task} — ${todo.date}`
+            : `${todo.task} — No due date`;
 
           todoList.appendChild(li);
         });
@@ -3004,7 +3488,10 @@ const ROUTE_INITIALIZERS = {
         .sort((a, b) => {
           const dateA = eventDateTime(a);
           const dateB = eventDateTime(b);
-          return (dateA?.getTime() ?? Number.POSITIVE_INFINITY) - (dateB?.getTime() ?? Number.POSITIVE_INFINITY);
+          return (
+            (dateA?.getTime() ?? Number.POSITIVE_INFINITY) -
+            (dateB?.getTime() ?? Number.POSITIVE_INFINITY)
+          );
         })
         .slice(0, 3);
 
@@ -3058,7 +3545,8 @@ const ROUTE_INITIALIZERS = {
       }
     });
 
-    const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+    const progress =
+      totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
     if (progressFill && progressText) {
       progressFill.style.width = progress + "%";
@@ -3069,7 +3557,10 @@ const ROUTE_INITIALIZERS = {
         progressBar.setAttribute("aria-valuemin", "0");
         progressBar.setAttribute("aria-valuemax", "100");
         progressBar.setAttribute("aria-valuenow", String(progress));
-        progressBar.setAttribute("aria-valuetext", `${completedItems} of ${totalItems} items complete (${progress}%)`);
+        progressBar.setAttribute(
+          "aria-valuetext",
+          `${completedItems} of ${totalItems} items complete (${progress}%)`,
+        );
       }
     }
 
@@ -3078,7 +3569,9 @@ const ROUTE_INITIALIZERS = {
     // ===========================
 
     const starContainer = document.getElementById("shootingStars");
-    const reduceHomeMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceHomeMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     function createStar() {
       if (!starContainer) return;
@@ -3155,7 +3648,9 @@ const ROUTE_INITIALIZERS = {
       }
 
       if (daysLeft === 0) {
-        const dueDateTime = todo.time ? parseLocalDateTime(todo.date, todo.time) : null;
+        const dueDateTime = todo.time
+          ? parseLocalDateTime(todo.date, todo.time)
+          : null;
         if (dueDateTime && dueDateTime.getTime() < now.getTime()) {
           return {
             text: "Overdue",
@@ -3182,7 +3677,8 @@ const ROUTE_INITIALIZERS = {
     }
 
     function sortAlerts(a, b) {
-      const dateDifference = dateKeyDayNumber(a.date) - dateKeyDayNumber(b.date);
+      const dateDifference =
+        dateKeyDayNumber(a.date) - dateKeyDayNumber(b.date);
 
       if (dateDifference !== 0) {
         return dateDifference;
@@ -3195,7 +3691,9 @@ const ROUTE_INITIALIZERS = {
       alertList.innerHTML = "";
 
       // Ignore completed tasks and tasks with no due date.
-      const activeAlerts = todos.filter((todo) => !isTodoCompleted(todo) && todo.date).sort(sortAlerts);
+      const activeAlerts = todos
+        .filter((todo) => !isTodoCompleted(todo) && todo.date)
+        .sort(sortAlerts);
 
       if (activeAlerts.length === 0) {
         const emptyMessage = document.createElement("p");
@@ -3220,7 +3718,9 @@ const ROUTE_INITIALIZERS = {
         const dueDate = document.createElement("p");
         dueDate.classList.add("alert-date");
 
-        dueDate.textContent = todo.time ? `📅 ${todo.date} at ${todo.time}` : `📅 ${todo.date}`;
+        dueDate.textContent = todo.time
+          ? `📅 ${todo.date} at ${todo.time}`
+          : `📅 ${todo.date}`;
 
         const status = getStatus(todo);
 
@@ -3229,7 +3729,10 @@ const ROUTE_INITIALIZERS = {
         statusText.textContent = status.text;
 
         const priorityText = document.createElement("p");
-        priorityText.classList.add("alert-priority", `priority-${todo.priority || "medium"}`);
+        priorityText.classList.add(
+          "alert-priority",
+          `priority-${todo.priority || "medium"}`,
+        );
         priorityText.textContent = `Priority: ${formatPriority(todo.priority)}`;
 
         details.append(title, dueDate, statusText, priorityText);
@@ -3258,17 +3761,25 @@ const ROUTE_INITIALIZERS = {
         completeButton.type = "button";
         completeButton.textContent = "Mark Done";
 
-        completeButton.setAttribute("aria-label", `Mark task complete: ${todo.task}`);
+        completeButton.setAttribute(
+          "aria-label",
+          `Mark task complete: ${todo.task}`,
+        );
 
         completeButton.onclick = () => {
           todo.completed = true;
           saveTodos();
           showAlerts();
-          const remainingTodos = todos.filter((savedTodo) => !isTodoCompleted(savedTodo)).length;
-          showAscendraAIResponse(remainingTodos === 0 ? "allTasksComplete" : "taskComplete", {
-            username: getLoggedInUsername(),
-            remainingTodos,
-          });
+          const remainingTodos = todos.filter(
+            (savedTodo) => !isTodoCompleted(savedTodo),
+          ).length;
+          showAscendraAIResponse(
+            remainingTodos === 0 ? "allTasksComplete" : "taskComplete",
+            {
+              username: getLoggedInUsername(),
+              remainingTodos,
+            },
+          );
         };
 
         const viewButton = document.createElement("button");
@@ -3398,7 +3909,8 @@ const ROUTE_INITIALIZERS = {
         const emptyMessage = document.createElement("p");
         emptyMessage.className = "todo-empty";
 
-        emptyMessage.textContent = todos.length === 0 ? "No tasks yet" : `No ${activeFilter} tasks`;
+        emptyMessage.textContent =
+          todos.length === 0 ? "No tasks yet" : `No ${activeFilter} tasks`;
 
         todoList.appendChild(emptyMessage);
         return;
@@ -3450,7 +3962,10 @@ const ROUTE_INITIALIZERS = {
         completeBtn.type = "button";
         completeBtn.textContent = isTodoCompleted(todo) ? "Undo" : "Done";
 
-        completeBtn.setAttribute("aria-label", `${isTodoCompleted(todo) ? "Mark incomplete" : "Mark complete"}: ${todo.task}`);
+        completeBtn.setAttribute(
+          "aria-label",
+          `${isTodoCompleted(todo) ? "Mark incomplete" : "Mark complete"}: ${todo.task}`,
+        );
 
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
@@ -3466,11 +3981,16 @@ const ROUTE_INITIALIZERS = {
           showTodos();
 
           if (isCompleting) {
-            const remainingTodos = todos.filter((savedTodo) => !isTodoCompleted(savedTodo)).length;
-            showAscendraAIResponse(remainingTodos === 0 ? "allTasksComplete" : "taskComplete", {
-              username: getLoggedInUsername(),
-              remainingTodos,
-            });
+            const remainingTodos = todos.filter(
+              (savedTodo) => !isTodoCompleted(savedTodo),
+            ).length;
+            showAscendraAIResponse(
+              remainingTodos === 0 ? "allTasksComplete" : "taskComplete",
+              {
+                username: getLoggedInUsername(),
+                remainingTodos,
+              },
+            );
           }
         };
 
@@ -3515,7 +4035,10 @@ const ROUTE_INITIALIZERS = {
         showTodos();
       };
 
-      button.setAttribute("aria-pressed", String(button.dataset.filter === activeFilter));
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.filter === activeFilter),
+      );
     });
 
     todoForm.onsubmit = (event) => {
@@ -3528,7 +4051,8 @@ const ROUTE_INITIALIZERS = {
       const priority = priorityInput.value;
       const notes = notesInput.value.trim();
 
-      const estimatedMinutes = estimatedInput.value === "" ? null : Number(estimatedInput.value);
+      const estimatedMinutes =
+        estimatedInput.value === "" ? null : Number(estimatedInput.value);
 
       if (task === "") {
         alert("Add a task name first!");
@@ -3540,7 +4064,10 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      if (estimatedMinutes !== null && (!Number.isFinite(estimatedMinutes) || estimatedMinutes < 1)) {
+      if (
+        estimatedMinutes !== null &&
+        (!Number.isFinite(estimatedMinutes) || estimatedMinutes < 1)
+      ) {
         alert("Estimated minutes must be at least 1.");
         return;
       }
@@ -3682,7 +4209,9 @@ const ROUTE_INITIALIZERS = {
       }
 
       if (result === false) {
-        return habit.type === "bad" ? "Habit happened today ❌" : "Missed today ❌";
+        return habit.type === "bad"
+          ? "Habit happened today ❌"
+          : "Missed today ❌";
       }
 
       return "Not checked today";
@@ -3732,7 +4261,8 @@ const ROUTE_INITIALIZERS = {
         const habitTypeText = document.createElement("div");
         habitTypeText.classList.add("habit-type");
 
-        habitTypeText.textContent = habit.type === "bad" ? "Bad habit" : "Good habit";
+        habitTypeText.textContent =
+          habit.type === "bad" ? "Bad habit" : "Good habit";
 
         const habitFrequencyText = document.createElement("div");
         habitFrequencyText.classList.add("habit-frequency");
@@ -3748,7 +4278,13 @@ const ROUTE_INITIALIZERS = {
         const streak = getCurrentStreak(habit);
         habitStreak.textContent = `🔥 ${streak} day${streak === 1 ? "" : "s"} streak`;
 
-        leftSide.append(habitTitle, habitTypeText, habitFrequencyText, habitResult, habitStreak);
+        leftSide.append(
+          habitTitle,
+          habitTypeText,
+          habitFrequencyText,
+          habitResult,
+          habitStreak,
+        );
 
         if (habit.goal && habit.unit) {
           const goalText = document.createElement("div");
@@ -3782,7 +4318,10 @@ const ROUTE_INITIALIZERS = {
         checkButton.type = "button";
         checkButton.textContent = "✅";
 
-        checkButton.setAttribute("aria-label", `Mark ${habit.name} successful today`);
+        checkButton.setAttribute(
+          "aria-label",
+          `Mark ${habit.name} successful today`,
+        );
         checkButton.disabled = !isScheduledToday;
 
         const xButton = document.createElement("button");
@@ -3869,7 +4408,10 @@ const ROUTE_INITIALIZERS = {
 
       const goal = habitGoal.value === "" ? null : Number(habitGoal.value);
 
-      const reminder = noReminderInput && habitReminder && !noReminderInput.checked ? habitReminder.value || null : null;
+      const reminder =
+        noReminderInput && habitReminder && !noReminderInput.checked
+          ? habitReminder.value || null
+          : null;
 
       if (name === "") {
         alert("Add a habit name first!");
@@ -4129,7 +4671,11 @@ const ROUTE_INITIALIZERS = {
           } else {
             td.textContent = date;
 
-            if (date === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+            if (
+              date === today.getDate() &&
+              currentMonth === today.getMonth() &&
+              currentYear === today.getFullYear()
+            ) {
               td.classList.add("today");
             }
 
@@ -4343,14 +4889,22 @@ const ROUTE_INITIALIZERS = {
     function isTodayDate(day) {
       const currentDate = getCurrentDateParts();
 
-      return day === currentDate.day && currentMonth === currentDate.month && currentYear === currentDate.year;
+      return (
+        day === currentDate.day &&
+        currentMonth === currentDate.month &&
+        currentYear === currentDate.year
+      );
     }
 
     function isFutureDate(day) {
       const selectedDate = new Date(currentYear, currentMonth, day);
       const currentDate = getCurrentDateParts();
 
-      const realToday = new Date(currentDate.year, currentDate.month, currentDate.day);
+      const realToday = new Date(
+        currentDate.year,
+        currentDate.month,
+        currentDate.day,
+      );
 
       return selectedDate > realToday;
     }
@@ -4375,7 +4929,9 @@ const ROUTE_INITIALIZERS = {
 
       const data = await response.json();
 
-      journalEntries = Array.isArray(data) ? data.filter((entry) => entry && typeof entry === "object") : [];
+      journalEntries = Array.isArray(data)
+        ? data.filter((entry) => entry && typeof entry === "object")
+        : [];
 
       // Normalize backend field names so frontend code can rely on `userId`
       journalEntries = journalEntries.map((e) => {
@@ -4390,7 +4946,13 @@ const ROUTE_INITIALIZERS = {
       const currentUserId = getCurrentUserId();
       const dateKey = getEntryKey(day);
 
-      return journalEntries.find((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey) || null;
+      return (
+        journalEntries.find(
+          (entry) =>
+            (entry.userId || entry.user_id) === currentUserId &&
+            entry.date === dateKey,
+        ) || null
+      );
     }
 
     function loadEntry(day) {
@@ -4419,7 +4981,12 @@ const ROUTE_INITIALIZERS = {
       if (!hasAccount) {
         setJournalStatus("Log in to write and sync journal entries.", "error");
       } else if (!canEdit) {
-        setJournalStatus(isFutureDate(day) ? "Future entries cannot be edited." : "Past entries are read-only.", "info");
+        setJournalStatus(
+          isFutureDate(day)
+            ? "Future entries cannot be edited."
+            : "Past entries are read-only.",
+          "info",
+        );
       } else if (journalBackendNotice) {
         setJournalStatus(journalBackendNotice, "warning");
       } else {
@@ -4462,7 +5029,11 @@ const ROUTE_INITIALIZERS = {
 
         const dateKey = getEntryKey(day);
 
-        const hasBackendEntry = journalEntries.some((entry) => (entry.userId || entry.user_id) === currentUserId && entry.date === dateKey);
+        const hasBackendEntry = journalEntries.some(
+          (entry) =>
+            (entry.userId || entry.user_id) === currentUserId &&
+            entry.date === dateKey,
+        );
         const hasLocalEntry = Boolean(readUserJson(dateKey, null));
 
         if (hasBackendEntry || hasLocalEntry) {
@@ -4491,7 +5062,9 @@ const ROUTE_INITIALIZERS = {
       }
 
       const currentDate = getCurrentDateParts();
-      nextMonth.disabled = currentYear > currentDate.year || (currentYear === currentDate.year && currentMonth >= currentDate.month);
+      nextMonth.disabled =
+        currentYear > currentDate.year ||
+        (currentYear === currentDate.year && currentMonth >= currentDate.month);
     }
 
     prevMonth.onclick = () => {
@@ -4526,7 +5099,12 @@ const ROUTE_INITIALIZERS = {
 
     saveEntry.onclick = async () => {
       if (!isTodayDate(selectedDay)) {
-        setJournalStatus(isFutureDate(selectedDay) ? "Future entries cannot be edited." : "Past entries are read-only.", "info");
+        setJournalStatus(
+          isFutureDate(selectedDay)
+            ? "Future entries cannot be edited."
+            : "Past entries are read-only.",
+          "info",
+        );
 
         return;
       }
@@ -4565,7 +5143,9 @@ const ROUTE_INITIALIZERS = {
         }
 
         const existingIndex = journalEntries.findIndex(
-          (savedEntry) => (savedEntry.userId || savedEntry.user_id) === (entry.userId || entry.user_id) && savedEntry.date === entry.date,
+          (savedEntry) =>
+            (savedEntry.userId || savedEntry.user_id) ===
+              (entry.userId || entry.user_id) && savedEntry.date === entry.date,
         );
 
         if (existingIndex === -1) {
@@ -4587,12 +5167,19 @@ const ROUTE_INITIALIZERS = {
         // Save locally if the backend fails.
         try {
           setUserItem(getEntryKey(selectedDay), JSON.stringify(entry));
-          journalBackendNotice = "The backend is unavailable. This entry is saved only in this browser.";
+          journalBackendNotice =
+            "The backend is unavailable. This entry is saved only in this browser.";
           setJournalStatus(journalBackendNotice, "warning");
           buildDateGrid();
         } catch (storageError) {
-          console.error("Could not save the local journal backup:", storageError);
-          setJournalStatus("This entry could not be saved. Please try again.", "error");
+          console.error(
+            "Could not save the local journal backup:",
+            storageError,
+          );
+          setJournalStatus(
+            "This entry could not be saved. Please try again.",
+            "error",
+          );
         }
       } finally {
         if (journalActive) saveEntry.disabled = false;
@@ -4616,7 +5203,8 @@ const ROUTE_INITIALIZERS = {
       } catch (error) {
         if (error.name === "AbortError" && !journalActive) return;
         console.error("Could not refresh the journal backend:", error);
-        journalBackendNotice = "The backend is unavailable. Showing entries saved in this browser.";
+        journalBackendNotice =
+          "The backend is unavailable. Showing entries saved in this browser.";
       }
 
       if (!journalActive) return;
@@ -4632,7 +5220,10 @@ const ROUTE_INITIALIZERS = {
 
     window.addEventListener("focus", refreshJournalDateRules);
 
-    document.addEventListener("visibilitychange", handleJournalVisibilityChange);
+    document.addEventListener(
+      "visibilitychange",
+      handleJournalVisibilityChange,
+    );
 
     async function initializeJournal() {
       try {
@@ -4642,7 +5233,8 @@ const ROUTE_INITIALIZERS = {
         if (error.name === "AbortError" && !journalActive) return;
         console.error("Could not load the journal backend:", error);
         journalEntries = [];
-        journalBackendNotice = "The backend is unavailable. Showing entries saved in this browser.";
+        journalBackendNotice =
+          "The backend is unavailable. Showing entries saved in this browser.";
       }
 
       if (!journalActive) return;
@@ -4664,7 +5256,10 @@ const ROUTE_INITIALIZERS = {
       journalRequests.clear();
       window.removeEventListener("focus", refreshJournalDateRules);
 
-      document.removeEventListener("visibilitychange", handleJournalVisibilityChange);
+      document.removeEventListener(
+        "visibilitychange",
+        handleJournalVisibilityChange,
+      );
 
       clearWindowRouteFunction("buildDateGrid", buildDateGrid);
       clearWindowRouteFunction("getEntryKey", getEntryKey);
@@ -4677,8 +5272,12 @@ const ROUTE_INITIALIZERS = {
     const menuNavigation = document.getElementById("nav");
     const buttons = document.querySelectorAll("#nav button");
 
-    const compactMenuQuery = window.matchMedia("(max-width: 768px), (max-height: 820px)");
-    const reduceMenuMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const compactMenuQuery = window.matchMedia(
+      "(max-width: 768px), (max-height: 820px)",
+    );
+    const reduceMenuMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     function clearOrbitPositions() {
       buttons.forEach((button) => {
@@ -4692,7 +5291,9 @@ const ROUTE_INITIALIZERS = {
 
     function updateOrbitRadius() {
       const firstButton = buttons[0];
-      radius = firstButton ? firstButton.getBoundingClientRect().width * 1.65 : 0;
+      radius = firstButton
+        ? firstButton.getBoundingClientRect().width * 1.65
+        : 0;
     }
 
     let angle = 0;
@@ -4817,7 +5418,9 @@ const ROUTE_INITIALIZERS = {
     }
 
     function resetSettings() {
-      const confirmReset = confirm(configuredAppText("Reset Ascendra settings back to default?"));
+      const confirmReset = confirm(
+        configuredAppText("Reset Ascendra settings back to default?"),
+      );
 
       if (confirmReset) {
         removeUserItem("ascendraSettings");
@@ -4827,11 +5430,17 @@ const ROUTE_INITIALIZERS = {
     }
 
     function deleteAllData() {
-      const warning = prompt(configuredAppText("Type DELETE to delete all local Ascendra data."));
+      const warning = prompt(
+        configuredAppText("Type DELETE to delete all local Ascendra data."),
+      );
 
       if (warning === "DELETE") {
         deleteCurrentAccountData();
-        alert(configuredAppText("This account and its Ascendra data have been deleted."));
+        alert(
+          configuredAppText(
+            "This account and its Ascendra data have been deleted.",
+          ),
+        );
         navigate("welcome");
       } else if (warning !== null) {
         alert("Delete cancelled.");
@@ -4842,8 +5451,10 @@ const ROUTE_INITIALIZERS = {
     window.deleteAllData = deleteAllData;
 
     return () => {
-      if (modeToggle) modeToggle.removeEventListener("change", handleModeChange);
-      if (ascendraAIToggle) ascendraAIToggle.removeEventListener("change", handleAscendraAIChange);
+      if (modeToggle)
+        modeToggle.removeEventListener("change", handleModeChange);
+      if (ascendraAIToggle)
+        ascendraAIToggle.removeEventListener("change", handleAscendraAIChange);
       clearWindowRouteFunction("resetSettings", resetSettings);
       clearWindowRouteFunction("deleteAllData", deleteAllData);
     };
@@ -4856,27 +5467,36 @@ const ROUTE_INITIALIZERS = {
 
     const remainingTasksElement = document.getElementById("remaining-tasks");
 
-    const taskCompletionRateElement = document.getElementById("task-completion-rate");
+    const taskCompletionRateElement = document.getElementById(
+      "task-completion-rate",
+    );
 
     const taskProgressLabel = document.getElementById("task-progress-label");
 
     const taskProgressFill = document.getElementById("task-progress-fill");
 
-    const taskProgressMessage = document.getElementById("task-progress-message");
+    const taskProgressMessage = document.getElementById(
+      "task-progress-message",
+    );
 
     const totalHabitsElement = document.getElementById("total-habits");
 
-    const successfulHabitDaysElement = document.getElementById("successful-habit-days");
+    const successfulHabitDaysElement = document.getElementById(
+      "successful-habit-days",
+    );
 
     const missedHabitDaysElement = document.getElementById("missed-habit-days");
 
-    const habitSuccessRateElement = document.getElementById("habit-success-rate");
+    const habitSuccessRateElement =
+      document.getElementById("habit-success-rate");
 
     const habitProgressLabel = document.getElementById("habit-progress-label");
 
     const habitProgressFill = document.getElementById("habit-progress-fill");
 
-    const habitProgressMessage = document.getElementById("habit-progress-message");
+    const habitProgressMessage = document.getElementById(
+      "habit-progress-message",
+    );
 
     const dueTodayElement = document.getElementById("due-today");
 
@@ -4884,27 +5504,41 @@ const ROUTE_INITIALIZERS = {
 
     const futureTasksElement = document.getElementById("future-tasks");
 
-    const habitsSuccessfulTodayElement = document.getElementById("habits-successful-today");
+    const habitsSuccessfulTodayElement = document.getElementById(
+      "habits-successful-today",
+    );
 
-    const habitsMissedTodayElement = document.getElementById("habits-missed-today");
+    const habitsMissedTodayElement = document.getElementById(
+      "habits-missed-today",
+    );
 
-    const habitsUncheckedTodayElement = document.getElementById("habits-unchecked-today");
+    const habitsUncheckedTodayElement = document.getElementById(
+      "habits-unchecked-today",
+    );
 
-    const habitHistoryTable = document.querySelector(".habit-history-table table");
+    const habitHistoryTable = document.querySelector(
+      ".habit-history-table table",
+    );
 
-    const habitHistoryDayHeaders = Array.from(document.querySelectorAll("[data-habit-history-day]"));
+    const habitHistoryDayHeaders = Array.from(
+      document.querySelectorAll("[data-habit-history-day]"),
+    );
 
     const habitHistoryBody = document.getElementById("habit-history-body");
 
     const habitHistoryEmpty = document.getElementById("habit-history-empty");
 
-    const habitHistorySummary = document.getElementById("habit-history-summary");
+    const habitHistorySummary = document.getElementById(
+      "habit-history-summary",
+    );
 
     const printStatsButton = document.getElementById("print-stats");
 
     const habitTrackerQr = document.getElementById("habit-tracker-qr");
 
-    const habitTrackerQrStatus = document.getElementById("habit-tracker-qr-status");
+    const habitTrackerQrStatus = document.getElementById(
+      "habit-tracker-qr-status",
+    );
 
     let printRestoreTimer = null;
 
@@ -4912,7 +5546,9 @@ const ROUTE_INITIALIZERS = {
 
     const achievementTitle = document.getElementById("achievement-title");
 
-    const achievementDescription = document.getElementById("achievement-description");
+    const achievementDescription = document.getElementById(
+      "achievement-description",
+    );
 
     const recentTasksContainer = document.getElementById("recent-tasks");
 
@@ -4977,7 +5613,10 @@ const ROUTE_INITIALIZERS = {
         taskProgressTrack.setAttribute("aria-valuemin", "0");
         taskProgressTrack.setAttribute("aria-valuemax", "100");
         taskProgressTrack.setAttribute("aria-valuenow", String(completionRate));
-        taskProgressTrack.setAttribute("aria-valuetext", `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`);
+        taskProgressTrack.setAttribute(
+          "aria-valuetext",
+          `${completedTasks} of ${totalTasks} tasks complete (${completionRate}%)`,
+        );
       }
 
       updateTaskProgressMessage(totalTasks, completedTasks, completionRate);
@@ -4985,17 +5624,26 @@ const ROUTE_INITIALIZERS = {
       return completedTasks;
     }
 
-    function updateTaskProgressMessage(totalTasks, completedTasks, completionRate) {
+    function updateTaskProgressMessage(
+      totalTasks,
+      completedTasks,
+      completionRate,
+    ) {
       if (totalTasks === 0) {
-        taskProgressMessage.textContent = "Add your first task to begin tracking progress.";
+        taskProgressMessage.textContent =
+          "Add your first task to begin tracking progress.";
       } else if (completionRate === 100) {
-        taskProgressMessage.textContent = "Every task is complete. Absolute productivity monster.";
+        taskProgressMessage.textContent =
+          "Every task is complete. Absolute productivity monster.";
       } else if (completionRate >= 75) {
-        taskProgressMessage.textContent = "You are nearly there. Finish strong.";
+        taskProgressMessage.textContent =
+          "You are nearly there. Finish strong.";
       } else if (completionRate >= 50) {
-        taskProgressMessage.textContent = "More than halfway complete. Nice work.";
+        taskProgressMessage.textContent =
+          "More than halfway complete. Nice work.";
       } else if (completedTasks > 0) {
-        taskProgressMessage.textContent = "Progress is progress. Keep stacking wins.";
+        taskProgressMessage.textContent =
+          "Progress is progress. Keep stacking wins.";
       } else {
         taskProgressMessage.textContent = "Your tasks are ready when you are.";
       }
@@ -5048,7 +5696,9 @@ const ROUTE_INITIALIZERS = {
       let habitSuccessRate = 0;
 
       if (totalCheckIns > 0) {
-        habitSuccessRate = Math.round((successfulHabitDays / totalCheckIns) * 100);
+        habitSuccessRate = Math.round(
+          (successfulHabitDays / totalCheckIns) * 100,
+        );
       }
 
       totalHabitsElement.textContent = habits.length;
@@ -5062,34 +5712,51 @@ const ROUTE_INITIALIZERS = {
       habitProgressLabel.textContent = habitSuccessRate + "%";
 
       habitProgressFill.style.width = habitSuccessRate + "%";
-      const habitProgressTrack = document.getElementById("habit-progress-track");
+      const habitProgressTrack = document.getElementById(
+        "habit-progress-track",
+      );
       if (habitProgressTrack) {
         habitProgressTrack.setAttribute("role", "progressbar");
         habitProgressTrack.setAttribute("aria-valuemin", "0");
         habitProgressTrack.setAttribute("aria-valuemax", "100");
-        habitProgressTrack.setAttribute("aria-valuenow", String(habitSuccessRate));
+        habitProgressTrack.setAttribute(
+          "aria-valuenow",
+          String(habitSuccessRate),
+        );
         habitProgressTrack.setAttribute(
           "aria-valuetext",
           `${successfulHabitDays} of ${totalCheckIns} scheduled check-ins successful (${habitSuccessRate}%)`,
         );
       }
 
-      updateHabitProgressMessage(habits.length, totalCheckIns, habitSuccessRate);
+      updateHabitProgressMessage(
+        habits.length,
+        totalCheckIns,
+        habitSuccessRate,
+      );
 
       return successfulHabitDays;
     }
 
-    function updateHabitProgressMessage(totalHabits, totalCheckIns, habitSuccessRate) {
+    function updateHabitProgressMessage(
+      totalHabits,
+      totalCheckIns,
+      habitSuccessRate,
+    ) {
       if (totalHabits === 0) {
-        habitProgressMessage.textContent = "Add your first habit to begin tracking progress.";
+        habitProgressMessage.textContent =
+          "Add your first habit to begin tracking progress.";
       } else if (totalCheckIns === 0) {
-        habitProgressMessage.textContent = "Check off a habit to begin tracking it.";
+        habitProgressMessage.textContent =
+          "Check off a habit to begin tracking it.";
       } else if (habitSuccessRate === 100) {
-        habitProgressMessage.textContent = "Perfect habit record so far. Huge win.";
+        habitProgressMessage.textContent =
+          "Perfect habit record so far. Huge win.";
       } else if (habitSuccessRate >= 75) {
         habitProgressMessage.textContent = "Your habits are looking strong.";
       } else if (habitSuccessRate >= 50) {
-        habitProgressMessage.textContent = "You are building consistency. Keep going.";
+        habitProgressMessage.textContent =
+          "You are building consistency. Keep going.";
       } else {
         habitProgressMessage.textContent = "Every new day is another chance.";
       }
@@ -5142,15 +5809,25 @@ const ROUTE_INITIALIZERS = {
         if (!date) return;
 
         const weekday = document.createElement("span");
-        weekday.textContent = date.toLocaleDateString(undefined, { weekday: "short" });
+        weekday.textContent = date.toLocaleDateString(undefined, {
+          weekday: "short",
+        });
 
         const day = document.createElement("small");
-        day.textContent = date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+        day.textContent = date.toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+        });
 
         header.replaceChildren(weekday, day);
         header.setAttribute(
           "aria-label",
-          date.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }),
+          date.toLocaleDateString(undefined, {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
         );
       });
     }
@@ -5166,12 +5843,17 @@ const ROUTE_INITIALIZERS = {
 
       habitHistoryTable.hidden = habits.length === 0;
       habitHistoryEmpty.hidden = habits.length !== 0;
-      if (habitHistorySummary) habitHistorySummary.textContent = "Your latest seven days of habit check-ins.";
+      if (habitHistorySummary)
+        habitHistorySummary.textContent =
+          "Your latest seven days of habit check-ins.";
 
       habits.forEach(function (habit) {
         const row = document.createElement("tr");
         const habitName = document.createElement("th");
-        const emoji = typeof habit.emoji === "string" && habit.emoji.trim() ? `${habit.emoji.trim()} ` : "";
+        const emoji =
+          typeof habit.emoji === "string" && habit.emoji.trim()
+            ? `${habit.emoji.trim()} `
+            : "";
 
         habitName.scope = "row";
         habitName.textContent = `${emoji}${habit.name || "Untitled habit"}`;
@@ -5194,7 +5876,8 @@ const ROUTE_INITIALIZERS = {
             statusIcon = "—";
             statusClass = "not-scheduled";
           } else if (result === true) {
-            statusText = habit.type === "bad" ? "Successfully avoided" : "Completed";
+            statusText =
+              habit.type === "bad" ? "Successfully avoided" : "Completed";
             statusIcon = "✅";
             statusClass = "successful";
           } else if (result === false) {
@@ -5229,15 +5912,21 @@ const ROUTE_INITIALIZERS = {
               .trim()
               .slice(0, 8),
             habit.type === "bad" ? "bad" : "good",
-            ["weekdays", "weekends"].includes(habit.frequency) ? habit.frequency : "daily",
+            ["weekdays", "weekends"].includes(habit.frequency)
+              ? habit.frequency
+              : "daily",
           ];
         }),
       };
     }
 
     function createHabitImportUrl(payload) {
-      const isLocalPreview = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname) || window.location.protocol === "file:";
-      const baseUrl = isLocalPreview ? APP_CONFIG.publicUrl : window.location.href;
+      const isLocalPreview =
+        ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname) ||
+        window.location.protocol === "file:";
+      const baseUrl = isLocalPreview
+        ? APP_CONFIG.publicUrl
+        : window.location.href;
       const url = new URL(baseUrl);
       url.search = "";
       url.searchParams.set("habitImport", JSON.stringify(payload));
@@ -5255,12 +5944,16 @@ const ROUTE_INITIALIZERS = {
       renderHabitHistoryHeaders(dates);
       habitHistoryTable.hidden = habits.length === 0;
       habitHistoryEmpty.hidden = habits.length !== 0;
-      habitHistoryEmpty.textContent = "Add habits before printing a weekly tracker.";
+      habitHistoryEmpty.textContent =
+        "Add habits before printing a weekly tracker.";
 
       habits.forEach(function (habit) {
         const row = document.createElement("tr");
         const habitName = document.createElement("th");
-        const emoji = typeof habit.emoji === "string" && habit.emoji.trim() ? `${habit.emoji.trim()} ` : "";
+        const emoji =
+          typeof habit.emoji === "string" && habit.emoji.trim()
+            ? `${habit.emoji.trim()} `
+            : "";
         habitName.scope = "row";
         habitName.textContent = `${emoji}${habit.name || "Untitled habit"}`;
         row.appendChild(habitName);
@@ -5287,7 +5980,8 @@ const ROUTE_INITIALIZERS = {
       habitTrackerQr.innerHTML = "";
 
       if (habits.length === 0) {
-        habitTrackerQrStatus.textContent = "Add a habit before generating an import QR code.";
+        habitTrackerQrStatus.textContent =
+          "Add a habit before generating an import QR code.";
         return;
       }
       if (habits.length > HABIT_IMPORT_MAX_HABITS) {
@@ -5295,7 +5989,8 @@ const ROUTE_INITIALIZERS = {
         return;
       }
       if (typeof window.QRCode !== "function") {
-        habitTrackerQrStatus.textContent = "The QR generator did not load. The blank tracker can still be printed.";
+        habitTrackerQrStatus.textContent =
+          "The QR generator did not load. The blank tracker can still be printed.";
         return;
       }
 
@@ -5307,10 +6002,15 @@ const ROUTE_INITIALIZERS = {
           height: 256,
           correctLevel: window.QRCode.CorrectLevel.L,
         });
-        habitTrackerQrStatus.textContent = "Scan this code to review and import these blank weekly habits.";
+        habitTrackerQrStatus.textContent =
+          "Scan this code to review and import these blank weekly habits.";
       } catch (error) {
-        console.warn("Ascendra could not generate the habit tracker QR code.", error);
-        habitTrackerQrStatus.textContent = "The QR data is too large, but the blank tracker can still be printed.";
+        console.warn(
+          "Ascendra could not generate the habit tracker QR code.",
+          error,
+        );
+        habitTrackerQrStatus.textContent =
+          "The QR data is too large, but the blank tracker can still be printed.";
       }
     }
 
@@ -5325,7 +6025,10 @@ const ROUTE_INITIALIZERS = {
     function prepareHabitHistoryForPrint() {
       preparePrintableHabitTracker();
       window.clearTimeout(printRestoreTimer);
-      printRestoreTimer = window.setTimeout(restoreHabitHistoryAfterPrint, 1500);
+      printRestoreTimer = window.setTimeout(
+        restoreHabitHistoryAfterPrint,
+        1500,
+      );
     }
 
     function printHabitTracker() {
@@ -5378,7 +6081,8 @@ const ROUTE_INITIALIZERS = {
 
         emptyMessage.classList.add("empty-message");
 
-        emptyMessage.textContent = "No tasks yet. Your productivity empire awaits.";
+        emptyMessage.textContent =
+          "No tasks yet. Your productivity empire awaits.";
 
         recentTasksContainer.appendChild(emptyMessage);
 
@@ -5457,7 +6161,9 @@ const ROUTE_INITIALIZERS = {
       if (printStatsButton) {
         printStatsButton.disabled = habits.length === 0;
         printStatsButton.title =
-          habits.length === 0 ? "Add a habit before printing a weekly tracker." : "Print a blank weekly habit tracker.";
+          habits.length === 0
+            ? "Add a habit before printing a weekly tracker."
+            : "Print a blank weekly habit tracker.";
       }
 
       updateWelcomeMessage();
@@ -5477,7 +6183,8 @@ const ROUTE_INITIALIZERS = {
       displayRecentTasks(todos);
     }
 
-    if (printStatsButton) printStatsButton.addEventListener("click", printHabitTracker);
+    if (printStatsButton)
+      printStatsButton.addEventListener("click", printHabitTracker);
     window.addEventListener("beforeprint", prepareHabitHistoryForPrint);
     window.addEventListener("afterprint", restoreHabitHistoryAfterPrint);
 
@@ -5522,7 +6229,8 @@ const ROUTE_INITIALIZERS = {
       }).forEach(([name, routeFunction]) => {
         clearWindowRouteFunction(name, routeFunction);
       });
-      if (printStatsButton) printStatsButton.removeEventListener("click", printHabitTracker);
+      if (printStatsButton)
+        printStatsButton.removeEventListener("click", printHabitTracker);
       window.removeEventListener("beforeprint", prepareHabitHistoryForPrint);
       window.removeEventListener("afterprint", restoreHabitHistoryAfterPrint);
       window.clearTimeout(printRestoreTimer);
@@ -5568,7 +6276,8 @@ const ROUTE_INITIALIZERS = {
       const seconds = remainingSeconds % 60;
       timerCard.setAttribute(
         "aria-label",
-        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ` + `${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
+        `${minutes} ${minutes === 1 ? "minute" : "minutes"} and ` +
+          `${seconds} ${seconds === 1 ? "second" : "seconds"} remaining`,
       );
     }
 
@@ -5597,11 +6306,14 @@ const ROUTE_INITIALIZERS = {
       announceProgressionReward(reward);
 
       if (!reward.saved) {
-        timerStatus.textContent = "Session complete. Your progress could not be saved.";
+        timerStatus.textContent =
+          "Session complete. Your progress could not be saved.";
         return;
       }
 
-      const unlockedNames = reward.newlyUnlocked.map((achievement) => achievement.name).join(" and ");
+      const unlockedNames = reward.newlyUnlocked
+        .map((achievement) => achievement.name)
+        .join(" and ");
       timerStatus.textContent = unlockedNames
         ? `Session complete! Achievement unlocked: ${unlockedNames}.`
         : `Session complete! You earned ${reward.xpAwarded} XP.`;
@@ -5619,7 +6331,8 @@ const ROUTE_INITIALIZERS = {
       if (!sessionInProgress || remainingSeconds <= 0) {
         const duration = readDuration();
         if (duration === null) {
-          timerStatus.textContent = "Enter a whole number from 1 to 120 minutes.";
+          timerStatus.textContent =
+            "Enter a whole number from 1 to 120 minutes.";
           elapsedInput.focus();
           return;
         }
@@ -5707,9 +6420,14 @@ const ROUTE_INITIALIZERS = {
 
       const savedUsername = getActiveIdentityItem("username") || "ascendrauser";
 
-      const savedBio = getUserItem("ascendra-profile-bio", profileOwner) || "Becoming better, one day at a time.";
+      const savedBio =
+        getUserItem("ascendra-profile-bio", profileOwner) ||
+        "Becoming better, one day at a time.";
 
-      const savedPicture = getUserItem("ascendra-profile-picture", profileOwner);
+      const savedPicture = getUserItem(
+        "ascendra-profile-picture",
+        profileOwner,
+      );
 
       nameInput.value = savedName;
       surnameInput.value = savedSurname;
@@ -5734,7 +6452,9 @@ const ROUTE_INITIALIZERS = {
 
       streakNumber.textContent = String(longestCurrentStreak);
       tasksNumber.textContent = String(completedTasks);
-      achievementsNumber.textContent = String(getUnlockedAchievements(progression.state).length);
+      achievementsNumber.textContent = String(
+        getUnlockedAchievements(progression.state).length,
+      );
       renderProgressionSummary(progression.state);
 
       if (savedPicture) {
@@ -5795,7 +6515,9 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      const accountRecord = profileOwner ? findStoredAccount(oldUsername) || findStoredAccount(profileOwner) : null;
+      const accountRecord = profileOwner
+        ? findStoredAccount(oldUsername) || findStoredAccount(profileOwner)
+        : null;
       const usernameRecord = findStoredAccount(username);
 
       if (usernameRecord && usernameRecord.key !== accountRecord?.key) {
@@ -5803,17 +6525,27 @@ const ROUTE_INITIALIZERS = {
         return;
       }
 
-      if (accountRecord?.legacy && oldUsername.toLowerCase() !== username.toLowerCase()) {
-        showMessage("Log in once before changing this legacy username.", "error");
+      if (
+        accountRecord?.legacy &&
+        oldUsername.toLowerCase() !== username.toLowerCase()
+      ) {
+        showMessage(
+          "Log in once before changing this legacy username.",
+          "error",
+        );
         return;
       }
 
       if (profileOwner && !accountRecord) {
-        showMessage("Account data was not found. Please log in again.", "error");
+        showMessage(
+          "Account data was not found. Please log in again.",
+          "error",
+        );
         return;
       }
 
-      const updatedAccountId = accountRecord?.account?.accountId || getActiveIdentityItem("accountId");
+      const updatedAccountId =
+        accountRecord?.account?.accountId || getActiveIdentityItem("accountId");
 
       try {
         if (accountRecord) {
@@ -5824,7 +6556,12 @@ const ROUTE_INITIALIZERS = {
             username,
           };
 
-          renameStoredAccountAndData(accountRecord, updatedUser, oldUsername, username);
+          renameStoredAccountAndData(
+            accountRecord,
+            updatedUser,
+            oldUsername,
+            username,
+          );
         }
 
         const updatedOwner = accountRecord ? username : "";
@@ -5858,7 +6595,10 @@ const ROUTE_INITIALIZERS = {
         showMessage("Profile saved successfully!", "success");
       } catch (error) {
         console.error("Could not safely save the profile:", error);
-        showMessage(error.message || "Could not safely save your profile.", "error");
+        showMessage(
+          error.message || "Could not safely save your profile.",
+          "error",
+        );
       }
     }
 
@@ -5990,7 +6730,9 @@ const ROUTE_INITIALIZERS = {
 
     function readTimerDuration() {
       const minutes = Number(minutesInput.value);
-      return Number.isInteger(minutes) && minutes >= 1 && minutes <= 180 ? minutes * 60 : null;
+      return Number.isInteger(minutes) && minutes >= 1 && minutes <= 180
+        ? minutes * 60
+        : null;
     }
 
     function updateTimerDisplay() {
@@ -6037,7 +6779,8 @@ const ROUTE_INITIALIZERS = {
       if (!sessionStarted || remainingSeconds <= 0) {
         const durationInSeconds = readTimerDuration();
         if (durationInSeconds === null) {
-          timerStatus.textContent = "Enter a whole number from 1 to 180 minutes.";
+          timerStatus.textContent =
+            "Enter a whole number from 1 to 180 minutes.";
           minutesInput.focus();
           return;
         }
@@ -6082,16 +6825,28 @@ const ROUTE_INITIALIZERS = {
       playButton.innerHTML = isPlaying
         ? '<i class="fa-solid fa-pause" aria-hidden="true"></i>'
         : '<i class="fa-solid fa-play" aria-hidden="true"></i>';
-      playButton.setAttribute("aria-label", `${isPlaying ? "Pause" : "Play"} ${activeTrack.title}`);
+      playButton.setAttribute(
+        "aria-label",
+        `${isPlaying ? "Pause" : "Play"} ${activeTrack.title}`,
+      );
     }
 
     function updateMusicProgress() {
-      const trackDuration = Number.isFinite(audio.duration) ? audio.duration : 0;
-      const currentTime = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
-      progress.value = trackDuration ? String((currentTime / trackDuration) * 100) : "0";
+      const trackDuration = Number.isFinite(audio.duration)
+        ? audio.duration
+        : 0;
+      const currentTime = Number.isFinite(audio.currentTime)
+        ? audio.currentTime
+        : 0;
+      progress.value = trackDuration
+        ? String((currentTime / trackDuration) * 100)
+        : "0";
       elapsed.textContent = formatTrackTime(currentTime);
       if (trackDuration) duration.textContent = formatTrackTime(trackDuration);
-      progress.setAttribute("aria-valuetext", `${formatTrackTime(currentTime)} of ${formatTrackTime(trackDuration)}`);
+      progress.setAttribute(
+        "aria-valuetext",
+        `${formatTrackTime(currentTime)} of ${formatTrackTime(trackDuration)}`,
+      );
     }
 
     async function toggleMusic() {
@@ -6106,13 +6861,19 @@ const ROUTE_INITIALIZERS = {
         musicStatus.textContent = `Playing ${tracks[activeTrackId].title}.`;
       } catch (error) {
         console.warn("Study Space could not start the selected track.", error);
-        musicStatus.textContent = "The music could not start. Please try again.";
+        musicStatus.textContent =
+          "The music could not start. Please try again.";
       }
     }
 
     function seekBy(seconds) {
-      const trackDuration = Number.isFinite(audio.duration) ? audio.duration : Infinity;
-      audio.currentTime = Math.min(trackDuration, Math.max(0, audio.currentTime + seconds));
+      const trackDuration = Number.isFinite(audio.duration)
+        ? audio.duration
+        : Infinity;
+      audio.currentTime = Math.min(
+        trackDuration,
+        Math.max(0, audio.currentTime + seconds),
+      );
       updateMusicProgress();
     }
 
@@ -6166,7 +6927,9 @@ const ROUTE_INITIALIZERS = {
     pauseButton.addEventListener("click", pauseTimer);
     resetButton.addEventListener("click", resetTimer);
     minutesInput.addEventListener("input", handleMinutesInput);
-    trackButtons.forEach((button) => button.addEventListener("click", selectTrack));
+    trackButtons.forEach((button) =>
+      button.addEventListener("click", selectTrack),
+    );
     playButton.addEventListener("click", toggleMusic);
     backButton.addEventListener("click", seekBackward);
     forwardButton.addEventListener("click", seekForward);
@@ -6188,7 +6951,9 @@ const ROUTE_INITIALIZERS = {
       pauseButton.removeEventListener("click", pauseTimer);
       resetButton.removeEventListener("click", resetTimer);
       minutesInput.removeEventListener("input", handleMinutesInput);
-      trackButtons.forEach((button) => button.removeEventListener("click", selectTrack));
+      trackButtons.forEach((button) =>
+        button.removeEventListener("click", selectTrack),
+      );
       playButton.removeEventListener("click", toggleMusic);
       backButton.removeEventListener("click", seekBackward);
       forwardButton.removeEventListener("click", seekForward);
@@ -6229,7 +6994,9 @@ const ROUTE_INITIALIZERS = {
     function parseCapsuleDate(value) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
       const date = new Date(`${value}T00:00:00`);
-      return !Number.isNaN(date.getTime()) && toLocalDateString(date) === value ? date : null;
+      return !Number.isNaN(date.getTime()) && toLocalDateString(date) === value
+        ? date
+        : null;
     }
 
     function isUnlocked(capsule) {
@@ -6242,7 +7009,13 @@ const ROUTE_INITIALIZERS = {
 
     function formatUnlockDate(value) {
       const date = parseCapsuleDate(value);
-      return date ? date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "Unknown date";
+      return date
+        ? date.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        : "Unknown date";
     }
 
     function getCapsules() {
@@ -6277,7 +7050,9 @@ const ROUTE_INITIALIZERS = {
       const icon = document.createElement("span");
       icon.className = "saved-capsule-icon";
       icon.setAttribute("aria-hidden", "true");
-      icon.innerHTML = unlocked ? '<i class="fa-solid fa-lock-open"></i>' : '<i class="fa-solid fa-lock"></i>';
+      icon.innerHTML = unlocked
+        ? '<i class="fa-solid fa-lock-open"></i>'
+        : '<i class="fa-solid fa-lock"></i>';
 
       const content = document.createElement("div");
       content.className = "saved-capsule-content";
@@ -6288,14 +7063,17 @@ const ROUTE_INITIALIZERS = {
       date.textContent = `${unlocked ? "Unlocked" : "Unlocks"} ${formatUnlockDate(capsule.unlockDate)}`;
       const message = document.createElement("p");
       message.className = "saved-capsule-message";
-      message.textContent = unlocked ? capsule.message : "This message is sealed until its unlock date.";
+      message.textContent = unlocked
+        ? capsule.message
+        : "This message is sealed until its unlock date.";
 
       const deleteButton = document.createElement("button");
       deleteButton.className = "capsule-delete";
       deleteButton.type = "button";
       deleteButton.dataset.capsuleId = capsule.id;
       deleteButton.setAttribute("aria-label", `Delete ${capsule.title}`);
-      deleteButton.innerHTML = '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+      deleteButton.innerHTML =
+        '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
 
       content.append(heading, date, message);
       article.append(icon, content, deleteButton);
@@ -6303,15 +7081,19 @@ const ROUTE_INITIALIZERS = {
     }
 
     function renderCapsules() {
-      const capsules = getCapsules().sort((first, second) => first.unlockDate.localeCompare(second.unlockDate));
+      const capsules = getCapsules().sort((first, second) =>
+        first.unlockDate.localeCompare(second.unlockDate),
+      );
       list.replaceChildren();
 
       if (capsules.length === 0) {
         const emptyState = document.createElement("div");
         emptyState.className = "capsule-empty";
-        emptyState.innerHTML = '<i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>';
+        emptyState.innerHTML =
+          '<i class="fa-solid fa-hourglass-start" aria-hidden="true"></i>';
         const emptyText = document.createElement("p");
-        emptyText.textContent = "Your future messages will appear here after you seal them.";
+        emptyText.textContent =
+          "Your future messages will appear here after you seal them.";
         emptyState.appendChild(emptyText);
         list.appendChild(emptyState);
         summary.textContent = "No capsules saved yet.";
@@ -6320,7 +7102,9 @@ const ROUTE_INITIALIZERS = {
 
       const unlockedCount = capsules.filter(isUnlocked).length;
       summary.textContent = `${capsules.length} saved · ${capsules.length - unlockedCount} locked · ${unlockedCount} unlocked`;
-      capsules.forEach((capsule) => list.appendChild(createCapsuleCard(capsule)));
+      capsules.forEach((capsule) =>
+        list.appendChild(createCapsuleCard(capsule)),
+      );
     }
 
     function updateCharacterCount() {
@@ -6335,7 +7119,10 @@ const ROUTE_INITIALIZERS = {
       const tomorrow = parseCapsuleDate(getTomorrowString());
 
       if (!title || !message || !unlockDate) {
-        showStatus("Complete every field before sealing your capsule.", "error");
+        showStatus(
+          "Complete every field before sealing your capsule.",
+          "error",
+        );
         return;
       }
       if (unlockDate < tomorrow) {
@@ -6363,7 +7150,10 @@ const ROUTE_INITIALIZERS = {
         titleInput.focus();
       } catch (error) {
         console.warn("Ascendra could not save the time capsule.", error);
-        showStatus("Your capsule could not be saved. Please try again.", "error");
+        showStatus(
+          "Your capsule could not be saved. Please try again.",
+          "error",
+        );
       }
     }
 
@@ -6371,8 +7161,11 @@ const ROUTE_INITIALIZERS = {
       const deleteButton = event.target.closest("[data-capsule-id]");
       if (!deleteButton) return;
       const capsules = getCapsules();
-      const capsule = capsules.find((item) => item.id === deleteButton.dataset.capsuleId);
-      if (!capsule || !confirm(`Delete the time capsule “${capsule.title}”?`)) return;
+      const capsule = capsules.find(
+        (item) => item.id === deleteButton.dataset.capsuleId,
+      );
+      if (!capsule || !confirm(`Delete the time capsule “${capsule.title}”?`))
+        return;
 
       try {
         saveCapsules(capsules.filter((item) => item.id !== capsule.id));
@@ -6417,8 +7210,12 @@ const ROUTE_INITIALIZERS = {
 
       if (!reward.xpAwarded) return resultText;
 
-      const unlockedNames = reward.newlyUnlocked.map((achievement) => achievement.name).join(" and ");
-      const unlockMessage = unlockedNames ? ` Achievement unlocked \u2014 ${unlockedNames}` : " First-use reward earned";
+      const unlockedNames = reward.newlyUnlocked
+        .map((achievement) => achievement.name)
+        .join(" and ");
+      const unlockMessage = unlockedNames
+        ? ` Achievement unlocked \u2014 ${unlockedNames}`
+        : " First-use reward earned";
 
       return `${resultText}${unlockMessage} (+${reward.xpAwarded} XP)`;
     }
@@ -6430,7 +7227,10 @@ const ROUTE_INITIALIZERS = {
 
     function rollDie() {
       const result = Math.floor(Math.random() * 6) + 1;
-      diceOutput.textContent = addMiniToolReward("You rolled a " + result + ".", "dice");
+      diceOutput.textContent = addMiniToolReward(
+        "You rolled a " + result + ".",
+        "dice",
+      );
     }
 
     function generateRandomNumber() {
@@ -6447,12 +7247,14 @@ const ROUTE_INITIALIZERS = {
       const range = maximum - minimum + 1;
 
       if (!Number.isSafeInteger(minimum) || !Number.isSafeInteger(maximum)) {
-        numberOutput.textContent = "Use whole numbers within the safe number range.";
+        numberOutput.textContent =
+          "Use whole numbers within the safe number range.";
         return;
       }
 
       if (minimum > maximum) {
-        numberOutput.textContent = "The minimum must be less than or equal to the maximum.";
+        numberOutput.textContent =
+          "The minimum must be less than or equal to the maximum.";
         return;
       }
 
@@ -6463,7 +7265,10 @@ const ROUTE_INITIALIZERS = {
 
       const result = Math.floor(Math.random() * range) + minimum;
 
-      numberOutput.textContent = addMiniToolReward("Your random number is " + result + ".", "random-number");
+      numberOutput.textContent = addMiniToolReward(
+        "Your random number is " + result + ".",
+        "random-number",
+      );
     }
 
     flipButton.addEventListener("click", flipCoin);
@@ -6487,7 +7292,11 @@ const ROUTE_INITIALIZERS = {
 
 const initialRoute = getRoute();
 if (location.hash !== canonicalRouteHash(initialRoute)) {
-  history.replaceState({ route: initialRoute }, "", canonicalRouteHash(initialRoute));
+  history.replaceState(
+    { route: initialRoute },
+    "",
+    canonicalRouteHash(initialRoute),
+  );
 }
 renderRoute(initialRoute, { focusRoute: false });
 initializeHabitImportPreview();
@@ -6535,7 +7344,9 @@ function openSearch() {
     return;
   }
 
-  const activeRouteDialog = app.querySelector('[role="dialog"][aria-hidden="false"], dialog[open], .modal[aria-hidden="false"]');
+  const activeRouteDialog = app.querySelector(
+    '[role="dialog"][aria-hidden="false"], dialog[open], .modal[aria-hidden="false"]',
+  );
   if (activeRouteDialog) {
     console.info("Close the current dialog before opening Search.");
     return;
@@ -6601,7 +7412,11 @@ document.addEventListener("input", function (event) {
 });
 
 document.addEventListener("keydown", function (event) {
-  if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "k") {
+  if (
+    (event.ctrlKey || event.metaKey) &&
+    event.shiftKey &&
+    event.key.toLowerCase() === "k"
+  ) {
     event.preventDefault();
     openSearch();
     return;
@@ -6612,7 +7427,9 @@ document.addEventListener("keydown", function (event) {
 
   if (event.key === "Tab") {
     const focusableElements = [
-      ...overlay.querySelectorAll('button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'),
+      ...overlay.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
     ].filter((element) => !element.hidden);
     const firstElement = focusableElements[0];
     const lastElement = focusableElements.at(-1);
@@ -6638,7 +7455,10 @@ document.addEventListener("keydown", function (event) {
 
 document.addEventListener("click", function (event) {
   const { overlay } = getSearchElements();
-  if (overlay && (event.target === overlay || event.target.closest("#searchClose"))) {
+  if (
+    overlay &&
+    (event.target === overlay || event.target.closest("#searchClose"))
+  ) {
     closeSearch();
   }
 });
@@ -6652,9 +7472,12 @@ const username = getLoggedInUsername() || "there";
 
 const hour = new Date().getHours();
 
-const timeOfDay = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+const timeOfDay =
+  hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
-const greeting = responses.greeting[Math.floor(Math.random() * responses.greeting.length)](username, totalTodos, timeOfDay);
+const greeting = responses.greeting[
+  Math.floor(Math.random() * responses.greeting.length)
+](username, totalTodos, timeOfDay);
 
 let aiMessage = document.getElementById("ai-message");
 
@@ -6664,7 +7487,12 @@ const aiRecentMessages = [];
 const AI_MESSAGE_COOLDOWN = 12000;
 const AI_MESSAGE_HISTORY_LIMIT = 4;
 
-function buildResponseMessage(category, responseFactory, responseIndex, context) {
+function buildResponseMessage(
+  category,
+  responseFactory,
+  responseIndex,
+  context,
+) {
   if (category === "taskComplete") {
     if (responseIndex === 3) return responseFactory(context.username);
     if (responseIndex === 4) return responseFactory(context.remainingTodos);
@@ -6696,11 +7524,16 @@ function responseMessage(category, context = {}) {
     buildResponseMessage(category, responseFactory, responseIndex, context),
   );
 
-  const freshCandidates = candidates.filter((message) => !aiRecentMessages.includes(message));
+  const freshCandidates = candidates.filter(
+    (message) => !aiRecentMessages.includes(message),
+  );
 
-  const availableCandidates = freshCandidates.length > 0 ? freshCandidates : candidates;
+  const availableCandidates =
+    freshCandidates.length > 0 ? freshCandidates : candidates;
 
-  return availableCandidates[Math.floor(Math.random() * availableCandidates.length)];
+  return availableCandidates[
+    Math.floor(Math.random() * availableCandidates.length)
+  ];
 }
 
 function showAscendraAIMessage(message, options = {}) {
@@ -6709,7 +7542,12 @@ function showAscendraAIMessage(message, options = {}) {
   const cleanMessage = String(message || "").trim();
   const now = Date.now();
 
-  if (!companion || companion.hidden || !messageElement || cleanMessage === "") {
+  if (
+    !companion ||
+    companion.hidden ||
+    !messageElement ||
+    cleanMessage === ""
+  ) {
     return false;
   }
 
@@ -6732,7 +7570,10 @@ function showAscendraAIMessage(message, options = {}) {
 
   clearTimeout(aiSpeakingTimer);
 
-  const speakingDuration = Math.min(6000, Math.max(1700, cleanMessage.length * 48));
+  const speakingDuration = Math.min(
+    6000,
+    Math.max(1700, cleanMessage.length * 48),
+  );
 
   aiSpeakingTimer = window.setTimeout(() => {
     companion.classList.remove("is-speaking");
@@ -6742,7 +7583,11 @@ function showAscendraAIMessage(message, options = {}) {
 }
 
 function showAscendraAIResponse(category, context = {}) {
-  const isMilestoneResponse = ["taskComplete", "allTasksComplete", "habitComplete"].includes(category);
+  const isMilestoneResponse = [
+    "taskComplete",
+    "allTasksComplete",
+    "habitComplete",
+  ].includes(category);
 
   return showAscendraAIMessage(responseMessage(category, context), {
     bypassCooldown: isMilestoneResponse,
@@ -6759,7 +7604,9 @@ function showIdleAscendraAIResponse() {
   if (route === "journal") {
     showAscendraAIResponse("journalReminder");
   } else if (route === "todos" || route === "alerts") {
-    const remainingTodos = getUserArray("todos").filter((todo) => !isTodoCompleted(todo)).length;
+    const remainingTodos = getUserArray("todos").filter(
+      (todo) => !isTodoCompleted(todo),
+    ).length;
 
     showAscendraAIResponse("reminder", {
       totalTodos: remainingTodos,
@@ -6770,7 +7617,9 @@ function showIdleAscendraAIResponse() {
 }
 
 function chooseFreshAiChatReply(replies) {
-  const availableReplies = replies.filter((reply) => !aiRecentMessages.includes(reply));
+  const availableReplies = replies.filter(
+    (reply) => !aiRecentMessages.includes(reply),
+  );
 
   const replyPool = availableReplies.length > 0 ? availableReplies : replies;
 
@@ -6783,13 +7632,21 @@ function ascendraAIReply(question) {
     .replace(/[^a-z0-9\s-]/g, "")
     .trim();
 
-  const navigationIntent = /^(open|go to|show|take me to)\s+/.test(normalizedQuestion);
+  const navigationIntent = /^(open|go to|show|take me to)\s+/.test(
+    normalizedQuestion,
+  );
 
-  if (/\b(what can you do|help|commands|abilities)\b/.test(normalizedQuestion)) {
+  if (
+    /\b(what can you do|help|commands|abilities)\b/.test(normalizedQuestion)
+  ) {
     return "I can open Ascendra pages, count your remaining tasks, check how many habits you have, and explain features. Try ‘open journal’ or ‘how many tasks?’";
   }
 
-  if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(normalizedQuestion)) {
+  if (
+    /^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(
+      normalizedQuestion,
+    )
+  ) {
     const currentUsername = getLoggedInUsername() || "there";
     return chooseFreshAiChatReply([
       `Hey ${currentUsername}! What are we working on?`,
@@ -6799,11 +7656,20 @@ function ascendraAIReply(question) {
   }
 
   if (/\b(thanks|thank you|thx)\b/.test(normalizedQuestion)) {
-    return chooseFreshAiChatReply(["You’re welcome!", "Anytime!", "Happy to help!"]);
+    return chooseFreshAiChatReply([
+      "You’re welcome!",
+      "Anytime!",
+      "Happy to help!",
+    ]);
   }
 
-  if (/\b(task|tasks|todo|to-do|to-dos)\b/.test(normalizedQuestion) && !navigationIntent) {
-    const remainingTodos = getUserArray("todos").filter((todo) => !isTodoCompleted(todo)).length;
+  if (
+    /\b(task|tasks|todo|to-do|to-dos)\b/.test(normalizedQuestion) &&
+    !navigationIntent
+  ) {
+    const remainingTodos = getUserArray("todos").filter(
+      (todo) => !isTodoCompleted(todo),
+    ).length;
 
     return remainingTodos === 0
       ? "You have no unfinished tasks. Nice work!"
@@ -6818,16 +7684,24 @@ function ascendraAIReply(question) {
       : `You currently have ${habitCount} ${habitCount === 1 ? "habit" : "habits"} set up.`;
   }
 
-  if (/\b(journal|privacy|private)\b/.test(normalizedQuestion) && !navigationIntent) {
+  if (
+    /\b(journal|privacy|private)\b/.test(normalizedQuestion) &&
+    !navigationIntent
+  ) {
     return "Your journal entries sync through Ascendra’s backend and also keep a local browser backup. Avoid entering sensitive secrets because the journal is not end-to-end encrypted.";
   }
 
-  if (/\b(achievement|achievements|badge|badges|xp)\b/.test(normalizedQuestion) && !navigationIntent) {
+  if (
+    /\b(achievement|achievements|badge|badges|xp)\b/.test(normalizedQuestion) &&
+    !navigationIntent
+  ) {
     return "Open Achievements to see your XP, unlocked achievements, and badges. Statistics shows your broader progress.";
   }
 
   if (navigationIntent) {
-    const requestedPage = normalizedQuestion.replace(/^(open|go to|show|take me to)\s+/, "").replace(/\s+page$/, "");
+    const requestedPage = normalizedQuestion
+      .replace(/^(open|go to|show|take me to)\s+/, "")
+      .replace(/\s+page$/, "");
 
     const pageAliases = {
       tasks: "To-Dos",
@@ -6841,7 +7715,9 @@ function ascendraAIReply(question) {
 
     const destination = searchablePages.find((page) =>
       [page.name, page.route].some(
-        (value) => value.toLowerCase().replace(/[^a-z0-9]/g, "") === requestedName.toLowerCase().replace(/[^a-z0-9]/g, ""),
+        (value) =>
+          value.toLowerCase().replace(/[^a-z0-9]/g, "") ===
+          requestedName.toLowerCase().replace(/[^a-z0-9]/g, ""),
       ),
     );
 
@@ -6869,7 +7745,11 @@ function checkManualResponse(input) {
   const text = input.toLowerCase().trim();
 
   // HELP TASK
-  if (text.includes("help task") || text.includes("task help") || text.includes("how do i make a task")) {
+  if (
+    text.includes("help task") ||
+    text.includes("task help") ||
+    text.includes("how do i make a task")
+  ) {
     return {
       type: "taskHelp",
       response: manualResponses.taskHelp,
@@ -6883,14 +7763,18 @@ function checkManualResponse(input) {
     let priority = "medium";
 
     // Get task name
-    const nameMatch = input.match(/task named (.*?)(?:,\s*add a note|\s+add a note|,\s*priority|\s+priority|$)/i);
+    const nameMatch = input.match(
+      /task named (.*?)(?:,\s*add a note|\s+add a note|,\s*priority|\s+priority|$)/i,
+    );
 
     if (nameMatch) {
       name = nameMatch[1].trim();
     }
 
     // Get note
-    const noteMatch = input.match(/add a note saying (.*?)(?:,\s*priority|\s+priority|$)/i);
+    const noteMatch = input.match(
+      /add a note saying (.*?)(?:,\s*priority|\s+priority|$)/i,
+    );
 
     if (noteMatch) {
       note = noteMatch[1].trim();
@@ -6935,8 +7819,15 @@ function initializeAscendraAIChat() {
     const manualResponse = checkManualResponse(question);
 
     if (manualResponse) {
-      if (manualResponse.type === "makeTask" && typeof window.createTodoFromAI === "function") {
-        window.createTodoFromAI(manualResponse.name, manualResponse.note, manualResponse.priority);
+      if (
+        manualResponse.type === "makeTask" &&
+        typeof window.createTodoFromAI === "function"
+      ) {
+        window.createTodoFromAI(
+          manualResponse.name,
+          manualResponse.note,
+          manualResponse.priority,
+        );
       }
 
       showAscendraAIMessage(manualResponse.response, { bypassCooldown: true });
@@ -6962,7 +7853,12 @@ function initializeAscendraAI() {
   const roamingInterval = 9000;
   const landingOverlap = 10;
 
-  const idleAnimationClasses = ["is-tail-wagging", "is-looking-around", "is-stretching", "is-napping"];
+  const idleAnimationClasses = [
+    "is-tail-wagging",
+    "is-looking-around",
+    "is-stretching",
+    "is-napping",
+  ];
 
   let lastInteraction = Date.now();
   let lastTarget = null;
@@ -6973,27 +7869,43 @@ function initializeAscendraAI() {
   function clearIdleAnimation() {
     clearTimeout(idleAnimationTimer);
 
-    idleAnimationClasses.forEach((className) => companion.classList.remove(className));
+    idleAnimationClasses.forEach((className) =>
+      companion.classList.remove(className),
+    );
   }
 
   function scheduleIdleAnimation(delay = 2800 + Math.random() * 3200) {
     clearTimeout(idleAnimationTimer);
 
     idleAnimationTimer = window.setTimeout(() => {
-      if (companion.hidden || reduceMotion.matches || document.hidden || companion.classList.contains("is-jumping")) {
+      if (
+        companion.hidden ||
+        reduceMotion.matches ||
+        document.hidden ||
+        companion.classList.contains("is-jumping")
+      ) {
         scheduleIdleAnimation();
         return;
       }
 
       clearIdleAnimation();
 
-      const animationClass = idleAnimationClasses[Math.floor(Math.random() * idleAnimationClasses.length)];
+      const animationClass =
+        idleAnimationClasses[
+          Math.floor(Math.random() * idleAnimationClasses.length)
+        ];
 
       companion.classList.add(animationClass);
 
-      const shiftX = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-x")) || 0;
+      const shiftX =
+        Number.parseFloat(
+          getComputedStyle(companion).getPropertyValue("--ai-shift-x"),
+        ) || 0;
 
-      const shiftY = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-y")) || 0;
+      const shiftY =
+        Number.parseFloat(
+          getComputedStyle(companion).getPropertyValue("--ai-shift-y"),
+        ) || 0;
 
       if (shiftX === 0 && shiftY === 0 && Math.random() < 0.65) {
         showIdleAscendraAIResponse();
@@ -7028,35 +7940,44 @@ function initializeAscendraAI() {
   }
 
   function visibleLandingButtons() {
-    return [...document.querySelectorAll("button:not([disabled])")].filter((button) => {
-      if (button.closest("#ascendra-ai, [hidden], .search-overlay, .popup")) {
-        return false;
-      }
+    return [...document.querySelectorAll("button:not([disabled])")].filter(
+      (button) => {
+        if (button.closest("#ascendra-ai, [hidden], .search-overlay, .popup")) {
+          return false;
+        }
 
-      const style = getComputedStyle(button);
+        const style = getComputedStyle(button);
 
-      const box = button.getBoundingClientRect();
+        const box = button.getBoundingClientRect();
 
-      return (
-        style.visibility !== "hidden" &&
-        style.display !== "none" &&
-        Number(style.opacity) > 0 &&
-        box.width >= 34 &&
-        box.height >= 28 &&
-        box.top > 70 &&
-        box.bottom < window.innerHeight - 72 &&
-        box.left > 20 &&
-        box.right < window.innerWidth - 20
-      );
-    });
+        return (
+          style.visibility !== "hidden" &&
+          style.display !== "none" &&
+          Number(style.opacity) > 0 &&
+          box.width >= 34 &&
+          box.height >= 28 &&
+          box.top > 70 &&
+          box.bottom < window.innerHeight - 72 &&
+          box.left > 20 &&
+          box.right < window.innerWidth - 20
+        );
+      },
+    );
   }
 
   function jumpToButton() {
-    if (companion.hidden || reduceMotion.matches || document.hidden || Date.now() - lastInteraction < idleBeforeRoaming) {
+    if (
+      companion.hidden ||
+      reduceMotion.matches ||
+      document.hidden ||
+      Date.now() - lastInteraction < idleBeforeRoaming
+    ) {
       return;
     }
 
-    const buttons = visibleLandingButtons().filter((button) => button !== lastTarget);
+    const buttons = visibleLandingButtons().filter(
+      (button) => button !== lastTarget,
+    );
 
     if (buttons.length === 0) {
       returnHome();
@@ -7068,9 +7989,15 @@ function initializeAscendraAI() {
 
       const homeBox = companion.getBoundingClientRect();
 
-      const currentX = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-x")) || 0;
+      const currentX =
+        Number.parseFloat(
+          getComputedStyle(companion).getPropertyValue("--ai-shift-x"),
+        ) || 0;
 
-      const currentY = Number.parseFloat(getComputedStyle(companion).getPropertyValue("--ai-shift-y")) || 0;
+      const currentY =
+        Number.parseFloat(
+          getComputedStyle(companion).getPropertyValue("--ai-shift-y"),
+        ) || 0;
 
       const baseLeft = homeBox.left - currentX;
 
@@ -7080,24 +8007,40 @@ function initializeAscendraAI() {
 
       const avatarHeight = companion.offsetHeight;
 
-      const desiredLeft = targetBox.left + targetBox.width / 2 - avatarWidth / 2;
+      const desiredLeft =
+        targetBox.left + targetBox.width / 2 - avatarWidth / 2;
 
       const desiredTop = targetBox.top - avatarHeight + landingOverlap;
 
-      const safeLeft = Math.min(window.innerWidth - avatarWidth - 10, Math.max(10, desiredLeft));
+      const safeLeft = Math.min(
+        window.innerWidth - avatarWidth - 10,
+        Math.max(10, desiredLeft),
+      );
 
-      const safeTop = Math.min(window.innerHeight - avatarHeight - 82, Math.max(12, desiredTop));
+      const safeTop = Math.min(
+        window.innerHeight - avatarHeight - 82,
+        Math.max(12, desiredTop),
+      );
 
-      const travelDistance = Math.hypot(safeLeft - homeBox.left, safeTop - homeBox.top);
+      const travelDistance = Math.hypot(
+        safeLeft - homeBox.left,
+        safeTop - homeBox.top,
+      );
 
-      const travelDuration = Math.min(1800, Math.max(720, Math.round(travelDistance * 1.8)));
+      const travelDuration = Math.min(
+        1800,
+        Math.max(720, Math.round(travelDistance * 1.8)),
+      );
 
       clearTimeout(homeTimer);
       clearIdleAnimation();
 
       companion.classList.add("is-roaming", "is-jumping");
 
-      companion.style.setProperty("--ai-travel-duration", `${travelDuration}ms`);
+      companion.style.setProperty(
+        "--ai-travel-duration",
+        `${travelDuration}ms`,
+      );
 
       companion.style.setProperty("--ai-shift-x", `${safeLeft - baseLeft}px`);
 
@@ -7117,7 +8060,8 @@ function initializeAscendraAI() {
     lastInteraction = Date.now();
     lastTarget = null;
 
-    const interactionIsInsideChat = event.target instanceof Element && event.target.closest("#ascendra-ai");
+    const interactionIsInsideChat =
+      event.target instanceof Element && event.target.closest("#ascendra-ai");
 
     const chatStillHasFocus = companion.contains(document.activeElement);
 
@@ -7136,15 +8080,19 @@ function initializeAscendraAI() {
     returnHome();
   }
 
-  ["pointerdown", "keydown", "focusin", "wheel", "touchstart"].forEach((eventName) => {
-    document.addEventListener(eventName, noteInteraction, { passive: true });
-  });
+  ["pointerdown", "keydown", "focusin", "wheel", "touchstart"].forEach(
+    (eventName) => {
+      document.addEventListener(eventName, noteInteraction, { passive: true });
+    },
+  );
 
   window.addEventListener("scroll", noteInteraction, { passive: true });
 
   window.addEventListener("resize", noteInteraction, { passive: true });
 
-  window.visualViewport?.addEventListener("resize", noteInteraction, { passive: true });
+  window.visualViewport?.addEventListener("resize", noteInteraction, {
+    passive: true,
+  });
 
   reduceMotion.addEventListener("change", noteInteraction);
 
