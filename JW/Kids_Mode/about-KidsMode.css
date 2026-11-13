@@ -1,265 +1,267 @@
 /* The body function controls everything in the <body> tag. */
 body {
-	/* No margin on the side */
-	margin: 0;
-	/* Changes font, include backup font. */
-	font-family: Arial, Helvetica, sans-serif;
-	/* Background changed to extremely light grey. */
-	background: rgb(240, 248, 255);
-	/* Changes text color. */
-	color: rgb(5, 10, 35);
+    /* No margin on the side */
+    margin: 0;
+    /* Changes font, include backup font. */
+    font-family: Arial, Helvetica, sans-serif;
+    /* Background changed to extremely light grey. */
+    background: rgb(240, 248, 255);
+    /* Changes text color. */
+    color: rgb(5, 10, 35);
 }
 
 /*  Controls the header */
 .about-header {
-	/* Makes the text aligned to the center */
-	text-align: center;
-	/* Gives the content breathing room */
-	padding: 50px 20px;
-	/* Gives a background with a gradient */
-	background: linear-gradient(135deg, rgb(0, 123, 255), rgb(0, 170, 255));
-	/* Makes the text white. */
-	color: white;
+    /* Makes the text aligned to the center */
+    text-align: center;
+    /* Gives the content breathing room */
+    padding: 50px 20px;
+    /* Gives a background with a gradient */
+    background: linear-gradient(135deg, rgb(0, 123, 255), rgb(0, 170, 255));
+    /* Makes the text white. */
+    color: white;
 }
 
 /* Controls the h1 in about-header */
 h1.about-header {
-	/* No margin */
-	margin: 0;
-	/* Makes font size more specific. */
-	font-size: 3rem;
+    /* No margin */
+    margin: 0;
+    /* Makes font size more specific. */
+    font-size: 3rem;
 }
 
 /* Edits the description of the header. */
 .header-description {
-	/* Makes the maximum width of the text 700px. */
-	max-width: 700px;
-	/* Adds 15px of margin. */
-	margin: 15px auto 0;
-	/* Makes font size more specific. */
-	font-size: 1.1rem;
-	/* Makes the line more specific. */
-	line-height: 1.6;
+    /* Makes the maximum width of the text 700px. */
+    max-width: 700px;
+    /* Adds 15px of margin. */
+    margin: 15px auto 0;
+    /* Makes font size more specific. */
+    font-size: 1.1rem;
+    /* Makes the line more specific. */
+    line-height: 1.6;
 }
 
 /* Controls the back button (top left corner) */
 .back-button {
-	/* Makes button on the same line as other content (no seperate lines) */
-	display: inline-block;
-	/* Adds margin to the bottom */
-	margin-bottom: 25px;
-	/* Makes the button white */
-	color: white;
-	/* Removes all text decoration */
-	text-decoration: none;
-	/* Makes the text bold */
-	font-weight: bold;
-	/* Makes font size more specific */
-	font-size: 1rem;
+    /* Makes button on the same line as other content (no seperate lines) */
+    display: inline-block;
+    /* Adds margin to the bottom */
+    margin-bottom: 25px;
+    /* Makes the button white */
+    color: white;
+    /* Removes all text decoration */
+    text-decoration: none;
+    /* Makes the text bold */
+    font-weight: bold;
+    /* Makes font size more specific */
+    font-size: 1rem;
 }
 
 /* Controls the state of the back button when hovering over it. */
 .back-button:hover {
-	/* Underlines the text */
-	text-decoration: underline;
+    /* Underlines the text */
+    text-decoration: underline;
 }
 
 /* Controls the box containing 'What is Ascendra?' */
 .about-container {
-	/* Keeps the width of the container 90% of the screen */
-	width: 90%;
-	/* Makes the maximum width 1100px */
-	max-width: 1100px;
-	/* Makes top and bottom 40px and makes it centered horizontally */
-	margin: 40px auto;
+    /* Keeps the width of the container 90% of the screen */
+    width: 90%;
+    /* Makes the maximum width 1100px */
+    max-width: 1100px;
+    /* Makes top and bottom 40px and makes it centered horizontally */
+    margin: 40px auto;
 }
 
 /* This controls almost all things in the <section> tag */
 .about-section {
-	/* Makes items go side by side */
-	display: flex;
-	/* Adds space between the elements that are side by side */
-	gap: 25px;
-	/* Puts content on the top */
-	align-items: flex-start;
-	/* Adds a white background */
-	background: white;
-	/* Adds 30px of space between content and edge of box */
-	padding: 30px;
-	/* Slightly rounds the corner */
-	border-radius: 18px;
-	/* Adds 30px of space between/underneath each box */
-	margin-bottom: 30px;
-	/* Adds shadow to every box */
-	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    /* Makes items go side by side */
+    display: flex;
+    /* Adds space between the elements that are side by side */ 
+    gap: 25px;
+    /* Puts content on the top */
+    align-items: flex-start;
+    /* Adds a white background */
+    background: white;
+    /* Adds 30px of space between content and edge of box */
+    padding: 30px;
+    /* Slightly rounds the corner */
+    border-radius: 18px;
+    /* Adds 30px of space between/underneath each box */
+    margin-bottom: 30px;
+    /* Adds shadow to every box */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
 /* This controls the font awesome icons in the sections */
 .section-icon {
-	/* Changes the size of the icon */
-	font-size: 2.5rem;
-	/* Changes the colour of the icon to a bright blue */
-	color: rgb(0, 123, 255);
-	/* Makes the minimum width of the icon 60px */
-	min-width: 60px;
+    /* Changes the size of the icon */
+    font-size: 2.5rem;
+    /* Changes the colour of the icon to a bright blue */
+    color: rgb(0, 123, 255);
+    /* Makes the minimum width of the icon 60px */
+    min-width: 60px;
 }
 
 /* Changes the h2 in section-content */
 .section-content h2 {
-	/* Removes all margin above the h2 */
-	margin-top: 0;
+    /* Removes all margin above the h2 */
+    margin-top: 0;
 }
 
 /* Changes the p in section-content */
 .section-content p {
-	line-height: 1.7;
+    line-height: 1.7;
 }
 
 /* Controls everything in the class features-section */
 .features-section {
-	/* Adds 40px of margin at the bottom */
-	margin-bottom: 40px;
+    /* Adds 40px of margin at the bottom */
+    margin-bottom: 40px;
 }
 
 /* controls the h2 in features-section */
 .features-section h2 {
-	/* Aligns the text to the center */
-	text-align: center;
-	/* Adds 30px of margin */
-	margin-bottom: 30px;
+    /* Aligns the text to the center */
+    text-align: center;
+    /* Adds 30px of margin */
+    margin-bottom: 30px;
 }
 
 /* Controls everything in features-grid */
 .features-grid {
-	/* Turns everything into a grid */
-	display: grid;
-	/* Determines how wide the columns are and how many fit. */
-	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-	/* Makes 25px of space between each grid */
-	gap: 25px;
+    /* Turns everything into a grid */
+    display: grid;
+    /* Determines how wide the columns are and how many fit. */
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    /* Makes 25px of space between each grid */
+    gap: 25px;
 }
 
 /* Controls the actual cards in the grid */
 .feature-card {
-	/* Adds a white background */
-	background: white;
-	/* Adds 25px of space between the text and the edge of the card */
-	padding: 25px;
-	/* Makes the corners slightly rounded */
-	border-radius: 18px;
-	/* Aligns the text to the center */
-	text-align: center;
-	/* Adds the shadow of each card */
-	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-	/* Gives a slight delay of how fast the shadow appears */
-	transition: 0.25s;
+    /* Adds a white background */
+    background: white;
+    /* Adds 25px of space between the text and the edge of the card */
+    padding: 25px;
+    /* Makes the corners slightly rounded */
+    border-radius: 18px;
+    /* Aligns the text to the center */
+    text-align: center;
+    /* Adds the shadow of each card */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    /* Gives a slight delay of how fast the shadow appears */
+    transition: 0.25s;
 }
 
 /* Controls the card when mouse is hovering over it */
 .feature-card:hover {
-	/* slightly moves the box up */
-	transform: translateY(-6px);
+    /* slightly moves the box up */
+    transform: translateY(-6px);
 }
 
 /* Controls everything that is in an <i> tag and is in the feature-card class */
 .feature-card i {
-	/* Makes font size more specific */
-	font-size: 2.5rem;
-	/* Makes text bright blue */
-	color: rgb(0, 123, 255);
-	/* Adds 15px of margin to the bottom of the i tags */
-	margin-bottom: 15px;
+    /* Makes font size more specific */
+    font-size: 2.5rem;
+    /* Makes text bright blue */
+    color: rgb(0, 123, 255);
+    /* Adds 15px of margin to the bottom of the i tags */
+    margin-bottom: 15px;
 }
 
 /* This controls all of the <h3> tags in feature-card */
 .feature-card h3 {
-	/* Adds 10px of margin on the top and bottom */
-	margin: 10px 0;
+   /* Adds 10px of margin on the top and bottom */
+    margin: 10px 0;
 }
 
 /* This controls all of the <p> tags in feature-card */
 .feature-card p {
-	/* Makes line height more specific */
-	line-height: 1.5;
+    /* Makes line height more specific */
+    line-height: 1.5;
 }
 
 /* Controls everything in the class creator-section (bottom of the page) */
 .creator-section {
-	/* Adds a banckground */
-	background: linear-gradient(135deg, rgb(0, 123, 255), rgb(0, 170, 255));
-	/* Changes text color to white */
-	color: white;
-	/* Aligns the text to the center */
-	text-align: center;
-	/* Gives the text breathing room in the box */
-	padding: 40px;
-	/* Makes the corners rounded */
-	border-radius: 18px;
-	/* Adds 40px of margin to the bottom */
-	margin-bottom: 40px;
+    /* Adds a banckground */
+    background: linear-gradient(135deg, rgb(0,123,255), rgb(0,170,255));
+    /* Changes text color to white */
+    color: white;
+    /* Aligns the text to the center */
+    text-align: center;
+    /* Gives the text breathing room in the box */
+    padding: 40px;
+    /* Makes the corners rounded */
+    border-radius: 18px;
+    /* Adds 40px of margin to the bottom */
+    margin-bottom: 40px;
 }
 
 /* Controls everything in the creator section that is in an <i> tag */
 .creator-section i {
-	/* Makes font size more specific */
-	font-size: 3rem;
-	/* Adds 15px of margin to the bottom of the section */
-	margin-bottom: 15px;
+    /* Makes font size more specific */
+    font-size: 3rem;
+    /* Adds 15px of margin to the bottom of the section */
+    margin-bottom: 15px;
 }
 
 /* Controls everything in the class about-footer (very bottom of the page) */
 .about-footer {
-	/* Adds a dark navy backgound */
-	background: rgb(5, 10, 35);
-	/* Makes the text white */
-	color: white;
-	/* Aligns the text to the center */
-	text-align: center;
-	/* Adds 30px of padding to the top and bottom and adds 20px of padding to left and right */
-	padding: 30px 20px;
+    /* Adds a dark navy backgound */
+    background: rgb(5,10,35);
+    /* Makes the text white */
+    color: white;
+    /* Aligns the text to the center */
+    text-align: center;
+    /* Adds 30px of padding to the top and bottom and adds 20px of padding to left and right */
+    padding: 30px 20px;
 }
 
 /* This controls the links in the footer */
 .footer-links {
-	/* Puts 15px of margin above the links */
-	margin-top: 15px;
+    /* Puts 15px of margin above the links */
+    margin-top: 15px;
 }
 
 /* Controls the <a> tag in the footer */
 .footer-links a {
-	/* Makes the color white */
-	color: white;
-	/* Adds 15px of margin in between each other */
-	margin: 0 15px;
-	/* Removes all text decoration */
-	text-decoration: none;
+    /* Makes the color white */
+    color: white;
+    /* Adds 15px of margin in between each other */
+    margin: 0 15px;
+    /* Removes all text decoration */
+    text-decoration: none;
 }
 
 /* Controls the links when mouse is hovering over it */
 .footer-links a:hover {
-	/* Underlines the links */
-	text-decoration: underline;
+    /* Underlines the links */
+    text-decoration: underline;
 }
 
 /* This controls everything when the screen is 768px or smaller */
 @media (max-width: 768px) {
-	/* Controls the things that are in the class about-section */
-	.about-section {
-		/* Makes content vertical */
-		flex-direction: column;
-		/* Aligns the text to the center */
-		text-align: center;
-	}
 
-	/* Edits the class section-icon */
-	.section-icon {
-		/* Centers the icon */
-		margin: auto;
-	}
+    /* Controls the things that are in the class about-section */
+    .about-section {
+        /* Makes content vertical */
+        flex-direction: column;
+        /* Aligns the text to the center */
+        text-align: center;
+    }
 
-	/* Controls the h1 in the class about-header */
-	.about-header h1 {
-		/* Makes font size more specific */
-		font-size: 2.2rem;
-	}
+    /* Edits the class section-icon */
+    .section-icon {
+        /* Centers the icon */
+        margin: auto;
+    }
+
+    /* Controls the h1 in the class about-header */
+    .about-header h1 {
+        /* Makes font size more specific */
+        font-size: 2.2rem;
+    }
+
 }

@@ -7,9 +7,7 @@ let USER_CONFIG = {
 const ascendraNativeFetch = window.fetch.bind(window);
 let ascendraJournalFetch = null;
 
-const journalSecurityReady = import(
-  new URL("src/js/journal.js", document.baseURI).href
-).then((module) => {
+const journalSecurityReady = import(new URL("src/js/journal.js", document.baseURI).href).then((module) => {
   ascendraJournalFetch = module.createJournalFetch(ascendraNativeFetch);
 });
 
@@ -27,9 +25,7 @@ window.fetch = async function ascendraSecureFetch(input, init) {
     const pathname = new URL(rawUrl, window.location.href).pathname;
     isJournalRequest = pathname.endsWith("/journal");
   } catch {
-    console.error(
-      "There was an error reaching the servers, please try again later.",
-    );
+    console.error("There was an error reaching the servers, please try again later.")
   }
 
   if (!isJournalRequest) {

@@ -1,109 +1,124 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>Ascendra - Alerts</title>
 
-		<!-- CSS -->
-		<link rel="stylesheet" href="alerts-KidsMode.css" />
-		<!-- Styles the coin in the bottom right corner -->
-		<link rel="stylesheet" href="coin-KidsMode.css" />
+<head>
+    <meta charset="UTF-8">
+    <title>Ascendra - Alerts</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="alerts-KidsMode.css">
+    <!-- Styles the coin in the bottom right corner -->
+    <link rel="stylesheet" href="coin-KidsMode.css">
+    
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
 
-		<!-- Font Awesome -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-	</head>
+<body>
 
-	<body>
-		<div class="alerts-page">
-			<header class="alerts-header">
-				<!-- Adds the alerts bell icon -->
-				<div class="header-icon">
-					<i class="fa-solid fa-bell"></i>
-				</div>
+    <div class="alerts-page">
 
-				<!-- Title and subtitle -->
-				<div>
-					<h1>Alerts</h1>
-					<p>For convenience and notifications</p>
-				</div>
-			</header>
+        <header class="alerts-header">
 
-			<!-- Displays alerts here -->
-			<!-- DO NOT DELETE -->
-			<main id="alertList"></main>
-		</div>
+            <!-- Adds the alerts bell icon -->
+            <div class="header-icon">
+                <i class="fa-solid fa-bell"></i>
+            </div>
 
-		<!-- Navigator bar -->
-		<nav class="navbar">
-			<!-- Home button -->
-			<button onclick="window.location.href = 'home-KidsMode.html'">
-				<i class="fa-solid fa-mug-saucer"></i>
-				<span>Home</span>
-			</button>
+            <!-- Title and subtitle -->
+            <div>
+                <h1>Alerts</h1>
+                <p>For convenience and notifications</p>
+            </div>
 
-			<!-- Alerts button (current) -->
-			<button class="current">
-				<i class="fa-solid fa-bell"></i>
-				<span>Alerts</span>
-			</button>
+        </header>
 
-			<!-- To-Dos button -->
-			<button onclick="window.location.href = 'todos-KidsMode.html'">
-				<i class="fa-solid fa-list-check"></i>
-				<span>To-Dos</span>
-			</button>
+        <!-- Displays alerts here -->
+        <!-- DO NOT DELETE -->
+        <main id="alertList">
+        </main>
 
-			<!-- Habits button -->
-			<button onclick="window.location.href = 'habits-KidsMode.html'">
-				<i class="fa-solid fa-thumbs-up"></i>
-				<span>Habits</span>
-			</button>
+    </div>
 
-			<!-- Breathing button -->
-			<button onclick="window.location.href = 'breathing-KidsMode.html'">
-				<i class="fa-solid fa-wind"></i>
-				<span>Breathing</span>
-			</button>
+    <!-- Navigator bar -->
+    <nav class="navbar">
 
-			<!-- Calendar button -->
-			<button onclick="window.location.href = 'calendar-KidsMode.html'">
-				<i class="fa-solid fa-calendar"></i>
-				<span>Calendar</span>
-			</button>
+        <!-- Home button -->
+        <button onclick="window.location.href='home-KidsMode.html'">
+            <i class="fa-solid fa-mug-saucer"></i>
+            <span>Home</span>
+        </button>
 
-			<!-- Journal button -->
-			<button onclick="window.location.href = 'journal-KidsMode.html'">
-				<i class="fa-solid fa-book-open"></i>
-				<span>Journal</span>
-			</button>
+        <!-- Alerts button (current) -->
+        <button class="current">
+            <i class="fa-solid fa-bell"></i>
+            <span>Alerts</span>
+        </button>
 
-			<!-- Merchandise button (Kids Mode exclusive) -->
-			<button onclick="window.location.href = 'merchandise-KidsMode.html'">
-				<i class="fa-solid fa-shirt"></i>
-				<span>Merchandise</span>
-			</button>
+        <!-- To-Dos button -->
+        <button onclick="window.location.href='todos-KidsMode.html'">
+            <i class="fa-solid fa-list-check"></i>
+            <span>To-Dos</span>
+        </button>
 
-			<!-- Menu button -->
-			<button onclick="window.location.href = 'menu-KidsMode.html'">
-				<i class="fa-solid fa-bars-staggered"></i>
-				<span>Menu</span>
-			</button>
-		</nav>
+        <!-- Habits button -->
+        <button onclick="window.location.href='habits-KidsMode.html'">
+            <i class="fa-solid fa-thumbs-up"></i>
+            <span>Habits</span>
+        </button>
 
-		<!-- Ascendra coin -->
-		<!-- Do not delete -->
-		<div class="coin-display">
-			<div class="ascendra-coin">
-				<span class="coin-letter">A</span>
-			</div>
+        <!-- Breathing button -->
+        <button onclick="window.location.href='breathing-KidsMode.html'">
+            <i class="fa-solid fa-wind"></i>
+            <span>Breathing</span>
+        </button>
 
-			<span class="coin-balance">0</span>
-		</div>
+        <!-- Calendar button -->
+        <button onclick="window.location.href='calendar-KidsMode.html'">
+            <i class="fa-solid fa-calendar"></i>
+            <span>Calendar</span>
+        </button>
 
-		<!-- Links js -->
-		<!-- Do not change order -->
-		<script src="global-settings(KidsMode).js"></script>
-		<script src="coin(KidsMode).js"></script>
-		<script src="alerts(KidsMode).js"></script>
-	</body>
+        <!-- Journal button -->
+        <button onclick="window.location.href='journal-KidsMode.html'">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Journal</span>
+        </button>
+
+        <!-- Merchandise button (Kids Mode exclusive) -->
+        <button onclick="window.location.href='merchandise-KidsMode.html'">
+            <i class="fa-solid fa-shirt"></i>
+            <span>Merchandise</span>
+        </button>
+        
+        <!-- Menu button -->
+        <button onclick="window.location.href='menu-KidsMode.html'">
+            <i class="fa-solid fa-bars-staggered"></i>
+            <span>Menu</span>
+        </button>
+
+    </nav>
+
+    <!-- Ascendra coin -->
+    <!-- Do not delete -->
+    <div class="coin-display">
+
+        <div class="ascendra-coin">
+            <span class="coin-letter">A</span>
+        </div>
+
+        <span class="coin-balance">0</span>
+
+    </div>
+
+    <!-- Links js -->
+    <!-- Do not change order -->
+    <script src="global-settings(KidsMode).js"></script>
+    <script src="coin(KidsMode).js"></script>
+    <script src="alerts(KidsMode).js"></script>
+    
+</body>
 </html>

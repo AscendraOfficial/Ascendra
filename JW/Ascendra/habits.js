@@ -10,17 +10,17 @@ const habitList = document.getElementById("habitList");
 let habits = JSON.parse(localStorage.getItem("habits")) || [];
 
 function saveHabits() {
-	localStorage.setItem("habits", JSON.stringify(habits));
+    localStorage.setItem("habits", JSON.stringify(habits));
 }
 
 function showHabits() {
-	habitList.innerHTML = "";
+    habitList.innerHTML = "";
 
-	habits.forEach((habit) => {
-		const habitCard = document.createElement("div");
-		habitCard.classList.add("habit");
+    habits.forEach(habit => {
+        const habitCard = document.createElement("div");
+        habitCard.classList.add("habit");
 
-		habitCard.innerHTML = `
+        habitCard.innerHTML = `
             <div class="left">
                 <div class="habit-title">${habit.name}</div>
                 <div class="habit-type">${habit.type === "bad" ? "Bad habit" : "Good habit"}</div>
@@ -33,61 +33,61 @@ function showHabits() {
             </div>
         `;
 
-		habitCard.querySelector(".check-btn").onclick = () => {
-			if (habit.type === "bad") {
-				alert("Nice! You avoided the bad habit ✅");
-			} else {
-				alert("Nice! You did the good habit ✅");
-			}
-		};
+        habitCard.querySelector(".check-btn").onclick = () => {
+            if (habit.type === "bad") {
+                alert("Nice! You avoided the bad habit ✅");
+            } else {
+                alert("Nice! You did the good habit ✅");
+            }
+        };
 
-		habitCard.querySelector(".x-btn").onclick = () => {
-			if (habit.type === "bad") {
-				alert("You did the bad habit today ❌");
-			} else {
-				alert("You missed the good habit today ❌");
-			}
-		};
+        habitCard.querySelector(".x-btn").onclick = () => {
+            if (habit.type === "bad") {
+                alert("You did the bad habit today ❌");
+            } else {
+                alert("You missed the good habit today ❌");
+            }
+        };
 
-		habitCard.querySelector(".delete-btn").onclick = () => {
-			habits = habits.filter((h) => h.id !== habit.id);
-			saveHabits();
-			showHabits();
-		};
+        habitCard.querySelector(".delete-btn").onclick = () => {
+            habits = habits.filter(h => h.id !== habit.id);
+            saveHabits();
+            showHabits();
+        };
 
-		habitList.appendChild(habitCard);
-	});
+        habitList.appendChild(habitCard);
+    });
 }
 
 addHabitBtn.onclick = () => {
-	habitPopup.style.display = "block";
-	habitInput.focus();
+    habitPopup.style.display = "block";
+    habitInput.focus();
 };
 
 cancelHabitBtn.onclick = () => {
-	habitPopup.style.display = "none";
-	habitInput.value = "";
+    habitPopup.style.display = "none";
+    habitInput.value = "";
 };
 
 saveHabitBtn.onclick = () => {
-	const name = habitInput.value.trim();
+    const name = habitInput.value.trim();
 
-	if (name === "") {
-		alert("Add a habit name first!");
-		return;
-	}
+    if (name === "") {
+        alert("Add a habit name first!");
+        return;
+    }
 
-	habits.push({
-		id: Date.now(),
-		name: name,
-		type: habitType.value,
-	});
+    habits.push({
+        id: Date.now(),
+        name: name,
+        type: habitType.value
+    });
 
-	saveHabits();
-	showHabits();
+    saveHabits();
+    showHabits();
 
-	habitPopup.style.display = "none";
-	habitInput.value = "";
+    habitPopup.style.display = "none";
+    habitInput.value = "";
 };
 
 showHabits();

@@ -1,35 +1,35 @@
 const addBtn = document.getElementById("add-btn");
-const popup = document.getElementById("popup");
-const saveBtn = document.getElementById("save-btn");
-const cancelBtn = document.getElementById("cancel-btn");
+    const popup = document.getElementById("popup");
+    const saveBtn = document.getElementById("save-btn");
+    const cancelBtn = document.getElementById("cancel-btn");
 
-const taskInput = document.getElementById("task-input");
-const dateInput = document.getElementById("date-input");
-const todoList = document.getElementById("todo-list");
+    const taskInput = document.getElementById("task-input");
+    const dateInput = document.getElementById("date-input");
+    const todoList = document.getElementById("todo-list");
 
-let todos = JSON.parse(localStorage.getItem("todos")) || [];
+    let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
-function saveTodos() {
-	localStorage.setItem("todos", JSON.stringify(todos));
-}
+    function saveTodos() {
+        localStorage.setItem("todos", JSON.stringify(todos));
+    }
 
-function showTodos() {
-	todoList.innerHTML = "";
+    function showTodos() {
+        todoList.innerHTML = "";
 
-	if (todos.length === 0) {
-		todoList.innerHTML = "<p>No tasks yet</p>";
-		return;
-	}
+        if (todos.length === 0) {
+            todoList.innerHTML = "<p>No tasks yet</p>";
+            return;
+        }
 
-	todos.forEach((todo) => {
-		const card = document.createElement("div");
-		card.classList.add("todo-card");
+        todos.forEach(todo => {
+            const card = document.createElement("div");
+            card.classList.add("todo-card");
 
-		if (todo.completed) {
-			card.classList.add("completed");
-		}
+            if (todo.completed) {
+                card.classList.add("completed");
+            }
 
-		card.innerHTML = `
+            card.innerHTML = `
                 <div class="todo-info">
                     <div class="todo-title">
                         ${todo.completed ? "✅" : "⬜"} ${todo.task}
@@ -44,58 +44,58 @@ function showTodos() {
                 <button class="delete-btn">🗑️</button>
             `;
 
-		const completeBtn = card.querySelector(".complete-btn");
-		const deleteBtn = card.querySelector(".delete-btn");
+            const completeBtn = card.querySelector(".complete-btn");
+            const deleteBtn = card.querySelector(".delete-btn");
 
-		completeBtn.onclick = () => {
-			todo.completed = !todo.completed;
-			saveTodos();
-			showTodos();
-		};
+            completeBtn.onclick = () => {
+                todo.completed = !todo.completed;
+                saveTodos();
+                showTodos();
+            };
 
-		deleteBtn.onclick = () => {
-			todos = todos.filter((t) => t.id !== todo.id);
-			saveTodos();
-			showTodos();
-		};
+            deleteBtn.onclick = () => {
+                todos = todos.filter(t => t.id !== todo.id);
+                saveTodos();
+                showTodos();
+            };
 
-		todoList.appendChild(card);
-	});
-}
+            todoList.appendChild(card);
+        });
+    }
 
-addBtn.onclick = () => {
-	popup.style.display = "block";
-	taskInput.focus();
-};
+    addBtn.onclick = () => {
+        popup.style.display = "block";
+        taskInput.focus();
+    };
 
-cancelBtn.onclick = () => {
-	popup.style.display = "none";
-	taskInput.value = "";
-	dateInput.value = "";
-};
+    cancelBtn.onclick = () => {
+        popup.style.display = "none";
+        taskInput.value = "";
+        dateInput.value = "";
+    };
 
-saveBtn.onclick = () => {
-	const task = taskInput.value.trim();
-	const date = dateInput.value;
+    saveBtn.onclick = () => {
+        const task = taskInput.value.trim();
+        const date = dateInput.value;
 
-	if (task === "" || date === "") {
-		alert("Add a task and due date first!");
-		return;
-	}
+        if (task === "" || date === "") {
+            alert("Add a task and due date first!");
+            return;
+        }
 
-	todos.push({
-		id: Date.now(),
-		task: task,
-		date: date,
-		completed: false,
-	});
+        todos.push({
+            id: Date.now(),
+            task: task,
+            date: date,
+            completed: false
+        });
 
-	saveTodos();
-	showTodos();
+        saveTodos();
+        showTodos();
 
-	popup.style.display = "none";
-	taskInput.value = "";
-	dateInput.value = "";
-};
+        popup.style.display = "none";
+        taskInput.value = "";
+        dateInput.value = "";
+    };
 
-showTodos();
+    showTodos();

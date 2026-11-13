@@ -10,26 +10,26 @@ const todoList = document.getElementById("todo-list");
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
 function saveTodos() {
-	localStorage.setItem("todos", JSON.stringify(todos));
+    localStorage.setItem("todos", JSON.stringify(todos));
 }
 
 function showTodos() {
-	todoList.innerHTML = "";
+    todoList.innerHTML = "";
 
-	if (todos.length === 0) {
-		todoList.innerHTML = "<p>No tasks yet</p>";
-		return;
-	}
+    if (todos.length === 0) {
+        todoList.innerHTML = "<p>No tasks yet</p>";
+        return;
+    }
 
-	todos.forEach((todo) => {
-		const card = document.createElement("div");
-		card.classList.add("todo-card");
+    todos.forEach(todo => {
+        const card = document.createElement("div");
+        card.classList.add("todo-card");
 
-		if (todo.completed) {
-			card.classList.add("completed");
-		}
+        if (todo.completed) {
+            card.classList.add("completed");
+        }
 
-		card.innerHTML = `
+        card.innerHTML = `
             <div class="todo-info">
                 <div class="todo-title">
                     ${todo.completed ? "✅" : "⬜"} ${todo.task}
@@ -44,67 +44,68 @@ function showTodos() {
             <button class="delete-btn">🗑️</button>
         `;
 
-		const completeBtn = card.querySelector(".complete-btn");
-		const deleteBtn = card.querySelector(".delete-btn");
+        const completeBtn = card.querySelector(".complete-btn");
+        const deleteBtn = card.querySelector(".delete-btn");
 
-		completeBtn.onclick = () => {
-			// Only award coins when completing the task
-			if (!todo.completed) {
-				addCoins(5);
+        completeBtn.onclick = () => {
 
-				alert("Task completed! ✅\n+5 Ascendra Coins 🪙");
-			}
+            // Only award coins when completing the task
+            if (!todo.completed) {
+                addCoins(5);
 
-			// Toggle completed status
-			todo.completed = !todo.completed;
+                alert("Task completed! ✅\n+5 Ascendra Coins 🪙");
+            }
 
-			saveTodos();
-			showTodos();
-		};
+            // Toggle completed status
+            todo.completed = !todo.completed;
 
-		deleteBtn.onclick = () => {
-			todos = todos.filter((t) => t.id !== todo.id);
-			saveTodos();
-			showTodos();
-		};
+            saveTodos();
+            showTodos();
+        };
 
-		todoList.appendChild(card);
-	});
+        deleteBtn.onclick = () => {
+            todos = todos.filter(t => t.id !== todo.id);
+            saveTodos();
+            showTodos();
+        };
+
+        todoList.appendChild(card);
+    });
 }
 
 addBtn.onclick = () => {
-	popup.style.display = "block";
-	taskInput.focus();
+    popup.style.display = "block";
+    taskInput.focus();
 };
 
 cancelBtn.onclick = () => {
-	popup.style.display = "none";
-	taskInput.value = "";
-	dateInput.value = "";
+    popup.style.display = "none";
+    taskInput.value = "";
+    dateInput.value = "";
 };
 
 saveBtn.onclick = () => {
-	const task = taskInput.value.trim();
-	const date = dateInput.value;
+    const task = taskInput.value.trim();
+    const date = dateInput.value;
 
-	if (task === "" || date === "") {
-		alert("Add a task and due date first!");
-		return;
-	}
+    if (task === "" || date === "") {
+        alert("Add a task and due date first!");
+        return;
+    }
 
-	todos.push({
-		id: Date.now(),
-		task: task,
-		date: date,
-		completed: false,
-	});
+    todos.push({
+        id: Date.now(),
+        task: task,
+        date: date,
+        completed: false
+    });
 
-	saveTodos();
-	showTodos();
+    saveTodos();
+    showTodos();
 
-	popup.style.display = "none";
-	taskInput.value = "";
-	dateInput.value = "";
+    popup.style.display = "none";
+    taskInput.value = "";
+    dateInput.value = "";
 };
 
 showTodos();

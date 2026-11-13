@@ -1,129 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-		<title>Ascendra - Profile</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
-		<link rel="stylesheet" href="profile.css" />
-	</head>
+    <title>Ascendra - Profile</title>
 
-	<body>
-		<header class="top-bar">
-			<a href="home.html" class="icon-button" aria-label="Go home">
-				<i class="fa-solid fa-arrow-left"></i>
-			</a>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
 
-			<h1>My Profile</h1>
+<body>
 
-			<a href="settings.html" class="icon-button" aria-label="Open settings">
-				<i class="fa-solid fa-gear"></i>
-			</a>
-		</header>
+    <header class="top-bar">
 
-		<main>
-			<section class="profile-card">
-				<div class="profile-picture-container">
-					<img id="profile-picture" src="https://placehold.co/160x160?text=Profile" alt="Profile picture" />
+        <a href="home.html" class="icon-button" aria-label="Go home">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
 
-					<label for="profile-upload" class="camera-button">
-						<i class="fa-solid fa-camera"></i>
-					</label>
+        <h1>My Profile</h1>
 
-					<input type="file" id="profile-upload" accept="image/*" hidden />
-				</div>
+        <a href="settings.html" class="icon-button" aria-label="Open settings">
+            <i class="fa-solid fa-gear"></i>
+        </a>
 
-				<h2 id="display-name">Ascendra User</h2>
+    </header>
 
-				<p id="display-username">@ascendrauser</p>
+    <main>
 
-				<p id="display-bio">Becoming better, one day at a time.</p>
-			</section>
+        <section class="profile-card">
 
-			<section class="stats-container">
-				<div class="stat-card">
-					<i class="fa-solid fa-fire"></i>
-					<h3 id="streak-number">0</h3>
-					<p>Day Streak</p>
-				</div>
+            <div class="profile-picture-container">
 
-				<div class="stat-card">
-					<i class="fa-solid fa-list-check"></i>
-					<h3 id="tasks-number">0</h3>
-					<p>Tasks Done</p>
-				</div>
+                <img
+                    id="profile-picture"
+                    src="https://placehold.co/160x160?text=Profile"
+                    alt="Profile picture"
+                >
 
-				<div class="stat-card">
-					<i class="fa-solid fa-trophy"></i>
-					<h3 id="achievements-number">0</h3>
-					<p>Achievements</p>
-				</div>
-			</section>
+                <label for="profile-upload" class="camera-button">
+                    <i class="fa-solid fa-camera"></i>
+                </label>
 
-			<!-- EDIT PROFILE -->
+                <input
+                    type="file"
+                    id="profile-upload"
+                    accept="image/*"
+                    hidden
+                >
 
-			<section class="edit-profile-card">
-				<h2>
-					<i class="fa-solid fa-user-pen"></i>
-					Edit Profile
-				</h2>
+            </div>
 
-				<div class="input-group">
-					<label for="name-input">First Name</label>
+            <h2 id="display-name">Ascendra User</h2>
 
-					<div class="input-wrapper">
-						<i class="fa-solid fa-user"></i>
+            <p id="display-username">@ascendrauser</p>
 
-						<input type="text" id="name-input" placeholder="Enter your first name" maxlength="30" />
-					</div>
-				</div>
+            <p id="display-bio">
+                Becoming better, one day at a time.
+            </p>
 
-				<div class="input-group">
-					<label for="surname-input">Surname</label>
+        </section>
 
-					<div class="input-wrapper">
-						<i class="fa-solid fa-user"></i>
+        <section class="stats-container">
 
-						<input type="text" id="surname-input" placeholder="Enter your surname" maxlength="30" />
-					</div>
-				</div>
+            <div class="stat-card">
+                <i class="fa-solid fa-fire"></i>
+                <h3 id="streak-number">0</h3>
+                <p>Day Streak</p>
+            </div>
 
-				<div class="input-group">
-					<label for="username-input">Username</label>
+            <div class="stat-card">
+                <i class="fa-solid fa-list-check"></i>
+                <h3 id="tasks-number">0</h3>
+                <p>Tasks Done</p>
+            </div>
 
-					<div class="input-wrapper">
-						<i class="fa-solid fa-at"></i>
+            <div class="stat-card">
+                <i class="fa-solid fa-trophy"></i>
+                <h3 id="achievements-number">0</h3>
+                <p>Achievements</p>
+            </div>
 
-						<input type="text" id="username-input" placeholder="Enter your username" maxlength="20" />
-					</div>
-				</div>
+        </section>
 
-				<div class="input-group">
-					<label for="bio-input">Bio</label>
+        <!-- EDIT PROFILE -->
 
-					<textarea id="bio-input" placeholder="Write something about yourself..." maxlength="120"></textarea>
+        <section class="edit-profile-card">
 
-					<p id="character-count">0 / 120</p>
-				</div>
+            <h2>
+                <i class="fa-solid fa-user-pen"></i>
+                Edit Profile
+            </h2>
 
-				<button id="save-button" type="button">
-					<i class="fa-solid fa-floppy-disk"></i>
-					Save Changes
-				</button>
+            <div class="input-group">
 
-				<p id="save-message"></p>
-			</section>
+                <label for="name-input">First Name</label>
 
-			<!-- LOG OUT -->
+                <div class="input-wrapper">
 
-			<button onclick="window.location.href = 'login.html'" id="logout-button" type="button">
-				Log Out
-				<i class="fa-solid fa-right-from-bracket"></i>
-			</button>
-		</main>
+                    <i class="fa-solid fa-user"></i>
 
-		<script src="profile.js"></script>
-	</body>
+                    <input
+                        type="text"
+                        id="name-input"
+                        placeholder="Enter your first name"
+                        maxlength="30"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="surname-input">Surname</label>
+
+                <div class="input-wrapper">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    <input
+                        type="text"
+                        id="surname-input"
+                        placeholder="Enter your surname"
+                        maxlength="30"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="username-input">Username</label>
+
+                <div class="input-wrapper">
+
+                    <i class="fa-solid fa-at"></i>
+
+                    <input
+                        type="text"
+                        id="username-input"
+                        placeholder="Enter your username"
+                        maxlength="20"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="input-group">
+
+                <label for="bio-input">Bio</label>
+
+                <textarea
+                    id="bio-input"
+                    placeholder="Write something about yourself..."
+                    maxlength="120"
+                ></textarea>
+
+                <p id="character-count">0 / 120</p>
+
+            </div>
+
+            <button id="save-button" type="button">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Changes
+            </button>
+
+            <p id="save-message"></p>
+
+        </section>
+
+        <!-- LOG OUT -->
+
+        <button
+            onclick="window.location.href='login.html'"
+            id="logout-button"
+            type="button"
+        >
+            Log Out
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+
+    </main>
+
+    <script src="profile.js"></script>
+
+</body>
+
 </html>
