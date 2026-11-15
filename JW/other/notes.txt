@@ -1,0 +1,14 @@
+Notes for the creator:
+
+Tasks:
+- Get all the files up to date (eg. Extras and Roadmap) 
+- Create new files like index.html, style.css and script.js
+- Look for bugs and visual flaws in each file
+- Get format of code consistent
+-----------------------------------------------------------------------
+
+Projects:
+- Create Kids Mode
+-----------------------------------------------------------------------
+
+Note: Tasks are ordered most to least important.
