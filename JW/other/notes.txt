@@ -15,3 +15,9 @@ Projects:
 
 Note: Tasks are ordered most to least important. 
 Everything needs to be from the real branch in order to have up to date files
+
+Links:
+Font Awesome CSS: https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css
+Ascendra: https://ascendra.ca/#/welcome
+GitHub: https://github.com/AscendraOfficial/Ascendra
+Issues: https://github.com/AscendraOfficial/Ascendra/issues
