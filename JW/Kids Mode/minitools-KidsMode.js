@@ -1,5 +1,3 @@
-
-
 function init_minitools() {
 	const flipButton = document.getElementById("flip");
 	const rollButton = document.getElementById("roll");
