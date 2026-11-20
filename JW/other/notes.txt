@@ -1,8 +1,10 @@
 Notes for the creator:
 
 Tasks:
-- Get all the files up to date (eg. Extras and Roadmap) 
-- Create new files like index.html, style.css and script.js
+- Get all the files up to date 
+(eg. Extras and Roadmap | FROM THE REAL BRANCH!) 
+- Create new files like index.html, style.css and script.js 
+(from real branch)
 - Look for bugs and visual flaws in each file
 - Get format of code consistent
 -----------------------------------------------------------------------
@@ -11,4 +13,5 @@ Projects:
 - Create Kids Mode
 -----------------------------------------------------------------------
 
-Note: Tasks are ordered most to least important.
+Note: Tasks are ordered most to least important. 
+Everything needs to be from the real branch in order to have up to date files
