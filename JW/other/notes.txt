@@ -10,7 +10,8 @@ Tasks:
 -----------------------------------------------------------------------
 
 Projects:
-- Create Kids Mode
+- Create Kids Mode 
+- get files to date
 -----------------------------------------------------------------------
 
 Note: Tasks are ordered most to least important. 
