@@ -1,0 +1,262 @@
+.ascendra-page {
+	min-height: 100dvh;
+	padding: calc(76px + env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) calc(56px + env(safe-area-inset-bottom))
+		max(20px, env(safe-area-inset-left));
+	color: #26212f;
+	font-family: Arial, Helvetica, sans-serif;
+	text-align: center;
+}
+
+.ascendra-page > h1 {
+	margin: 0;
+	color: var(--accent, #7b2cff);
+	font-size: clamp(2.25rem, 6vw, 3.25rem);
+}
+
+.ascendra-page > strong {
+	display: block;
+	width: min(680px, 100%);
+	margin: 12px auto 0;
+	color: #625b70;
+	font-size: clamp(1rem, 2vw, 1.1rem);
+	line-height: 1.55;
+}
+
+.ascendra-page .mini-tools-progress {
+	width: min(1080px, 100%);
+	margin: 28px auto 0;
+	padding: 20px 22px;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	gap: 20px;
+	align-items: center;
+	color: #2f2938;
+	background: rgba(255, 255, 255, 0.94);
+	border: 1px solid rgba(91, 33, 182, 0.12);
+	border-radius: 22px;
+	box-shadow: 0 12px 32px rgba(55, 32, 93, 0.1);
+	text-align: left;
+}
+
+.ascendra-page .mini-tools-progress h2 {
+	margin: 0 0 6px;
+	color: var(--accent, #7b2cff);
+	font-size: 1.3rem;
+}
+
+.ascendra-page .mini-tools-progress p {
+	margin: 0;
+	color: #625b70;
+	line-height: 1.45;
+}
+
+.ascendra-page .mini-tools-totals {
+	margin: 0;
+	display: flex;
+	gap: 10px;
+}
+
+.ascendra-page .mini-tools-totals > div {
+	min-width: 112px;
+	padding: 10px 14px;
+	background: #f4efff;
+	border: 1px solid rgba(109, 40, 217, 0.13);
+	border-radius: 14px;
+}
+
+.ascendra-page .mini-tools-totals dt {
+	color: #625b70;
+	font-size: 0.78rem;
+}
+
+.ascendra-page .mini-tools-totals dd {
+	margin: 3px 0 0;
+	color: var(--accent, #7b2cff);
+	font-size: 1.1rem;
+	font-weight: 800;
+}
+
+.ascendra-page .mini-tools-achievement-link {
+	min-height: 46px;
+	padding: 11px 16px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	color: white;
+	background: var(--accent, #7b2cff);
+	border-radius: 14px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.ascendra-page .mini-tools-achievement-link:focus-visible {
+	outline: 3px solid #4c1d95;
+	outline-offset: 3px;
+	box-shadow: 0 0 0 5px white;
+}
+
+.ascendra-page .mini-tools-grid {
+	width: min(1080px, 100%);
+	margin: 32px auto 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+	gap: clamp(16px, 2.5vw, 24px);
+	align-items: stretch;
+}
+
+.ascendra-page .mini-tools-grid .card {
+	min-width: 0;
+	padding: clamp(22px, 3vw, 30px);
+	display: flex;
+	flex-direction: column;
+	text-align: left;
+	color: #2f2938;
+	background: rgba(255, 255, 255, 0.94);
+	border: 1px solid rgba(91, 33, 182, 0.12);
+	border-radius: 22px;
+	box-shadow: 0 12px 32px rgba(55, 32, 93, 0.12);
+}
+
+.ascendra-page .card h2 {
+	margin: 0 0 10px;
+	color: var(--accent, #7b2cff);
+	font-size: clamp(1.25rem, 3vw, 1.55rem);
+	line-height: 1.25;
+}
+
+.ascendra-page .card h2 i {
+	margin-left: 6px;
+	color: var(--accent, #7b2cff);
+}
+
+.ascendra-page .card p {
+	color: #625b70;
+	line-height: 1.5;
+}
+
+.ascendra-page .card label {
+	margin: 12px 0 6px;
+	color: #403848;
+	font-weight: 700;
+}
+
+.ascendra-page .card input[type="number"] {
+	width: 100%;
+	min-height: 48px;
+	padding: 10px 12px;
+	color: #26212f;
+	background: #fff;
+	border: 1px solid #cfc5dd;
+	border-radius: 12px;
+	font: inherit;
+}
+
+.ascendra-page .card > button {
+	width: 100%;
+	min-height: 48px;
+	margin-top: auto;
+	padding: 11px 16px;
+	color: #fff;
+	background: var(--accent, #7b2cff);
+	border: 0;
+	border-radius: 14px;
+	box-shadow: 0 7px 18px rgba(109, 40, 217, 0.24);
+	cursor: pointer;
+	font: inherit;
+	font-weight: 700;
+	transition:
+		transform 0.18s ease,
+		box-shadow 0.18s ease;
+}
+
+.ascendra-page .card > button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 24px rgba(109, 40, 217, 0.3);
+}
+
+.ascendra-page .card > button:active {
+	transform: translateY(0);
+}
+
+.ascendra-page .card .tool-result {
+	min-height: 1.5em;
+	margin: 16px 0 0;
+	color: var(--accent, #7b2cff);
+	font-weight: 700;
+	text-align: center;
+}
+
+body.dark-mode .ascendra-page > strong,
+body.dark-mode .ascendra-page .card :is(p, label) {
+	color: var(--dark-muted) !important;
+}
+
+body.dark-mode .ascendra-page .mini-tools-grid .card {
+	border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page .mini-tools-progress {
+	color: var(--dark-text) !important;
+	background: var(--dark-surface) !important;
+	border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page .mini-tools-progress p,
+body.dark-mode .ascendra-page .mini-tools-totals dt {
+	color: var(--dark-muted) !important;
+}
+
+body.dark-mode .ascendra-page .mini-tools-totals > div {
+	background: var(--dark-surface-raised) !important;
+	border-color: var(--dark-border) !important;
+}
+
+body.dark-mode .ascendra-page .mini-tools-progress h2,
+body.dark-mode .ascendra-page .mini-tools-totals dd {
+	color: #d8b4fe !important;
+}
+
+body.dark-mode .ascendra-page .mini-tools-achievement-link:focus-visible {
+	outline-color: #facc15;
+	box-shadow: 0 0 0 5px var(--dark-surface);
+}
+
+body.dark-mode .ascendra-page .card :is(h2, h2 i, .tool-result) {
+	color: #d8b4fe !important;
+}
+
+@media (max-width: 650px) {
+	.ascendra-page {
+		padding: calc(74px + env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) calc(48px + env(safe-area-inset-bottom)) !important;
+	}
+
+	.ascendra-page .mini-tools-progress {
+		padding: 18px;
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+
+	.ascendra-page .mini-tools-totals {
+		width: 100%;
+	}
+
+	.ascendra-page .mini-tools-totals > div {
+		min-width: 0;
+		flex: 1;
+	}
+
+	.ascendra-page .mini-tools-achievement-link {
+		width: 100%;
+	}
+
+	.ascendra-page .mini-tools-grid {
+		grid-template-columns: 1fr;
+		gap: 14px;
+		margin-top: 24px;
+	}
+
+	.ascendra-page .mini-tools-grid .card {
+		padding: 20px;
+	}
+}
