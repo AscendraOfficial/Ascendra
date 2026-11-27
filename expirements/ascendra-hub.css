@@ -1,31 +1,212 @@
+
+/* ==============================
+   GENERAL PAGE STYLING
+================================= */
+
 body {
-    font-family: sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    background-color: #f5f3fa;
+    color: #292333;
+    margin: 0;
+    min-height: 100vh;
+    padding: 60px 0;
+    box-sizing: border-box;
 }
+
+/* ==============================
+   HUB HEADER
+================================= */
+
+#hub-header {
+    width: 75%;
+    max-width: 1100px;
+    margin: 0 auto 35px;
+}
+
+#hub-heading {
+    font-size: 68px;
+    font-weight: 700;
+    color: #292333;
+    margin: 0 0 12px;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#hub-subheading {
+    font-size: 23px;
+    font-weight: 500;
+    color: #777080;
+    margin: 0;
+}
+
+/* ==============================
+   MAIN HUB CARD
+================================= */
 
 #ascendra-hub-card {
     background-color: #ffffff;
-    border-radius: 18px;
-    padding: 45px;
-    width: 75%;
-    height: 75%;
-    margin: 60px auto;
+    border-radius: 24px;
+    padding: 30px;
+    width: 50%;
+    max-width: 1100px;
+    min-height: 35vh;
+    margin: 0 auto;
     box-sizing: border-box;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 35px rgba(50, 30, 80, 0.08);
+    border: 1px solid rgba(109, 40, 217, 0.08);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
+/* ==============================
+   BRAND COLOUR
+================================= */
+
 .main-word {
-    color: rgb(204, 16, 225);
+    color: #7f00ff;
 }
+
+/* ==============================
+   MAIN DESCRIPTION
+================================= */
 
 #main-hub-p {
     font-size: 18px;
-    line-height: 1.6;
-    color: #333333;
+    line-height: 1.8;
+    color: #514b5c;
+    max-width: 850px;
+    margin: 0 auto;
 }
+
+#ascendra-version {
+    font-weight: 450;
+    font-size: 30px;
+    color: #424040;
+    margin-top: 15px;
+}
+
+/* ==============================
+   HUB BUTTONS
+================================= */
+
+.btn {
+    background-color: #7f00ff;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    width: 45%;
+}
+
+/* Button hover effect */
+
+.btn:hover {
+    background-color: #6500cc;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(127, 0, 255, 0.2);
+}
+
+/* Button alignment */
+
+#ascendra-btn,
+#ascendra-learn-btn {
+    display: inline-block;
+}
+
+/* Button container */
+
+/* ==============================
+   BUTTON LAYOUT
+================================= */
+
+#ascendra-hub-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#ascendra-btn {
+    align-self: flex-start;
+}
+
+#ascendra-learn-btn {
+    align-self: flex-end;
+}
+
+/* ==============================
+   CREATORS
+================================= */
 
 #ascendra-creators {
     font-size: 16px;
-    color: #000000;
-    margin-top: 20px;
+    color: #928b9c;
+    margin-top: 40px;
+}
+
+/* ==============================
+   RESPONSIVE DESIGN
+================================= */
+
+@media (max-width: 768px) {
+    body {
+        padding: 40px 0;
+    }
+
+    #hub-header,
+    #ascendra-hub-card {
+        width: 90%;
+    }
+
+    #hub-heading {
+        font-size: 32px;
+    }
+
+    #hub-subheading {
+        font-size: 19px;
+    }
+
+    #ascendra-hub-card {
+        min-height: auto;
+        padding: 35px 25px;
+    }
+
+    #main-hub-p {
+        font-size: 17px;
+        line-height: 1.7;
+    }
+
+    #ascendra-creators {
+        font-size: 14px;
+        margin-top: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    #hub-header,
+    #ascendra-hub-card {
+        width: 94%;
+    }
+
+    #hub-heading {
+        font-size: 27px;
+    }
+
+    #hub-subheading {
+        font-size: 17px;
+    }
+
+    #ascendra-hub-card {
+        padding: 30px 20px;
+    }
 }
